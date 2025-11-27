@@ -40,31 +40,31 @@ How different tech stacks are bundled together to create a cohesive system.
 ```mermaid
 graph TD
     subgraph "User Layer"
-        User[User / Engineer]
-        Browser[Web Browser (Chrome/Edge)]
+        User["User / Engineer"]
+        Browser["Web Browser (Chrome/Edge)"]
     end
 
     subgraph "Frontend Layer (Next.js 15)"
-        Internationalization[Lingo.dev Compiler]
-        Client Side Storage[IndexedDB]
-        UI[React UI Components]
-        Viewer[AnyModelViewer (WebGPU/WebGL)]
-        State[React Context]
+        Internationalization["Lingo.dev Compiler"]
+        ClientStorage["IndexedDB"]
+        UI["React UI Components"]
+        Viewer["AnyModelViewer (WebGPU/WebGL)"]
+        State["React Context"]
     end
 
     subgraph "Intelligence Layer"
-        AI_SDK[Vercel AI SDK]
-        Gemini[Gemini 2.5 Flash API]
-        Lingo[Lingo.dev (i18n)]
-        CodeRabbit[CodeRabbit AI Review]
-        CodeQL (GitHub CodeReviewer)
+        AI_SDK["Vercel AI SDK"]
+        Gemini["Gemini 2.5 Flash API"]
+        Lingo["Lingo.dev (i18n)"]
+        CodeRabbit["CodeRabbit AI Review"]
+        CodeQL["GitHub CodeQL"]
     end
 
     subgraph "DevOps & Infrastructure"
-        GitHub[GitHub Actions]
-        Dependabot[Dependabot]
-        CodeRabbit[CodeRabbit AI Review]
-        Vercel[Vercel Deployment]
+        GitHub["GitHub Actions"]
+        Dependabot["Dependabot"]
+        CodeRabbitDev["CodeRabbit AI Review"]
+        Vercel["Vercel Deployment"]
     end
 
     User --> Browser
@@ -75,7 +75,7 @@ graph TD
     AI_SDK <--> Gemini
     UI --> Lingo
     GitHub --> Dependabot
-    GitHub --> CodeRabbit
+    GitHub --> CodeRabbitDev
     GitHub --> Vercel
 ```
 
@@ -85,13 +85,13 @@ The BFS-based hierarchical rendering engine that powers the disassembly.
 ```mermaid
 graph TD
     subgraph "Rendering Engine"
-        Input[3D Model (GLB/FBX)] --> Loader[Model Loader]
-        Loader --> SceneGraph[Scene Graph Construction]
-        SceneGraph --> BFS[BFS Traversal Algorithm]
-        BFS --> Hierarchy[Hierarchy Mapping]
-        Hierarchy --> VectorCalc[Radial Vector Calculation]
-        VectorCalc --> Animation[Animation Loop (WebGPU)]
-        Animation --> Display[Canvas Output]
+        Input["3D Model (GLB/FBX)"] --> Loader["Model Loader"]
+        Loader --> SceneGraph["Scene Graph Construction"]
+        SceneGraph --> BFS["BFS Traversal Algorithm"]
+        BFS --> Hierarchy["Hierarchy Mapping"]
+        Hierarchy --> VectorCalc["Radial Vector Calculation"]
+        VectorCalc --> Animation["Animation Loop (WebGPU)"]
+        Animation --> Display["Canvas Output"]
     end
 ```
 
@@ -101,23 +101,23 @@ How we ensure code quality, security, and global accessibility automatically.
 ```mermaid
 graph TD
     subgraph "CI/CD Pipeline"
-        Push[Git Push] --> Actions[GitHub Actions]
-        Actions --> CodeQL[CodeQL Security Scan]
-        Actions --> Dependabot[Dependabot Updates]
+        Push["Git Push"] --> Actions["GitHub Actions"]
+        Actions --> CodeQL["CodeQL Security Scan"]
+        Actions --> Dependabot["Dependabot Updates"]
     end
 
     subgraph "AI Code Review"
-        PR[Pull Request] --> CodeRabbit[CodeRabbit AI]
-        CodeRabbit --> Review[Automated Review]
-        CodeRabbit --> Summary[PR Summary]
-        CodeRabbit --> Chat[Contextual Chat]
+        PR["Pull Request"] --> CodeRabbit["CodeRabbit AI"]
+        CodeRabbit --> Review["Automated Review"]
+        CodeRabbit --> Summary["PR Summary"]
+        CodeRabbit --> Chat["Contextual Chat"]
     end
 
     subgraph "Internationalization Engine"
-        Content[App Content] --> Lingo[Lingo.dev Compiler]
-        Lingo --> Gemini[Gemini 2.5 Flash]
-        Gemini --> Translations[Locales (es, fr, de, ja...)]
-        Translations --> UI[Localized UI]
+        Content["App Content"] --> Lingo["Lingo.dev Compiler"]
+        Lingo --> Gemini["Gemini 2.5 Flash"]
+        Gemini --> Translations["Locales (es, fr, de, ja...)"]
+        Translations --> UI["Localized UI"]
     end
 
     Push --> PR
