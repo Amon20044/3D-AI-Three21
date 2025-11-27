@@ -1,11 +1,12 @@
+"use client"
 import { useState } from 'react';
 
-export function ModelInfoCollector({ 
-    fileName, 
-    fileType, 
-    onSubmit, 
+export function ModelInfoCollector({
+    fileName,
+    fileType,
+    onSubmit,
     onSkip,
-    isLoading 
+    isLoading
 }) {
     const [description, setDescription] = useState('');
     const [category, setCategory] = useState('');
@@ -15,7 +16,7 @@ export function ModelInfoCollector({
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        
+
         // Validate required fields
         if (!description.trim()) {
             alert('Please provide a description of your model');
@@ -33,7 +34,7 @@ export function ModelInfoCollector({
             alert('Please provide at least one tag for your model');
             return;
         }
-        
+
         const modelInfo = {
             filename: fileName,
             type: fileType,
@@ -57,12 +58,12 @@ export function ModelInfoCollector({
     };
 
     const categories = [
-        'Mechanical Parts', 'Electronics', 'Automotive', 'Architecture', 
+        'Mechanical Parts', 'Electronics', 'Automotive', 'Architecture',
         'Furniture', 'Tools', 'Toys', 'Medical', 'Aerospace', 'Other'
     ];
 
     const purposes = [
-        'Prototyping', 'Analysis', 'Reverse Engineering', 'Education', 
+        'Prototyping', 'Analysis', 'Reverse Engineering', 'Education',
         'Manufacturing', 'Visualization', 'Documentation', 'Other'
     ];
 
@@ -72,7 +73,7 @@ export function ModelInfoCollector({
                 <div className="model-info-header">
                     <div className="header-icon">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                     </div>
                     <h2>Model Information *</h2>
@@ -85,11 +86,11 @@ export function ModelInfoCollector({
                 <div className="file-preview-card">
                     <div className="file-preview-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-                            <polyline points="14,2 14,8 20,8"/>
-                            <line x1="16" y1="13" x2="8" y2="13"/>
-                            <line x1="16" y1="17" x2="8" y2="17"/>
-                            <polyline points="10,9 9,9 8,9"/>
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                            <polyline points="14,2 14,8 20,8" />
+                            <line x1="16" y1="13" x2="8" y2="13" />
+                            <line x1="16" y1="17" x2="8" y2="17" />
+                            <polyline points="10,9 9,9 8,9" />
                         </svg>
                     </div>
                     <div className="file-preview-details">
@@ -117,9 +118,9 @@ export function ModelInfoCollector({
                     <div className="form-grid">
                         <div className="form-section">
                             <label className="form-label">Category *</label>
-                            <select 
+                            <select
                                 className="form-select"
-                                value={category} 
+                                value={category}
                                 onChange={(e) => setCategory(e.target.value)}
                                 required
                             >
@@ -132,9 +133,9 @@ export function ModelInfoCollector({
 
                         <div className="form-section">
                             <label className="form-label">Purpose *</label>
-                            <select 
+                            <select
                                 className="form-select"
-                                value={purpose} 
+                                value={purpose}
                                 onChange={(e) => setPurpose(e.target.value)}
                                 required
                             >
@@ -191,16 +192,16 @@ export function ModelInfoCollector({
                     </div>
 
                     <div className="form-actions">
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             onClick={handleSkip}
                             className="btn btn-ghost"
                             disabled={isLoading}
                         >
                             Skip for now
                         </button>
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             className="btn btn-primary"
                             disabled={isLoading}
                         >
@@ -213,7 +214,7 @@ export function ModelInfoCollector({
                                 <>
                                     Continue Analysis
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M5 12h14m-7-7l7 7-7 7"/>
+                                        <path d="M5 12h14m-7-7l7 7-7 7" />
                                     </svg>
                                 </>
                             )}
@@ -225,7 +226,7 @@ export function ModelInfoCollector({
                     <div className="ai-features-header">
                         <div className="ai-icon">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                                <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                             </svg>
                         </div>
                         <h4>Enhanced AI Analysis with Your Input</h4>

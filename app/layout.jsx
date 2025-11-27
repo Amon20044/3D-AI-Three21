@@ -1,8 +1,9 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import ModelInfoWrapper from "./components/ModelInfoWrapper";
+import ModelInfoWrapper from "../components/ModelInfoWrapper";
 import { Analytics } from "@vercel/analytics/next"
 import { LingoProvider, loadDictionary } from "lingo.dev/react/rsc";
+import Providers from "./Providers";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -63,9 +64,11 @@ export default function RootLayout({ children }) {
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased dark-theme`}
         >
-          <ModelInfoWrapper>
-            {children}
-          </ModelInfoWrapper>
+          <Providers>
+            <ModelInfoWrapper>
+              {children}
+            </ModelInfoWrapper>
+          </Providers>
           <Analytics />
         </body>
       </html>
