@@ -213,18 +213,18 @@ When you ask the AI about engineering concepts (e.g., "Find research on quadrupe
 
 ```mermaid
 graph LR
-    A[User Query] --> B[Gemini 2.5 Flash]
-    B --> C[searchGoogleScholar Tool]
-    C --> D[Apify Client]
-    D --> E[Google Scholar Actor]
-    E --> F[Google Scholar]
+    A["User Query"] --> B["Gemini 2.5 Flash"]
+    B --> C["searchGoogleScholar Tool"]
+    C --> D["Apify Client"]
+    D --> E["Google Scholar Actor"]
+    E --> F["Google Scholar"]
     F --> E
     E --> D
     D --> C
     C --> B
-    B --> G[Structured Results]
-    G --> H[UI Display]
-    G --> I[IndexedDB Storage]
+    B --> G["Structured Results"]
+    G --> H["UI Display"]
+    G --> I["IndexedDB Storage"]
 ```
 
 ### Implementation Details

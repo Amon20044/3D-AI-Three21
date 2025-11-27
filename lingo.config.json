@@ -2,9 +2,20 @@
   "sourceLanguage": "en",
   "targetLanguages": [
     "es",
-    "de",
     "fr",
-    "ja"
+    "de",
+    "hi",
+    "ja",
+    "ko",
+    "pt",
+    "ru",
+    "zh",
+    "ar",
+    "bn",
+    "id",
+    "it",
+    "th",
+    "vi"
   ],
   "localesPath": "./locales",
   "format": "json",

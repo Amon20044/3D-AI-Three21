@@ -13,10 +13,6 @@ export default function Header() {
           {/* <span className="logo-subtitle">Where 3D Meets Intelligence</span> */}
         </div>
 
-
-
-
-
         <select
           className="language-select"
           value={currentLocale}
@@ -26,6 +22,18 @@ export default function Header() {
           <option value="es">Español</option>
           <option value="de">Deutsch</option>
           <option value="fr">Français</option>
+          <option value="hi">हिन्दी</option>
+          <option value="ja">日本語</option>
+          <option value="ko">한국어</option>
+          <option value="pt">Português</option>
+          <option value="ru">Русский</option>
+          <option value="zh">中文</option>
+          <option value="ar">العربية</option>
+          <option value="bn">বাংলা</option>
+          <option value="id">Bahasa Indonesia</option>
+          <option value="it">Italiano</option>
+          <option value="th">ไทย</option>
+          <option value="vi">Tiếng Việt</option>
         </select>
       </div>
 
