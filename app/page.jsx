@@ -470,7 +470,7 @@ export default function Home() {
         }
 
         .tagline-text {
-          font-size: 2rem;
+          font-size: 3rem;
           font-weight: 800;
           background: linear-gradient(to right, #ffffffff, #91aad0ff);
           -webkit-background-clip: text;
