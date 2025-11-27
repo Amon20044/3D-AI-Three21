@@ -1,6 +1,11 @@
 {
   "sourceLanguage": "en",
-  "targetLanguages": ["es", "de", "fr", "ja", "zh", "pt", "hi"],
+  "targetLanguages": [
+    "es",
+    "de",
+    "fr",
+    "ja"
+  ],
   "localesPath": "./locales",
   "format": "json",
   "engine": "lingo",

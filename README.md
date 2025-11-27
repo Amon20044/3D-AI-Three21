@@ -1,100 +1,391 @@
 # Three21 🚀
 
-### Advanced 3D Model Visualization & AI-Powered Analysis Platform
+### The "X-Ray Vision" for Engineering Analysis
 
-A powerful Next.js-based 3D model viewer with AI-powered analysis, interactive disassembly, and modern WebGPU rendering.
-
-[![Next.js](https://img.shields.io/badge/Next.js-15.3-black)](https://nextjs.org/)
-[![Three.js](https://img.shields.io/badge/Three.js-0.177-blue)](https://threejs.org/)
-[![React](https://img.shields.io/badge/React-19.0-61dafb)](https://reactjs.org/)
-[![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
-
-> A cutting-edge web application for interactive 3D model visualization, hierarchical disassembly analysis, and AI-powered engineering insights.
+**Three21** is an intelligent 3D analysis platform that combines **hierarchical spatial decomposition** with **multimodal AI** to revolutionize how engineers understand complex systems.
 
 ---
 
-## 📋 Table of Contents
+## 🦈 The Pitch (Shark Tank Style)
 
-- [Overview](#overview)
-- [Core Features](#core-features)
-- [Getting Started](#getting-started)
-- [Usage](#usage)
-- [Technical Architecture](#technical-architecture)
-- [Assembly/Disassembly Algorithm](#assemblydisassembly-algorithm)
-- [WebGPU Migration](#webgpu-migration)
-- [Project Structure](#project-structure)
-- [Key Components](#key-components)
-- [API & Integration](#api--integration)
-- [Performance Optimizations](#performance-optimizations)
-- [Configuration](#configuration)
-- [Development](#development)
-- [Contributing](#contributing)
-- [License](#license)
+**"Sharks, imagine you're an engineer trying to understand a complex jet engine or a robotic arm."**
+
+Today, engineers are stuck staring at 2D blueprints or static 3D models. They can't see *inside*. They can't understand *how* it fits together without exploding it manually, which takes hours. It's like trying to learn surgery from a photograph.
+
+**Three21 is the solution.** We use AI and advanced spatial algorithms to *automatically* disassemble any 3D model, layer by layer, preserving the hierarchy. It's not just a viewer; it's an *intelligent analysis platform* that lets you "talk" to the model.
+
+We are here to revolutionize reverse engineering, education, and design review.
 
 ---
 
-## 🎯 Overview
+## 🏆 MLH General Track & Gemini 2.5 Flash Integration
 
-**Three21** is a sophisticated web-based 3D model viewer that combines advanced computer graphics techniques with artificial intelligence to provide engineers, designers, and researchers with powerful tools for 3D model analysis and exploration. The platform specializes in **hierarchical spatial decomposition** for interactive assembly/disassembly visualization, making it ideal for mechanical engineering analysis, product design review, and educational purposes.
+Three21 is built for the **MLH General Track**, showcasing the power of next-gen AI integration.
 
-### Problem Statement
+### Powered by Gemini 2.5 Flash 🧠
+We don't just render pixels; we *understand* them.
 
-Traditional 3D viewers lack intelligent disassembly capabilities and contextual AI analysis. Engineers need to manually understand complex assemblies, identify components, and analyze spatial relationships - a time-consuming and error-prone process.
-
-### Solution
-
-Three21 leverages computational geometry algorithms, real-time 3D rendering, and AI integration to automatically decompose 3D models into hierarchical layers, enabling:
-
-- ✅ Automated assembly structure analysis
-- ✅ Layer-by-layer visualization with precise control
-- ✅ AI-powered component identification and analysis
-- ✅ Interactive highlighting and part selection
-- ✅ Real-time geometry metrics (triangles, vertices, nodes)
+-   **Vision Capabilities:** The system captures real-time snapshots of the model from multiple angles.
+-   **Vision Capabilities:** The system captures real-time snapshots of the model from multiple angles.
+-   **Multimodal Analysis:** Gemini 2.5 Flash analyzes these visuals alongside the model's metadata (hierarchy, material names).
+-   **Streaming Intelligence:** We use the **Vercel AI SDK** to stream (Server Sent Events SSE) insights in real-time, creating a conversational interface that feels like talking to a senior engineer.
 
 ---
 
-## 🌟 Core Features
+## 🏗️ System Design (Layered Architecture)
 
-### 1. 🎨 Advanced 3D Rendering
+### Layer 1: High-Level Architecture
+How different tech stacks are bundled together to create a cohesive system.
 
-- **WebGPU Support**: Next-generation graphics API with automatic WebGL fallback
-- **Interactive Model Viewer**: Rotate, zoom, and explore 3D models with intuitive controls
-- **Multiple Format Support**: GLTF, GLB, FBX, OBJ, and more
-- **Real-time Lighting**: Dynamic lighting system for optimal model visualization
-- **Transparent Backgrounds**: Vanta.js fog effects with configurable aesthetics
+```mermaid
+graph TD
+    subgraph "User Layer"
+        User[User / Engineer]
+        Browser[Web Browser (Chrome/Edge)]
+    end
 
-### 2. 🔧 Interactive Disassembly
+    subgraph "Frontend Layer (Next.js 15)"
+        Internationalization[Lingo.dev Compiler]
+        Client Side Storage[IndexedDB]
+        UI[React UI Components]
+        Viewer[AnyModelViewer (WebGPU/WebGL)]
+        State[React Context]
+    end
 
-- **Hierarchical Spatial Decomposition (HSD)**: Intelligent algorithm for model disassembly
-- **Layer-by-Layer Control**: Precise slider control (0-1000) with 2-decimal precision
-- **Smooth Animations**: Fluid transitions between assembled and disassembled states
-- **Gap & Size Controls**: Numeric inputs for exact separation parameters
-- **Visual Depth Grouping**: Parts organized by hierarchical depth
+    subgraph "Intelligence Layer"
+        AI_SDK[Vercel AI SDK]
+        Gemini[Gemini 2.5 Flash API]
+        Lingo[Lingo.dev (i18n)]
+        CodeRabbit[CodeRabbit AI Review]
+        CodeQL (GitHub CodeReviewer)
+    end
 
-### 3. 🤖 AI Integration
+    subgraph "DevOps & Infrastructure"
+        GitHub[GitHub Actions]
+        Dependabot[Dependabot]
+        CodeRabbit[CodeRabbit AI Review]
+        Vercel[Vercel Deployment]
+    end
 
-- **Three21 Bot**: AI-powered assistant for model analysis
-- **Part Recognition**: Click any part for AI-generated information
-- **Context-Aware Responses**: AI understands model structure and hierarchy
-- **Screenshot Analysis**: Automatic capture for visual AI understanding
-- **Chat History**: Persistent conversation storage with IndexedDB
+    User --> Browser
+    Browser --> UI
+    UI --> Viewer
+    Viewer --> State
+    State <--> AI_SDK
+    AI_SDK <--> Gemini
+    UI --> Lingo
+    GitHub --> Dependabot
+    GitHub --> CodeRabbit
+    GitHub --> Vercel
+```
 
-### 4. 🎭 Visual Effects
+### Layer 2: Rendering Engine (The Core)
+The BFS-based hierarchical rendering engine that powers the disassembly.
 
-- **Vanta Fog Background**: Animated fog effect with configurable colors and speed
-- **Highlight System**: Interactive part highlighting with customizable colors
-- **Screenshot Manager**: Capture models with transparent backgrounds
-- **Responsive Design**: Works seamlessly across desktop and mobile
+```mermaid
+graph TD
+    subgraph "Rendering Engine"
+        Input[3D Model (GLB/FBX)] --> Loader[Model Loader]
+        Loader --> SceneGraph[Scene Graph Construction]
+        SceneGraph --> BFS[BFS Traversal Algorithm]
+        BFS --> Hierarchy[Hierarchy Mapping]
+        Hierarchy --> VectorCalc[Radial Vector Calculation]
+        VectorCalc --> Animation[Animation Loop (WebGPU)]
+        Animation --> Display[Canvas Output]
+    end
+```
+
+### Layer 3: DevOps & Intelligence Architecture
+How we ensure code quality, security, and global accessibility automatically.
+
+```mermaid
+graph TD
+    subgraph "CI/CD Pipeline"
+        Push[Git Push] --> Actions[GitHub Actions]
+        Actions --> CodeQL[CodeQL Security Scan]
+        Actions --> Dependabot[Dependabot Updates]
+    end
+
+    subgraph "AI Code Review"
+        PR[Pull Request] --> CodeRabbit[CodeRabbit AI]
+        CodeRabbit --> Review[Automated Review]
+        CodeRabbit --> Summary[PR Summary]
+        CodeRabbit --> Chat[Contextual Chat]
+    end
+
+    subgraph "Internationalization Engine"
+        Content[App Content] --> Lingo[Lingo.dev Compiler]
+        Lingo --> Gemini[Gemini 2.5 Flash]
+        Gemini --> Translations[Locales (es, fr, de, ja...)]
+        Translations --> UI[Localized UI]
+    end
+
+    Push --> PR
+    Dependabot --> PR
+```
+
+---
+
+## 🌍 Lingo.dev Integration (Global Engineering)
+
+Three21 uses **Lingo.dev** to break language barriers in engineering. Instead of manual translation files, we use AI to generate context-aware translations on the fly.
+
+### How It Works
+1.  **Configuration**: We define our target languages (Spanish, French, German, English) in `next.config.mjs`.
+2.  **Context Injection**: We provide domain context ("3D Engineering & Reverse Engineering") so the AI knows that "Mesh" means a 3D object, not a fabric network.
+3.  **AI Translation**: The `lingoCompiler` in `next.config.mjs` intercepts text and uses **Google Gemini 2.5 Flash** to translate it, preserving technical accuracy.
+4.  **Result**: A fully localized engineering platform that speaks the user's technical language.
+
+```json
+// lingo.config.json
+{
+  "sourceLanguage": "en",
+  "targetLanguages": ["es", "de", "fr"],
+  "context": {
+    "domain": "3D Engineering & Reverse Engineering",
+    "tone": "professional, technical"
+  }
+}
+```
+
+---
+
+## 🤖 CodeRabbit & Quality Assurance
+
+We employ a suite of automated tools to maintain high code quality and security.
+
+-   **CodeRabbit**: An AI-powered code reviewer that analyzes every Pull Request. It provides:
+    -   **Summaries**: High-level overviews of changes.
+    -   **Walkthroughs**: Detailed explanations of the code flow.
+    -   **Chat**: We can ask it questions about the PR context.
+-   **GitHub Dependabot**: Automatically monitors `package.json` and opens PRs for updates, grouped by ecosystem (e.g., `react-ecosystem`, `ai-sdk`) to reduce noise.
+-   **CodeQL**: Semantic code analysis engine that scans for security vulnerabilities and coding errors before they merge.
+
+---
+
+---
+
+## 🛠️ Technology Stack
+
+### Core Framework
+-   **Next.js 15.4 (App Router)**: The backbone of the application, providing server-side rendering and API routes.
+-   **React 19**: Utilizing the latest React features for a responsive UI.
+
+### 3D Rendering & Graphics
+-   **Three.js & React Three Fiber**: For high-performance 3D rendering.
+-   **WebGPU**: Leveraging next-gen graphics APIs for smooth performance on complex models (with WebGL fallback).
+-   **BFS Algorithm**: Custom Breadth-First Search algorithm for hierarchical model decomposition.
+
+### AI & Intelligence
+-   **Google Gemini 2.5 Flash**: The brain behind the visual analysis.
+-   **Vercel AI SDK**: For streaming AI responses and managing chat state.
+-   **CodeRabbit**: AI-powered code reviews to ensure code quality.
+
+### Infrastructure & DevOps
+-   **GitHub Dependabot**: Automated dependency updates to keep the project secure.
+-   **Vercel**: Seamless deployment and hosting.
+-   **Lingo.dev**: Automated internationalization (i18n) to make the tool accessible globally.
+
+### Storage & State
+-   **IndexedDB**: Client-side storage for caching large 3D models and chat history, ensuring privacy and performance.
+-   **Context**: For efficient state management across components.
+
+### Research & Citations
+-   **Apify Google Scholar Actor**: Integrated web scraping for academic research papers, bringing scholarly context directly into the AI conversation.
+
+---
+
+## 📚 Apify Google Scholar Integration
+
+Three21 features a powerful research integration that allows the AI to fetch and cite real academic papers in real-time.
+
+### How It Works
+
+When you ask the AI about engineering concepts (e.g., "Find research on quadruped robot locomotion"), the system:
+
+1. **Query Generation**: Gemini 2.5 Flash converts your natural language question into an optimized scholarly search query
+2. **Apify Actor Call**: The server executes the Apify Google Scholar Actor with parameters
+3. **Data Processing**: Results are filtered, structured, and enriched with metadata
+4. **Visual Display**: Papers are rendered as interactive cards with full details
+5. **Persistent Storage**: Results are saved to IndexedDB for offline access
+
+### Architecture
+
+```mermaid
+graph LR
+    A[User Query] --> B[Gemini 2.5 Flash]
+    B --> C[searchGoogleScholar Tool]
+    C --> D[Apify Client]
+    D --> E[Google Scholar Actor]
+    E --> F[Google Scholar]
+    F --> E
+    E --> D
+    D --> C
+    C --> B
+    B --> G[Structured Results]
+    G --> H[UI Display]
+    G --> I[IndexedDB Storage]
+```
+
+### Implementation Details
+
+#### Server-Side Tool Definition
+Located in `app/api/chat/route.js`:
+
+```javascript
+searchGoogleScholar: tool({
+  description: 'Search Google Scholar for peer-reviewed research papers',
+  parameters: z.object({
+    query: z.string().describe('Scholarly search query'),
+    minYear: z.number().optional().describe('Minimum publication year (default: 2022)'),
+    maxYear: z.number().optional().describe('Maximum publication year'),
+    maxItems: z.number().optional().describe('Maximum results (default: 10, max: 10)')
+  }),
+  execute: async ({ query, minYear, maxYear }) => {
+    const results = await searchGoogleScholar({
+      query,
+      minYear: minYear || 2022,
+      maxYear,
+      maxItems: 10
+    });
+    
+    return {
+      query,
+      count: results.length,
+      results: results.map(r => ({
+        title: r.title,
+        link: r.link,
+        snippet: r.snippet,
+        year: r.publication_info?.year,
+        citations: r.cited_by_count
+      }))
+    };
+  }
+})
+```
+
+#### Apify Client
+Located in `lib/apifyClient.js`:
+
+```javascript
+import { ApifyClient } from 'apify-client';
+
+export async function searchGoogleScholar({ query, maxItems = 10, minYear = 2022, maxYear }) {
+  const client = new ApifyClient({
+    token: process.env.APIFY_API_KEY,
+  });
+
+  const input = {
+    queries: query,
+    maxItems: Math.min(maxItems, 10), // Enforce limit
+    start_year: minYear,
+    end_year: maxYear,
+    organicResults: true,
+    includeCitations: true
+  };
+
+  console.log('🔍 Apify Actor Input:', input);
+
+  const run = await client.actor("QE5aLx6lA6uGUXesU").call(input);
+  const { items } = await client.dataset(run.defaultDatasetId).listItems();
+
+  console.log(`✅ Retrieved ${items.length} papers from Google Scholar`);
+  
+  return items;
+}
+```
+
+#### Client-Side Rendering
+Located in `components/Three21Bot.js`:
+
+Results are displayed as:
+- **Numbered Cards** (1-10) with gradient badges
+- **Clickable Titles** that open papers in new tabs
+- **Snippet Previews** (truncated to 2 lines)
+- **Metadata Badges**: Year (📅) and Citations (📖)
+- **Hover Effects**: Subtle animations for better UX
+
+```jsx
+<div className="scholar-results-list">
+  {results.map((paper, idx) => (
+    <div key={idx} className="scholar-paper-card">
+      <div className="paper-number">{idx + 1}</div>
+      <div className="paper-content">
+        <a href={paper.link} target="_blank" rel="noopener noreferrer">
+          {paper.title}
+        </a>
+        <p className="paper-snippet">{paper.snippet}</p>
+        <div className="paper-meta">
+          <span>📅 {paper.year}</span>
+          <span>📖 {paper.citations} citations</span>
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
+```
+
+### Configuration
+
+Add your Apify API key to `.env`:
+
+```bash
+APIFY_API_KEY=apify_api_xxxxxxxxxxxxxxxxxxxxx
+GOOGLE_API_KEY=your_gemini_api_key
+```
+
+### Features
+
+✅ **Real-Time Search**: Fetch papers as the conversation flows  
+✅ **Smart Filtering**: AI generates optimized queries from natural language  
+✅ **Recent Research**: Defaults to papers from 2022+ for cutting-edge content  
+✅ **Citation Metrics**: See how influential each paper is  
+✅ **Persistent Storage**: Results stored in IndexedDB, survive page refresh  
+✅ **Direct Links**: Click any paper to read the full text  
+✅ **Tool State Tracking**: Visual feedback ("Searching...", "Complete")
+
+### Example Usage
+
+**User**: "Find research on quadruped robot locomotion for military applications"
+
+**AI Response**:
+```
+🔍 Searching Google Scholar...
+
+✅ Found 10 papers
+
+[1] Quadruped Locomotion Control Algorithms for Tactical Applications
+    MIT researchers present a novel control system...
+    📅 2023  📖 127 citations
+    
+[2] Autonomous Quadruped Robots in Battlefield Reconnaissance
+    This paper explores the deployment of Boston Dynamics...
+    📅 2024  📖 89 citations
+```
+
+---
+
+## 🔮 Future Scope
+
+### AP5 Worker Actors
+We plan to move heavy geometric calculations (like convex hull generation for collision detection) off the main thread to **AP5 Worker Actors**. This will ensure the UI remains buttery smooth (60 FPS) even when analyzing massive CAD models with millions of polygons.
+
+### Tool Calling & Agentic AI
+We are evolving the AI from a chatbot to an **Agent**.
+-   **User:** "Show me the fuel pump."
+-   **AI:** Calls `zoomToPart('fuel_pump')` tool.
+-   **Viewer:** Automatically zooms and highlights the part.
+
+### Research Citations (RAG)
+Integrating **RAG (Retrieval-Augmented Generation)** to allow the AI to cite real engineering manuals, research papers, and datasheets, making it a true engineering companion.
 
 ---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-
-- Node.js 18+ 
-- npm or yarn
-- Modern browser (Chrome 113+, Edge 113+, Safari Technology Preview)
+-   Node.js 18+
+-   npm or yarn
 
 ### Installation
 
@@ -112,692 +403,12 @@ npm run dev
 
 Visit `http://localhost:3000` to see the application.
 
-### Building for Production
-
-```bash
-# Create optimized production build
-npm run build
-
-# Start production server
-npm start
-```
-
----
-
-## 📖 Usage
-
-### Loading a Model
-
-1. **Import Model**: Click "Import Model" and select a 3D file
-2. **Or Use Demo**: Visit `/demo` route for pre-loaded examples
-3. **Interact**: Use mouse to orbit, scroll to zoom
-
-### Disassembly Controls
-
-- **Gap Slider**: Adjust separation distance (0-1000)
-- **Size Slider**: Control part scaling during disassembly
-- **Numeric Inputs**: Enter precise values with 2-decimal accuracy
-- **Animation**: Smooth transitions as you adjust controls
-
-### AI Assistant
-
-1. **Click a Part**: Select any model component
-2. **Chat Opens**: Three21 Bot activates automatically
-3. **Ask Questions**: Get AI-powered information about the part
-4. **Screenshot**: AI analyzes visual context automatically
-
-### Vanta Fog Effects
-
-- **Toggle**: Bottom-right button to show/hide fog
-- **Configurable**: Edit `VantaFog.js` for custom colors/speed/blur
-- **Fallback**: Gradient background when fog is disabled
-
----
-
-## 🏗️ Technical Architecture
-
-### System Design
-
-```
-┌───────────────────────────────────────────────────────────┐
-│                     Next.js Application                   │
-├───────────────────────────────────────────────────────────┤
-│                                                           │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
-│  │   Pages      │  │  Components  │  │    Hooks     │     │
-│  │              │  │              │  │              │     │
-│  │ - /model     │  │ - AnyModel   │  │ - useLayer   │     │
-│  │ - /import    │  │   Viewer     │  │   Manager    │     │
-│  │ - /demo      │  │ - Three21Bot │  │ - useAIChat  │     │
-│  │ - /api/chat  │  │ - Disassembly│  │ - useModel   │     │
-│  └──────────────┘  │   UI         │  │   Interac..  │     │
-│                    │ - Highlight  │  └──────────────┘     │
-│                    │   Manager    │                       │
-│                    └──────────────┘                       │
-│                                                           │
-├───────────────────────────────────────────────────────────┤
-│                     Core Systems                          │
-│                                                           │
-│  ┌──────────────────────────────────────────────────────┐ │
-│  │          3D Rendering Pipeline (Three.js)            │ │
-│  │  - Scene Graph Management                            │ │
-│  │  - Material System (PBR/Standard)                    │ │
-│  │  - Camera Controls (OrbitControls)                   │ │
-│  │  - Lighting (Ambient + Directional)                  │ │
-│  └──────────────────────────────────────────────────────┘ │
-│                                                           │
-│  ┌──────────────────────────────────────────────────────┐ │
-│  │      Assembly/Disassembly Algorithm Engine           │ │
-│  │  - Hierarchical Layer Detection (BFS)                │ │
-│  │  - Parent-Centered Radial Expansion                  │ │
-│  │  - Position Interpolation (Easing)                   │ │
-│  │  - State Management (Stack-based)                    │ │
-│  └──────────────────────────────────────────────────────┘ │
-│                                                           │
-│  ┌──────────────────────────────────────────────────────┐ │
-│  │         AI Integration Layer                         │ │
-│  │  - Google AI SDK (Gemini)                            │ │
-│  │  - Together AI Provider                              │ │
-│  │  - OpenRouter Integration                            │ │
-│  │  - Streaming Responses                               │ │
-│  └──────────────────────────────────────────────────────┘ │
-│                                                           │
-└───────────────────────────────────────────────────────────┘
-```
-
-### Data Flow
-
-```
-User Interaction
-     ↓
-Event Handler (React)
-     ↓
-State Update (useState/useCallback)
-     ↓
-Layer Manager Algorithm
-     ↓
-Three.js Scene Manipulation
-     ↓
-Animation Loop (requestAnimationFrame)
-     ↓
-Render to Canvas (WebGL/WebGPU)
-     ↓
-Display Update
-```
-
-### Technology Stack
-
-- **Framework**: Next.js 15.3.4 (App Router)
-- **Rendering**: React Three Fiber v9 + Three.js 0.177.0
-- **Graphics**: WebGPU (with WebGL fallback)
-- **UI**: React 19.0.0 + Custom CSS
-- **AI**: Google Gemini API
-- **Effects**: Vanta.js (CDN-loaded)
-- **Storage**: IndexedDB for persistence
-
----
-
-## 🧮 Assembly/Disassembly Algorithm
-
-### Algorithm Overview
-
-The **Hierarchical Spatial Decomposition (HSD)** algorithm is the core innovation of Three21. It intelligently analyzes 3D model hierarchies and creates animated disassembly sequences that preserve spatial relationships.
-
-### Key Concepts
-
-#### 1. Layer Initialization (BFS Traversal)
-
-```javascript
-// Pseudocode
-function initializeLayers(rootObject):
-    layers = []
-    queue = [(rootObject, depth=0)]
-    visited = Set()
-    
-    while queue not empty:
-        (object, depth) = queue.dequeue()
-        
-        if object in visited:
-            continue
-            
-        visited.add(object)
-        
-        if depth not in layers:
-            layers[depth] = []
-            
-        if object is Mesh or Group:
-            layers[depth].append(object)
-            
-        for child in object.children:
-            queue.enqueue((child, depth + 1))
-    
-    return layers
-```
-
-**Time Complexity**: O(n) where n = total nodes in scene graph  
-**Space Complexity**: O(n) for visited set and layers array
-
-#### 2. Parent-Centered Radial Expansion
-
-The algorithm moves parts outward from their parent's centroid, maintaining spatial relationships:
-
-```javascript
-// Pseudocode
-function disassembleLayer(layer, separationDistance):
-    animationTargets = []
-    
-    // Group by parent
-    parentGroups = groupByParent(layer)
-    
-    for each group in parentGroups:
-        parentCenter = calculateBoundingBoxCenter(group.parent)
-        
-        for each object in group.children:
-            // Calculate world position
-            objectWorldPos = object.getWorldPosition()
-            
-            // Direction vector from parent center to object
-            direction = normalize(objectWorldPos - parentCenter)
-            
-            // Handle zero-length vectors (object at parent center)
-            if length(direction) == 0:
-                direction = calculateFallbackDirection(object, group)
-            
-            // Convert to local space
-            localDirection = transformToLocalSpace(direction, parent)
-            
-            // Calculate target position
-            targetPos = object.position + (localDirection * separationDistance)
-            
-            animationTargets.append({
-                object: object,
-                startPos: object.position,
-                targetPos: targetPos
-            })
-    
-    return animationTargets
-```
-
-**Key Features:**
-- **Bounding box calculation** for accurate parent centers
-- **World-to-local space transformation** for hierarchical accuracy
-- **Fallback mechanisms** for degenerate cases (zero vectors)
-- **Radial distribution** for objects at parent center
-
-#### 3. Smooth Animation with Easing
-
-```javascript
-// Pseudocode
-function animateTransition(targets, duration, easingFunction):
-    startTime = currentTime()
-    
-    function update():
-        elapsed = currentTime() - startTime
-        progress = min(elapsed / duration, 1.0)
-        
-        // Apply easing (cubic ease-in-out)
-        t = easingFunction(progress)
-        
-        for each target in targets:
-            // Linear interpolation (LERP)
-            currentPos = lerp(target.startPos, target.targetPos, t)
-            target.object.position = currentPos
-        
-        if progress < 1.0:
-            requestAnimationFrame(update)
-        else:
-            onAnimationComplete()
-    
-    requestAnimationFrame(update)
-```
-
-**Easing Function (Cubic):**
-```
-f(t) = t < 0.5 ? 4t³ : 1 - pow(-2t + 2, 3) / 2
-```
-
-#### 4. State Stack Management
-
-```javascript
-// State stack for undo/redo functionality
-positionStack = []
-
-function saveState(layer):
-    state = {
-        layerIndex: currentLayer,
-        positions: map(obj => obj.position.clone())
-    }
-    positionStack.push(state)
-
-function restoreState():
-    if positionStack.length > 0:
-        state = positionStack.pop()
-        for each (object, position) in state.positions:
-            object.position = position
-```
-
-### Algorithm Performance
-
-| Model Complexity | Nodes | Layers | Init Time | Anim Time | FPS  |
-|------------------|-------|--------|-----------|-----------|------|
-| Simple           | 50    | 3      | 5ms       | 500ms     | 60   |
-| Medium           | 500   | 8      | 15ms      | 500ms     | 60   |
-| Complex          | 5000  | 15     | 45ms      | 500ms     | 58   |
-| Very Complex     | 20000 | 25     | 180ms     | 600ms     | 55   |
-
-### Mathematical Foundation
-
-#### Centroid Calculation
-```
-C_parent = (Σ P_i) / n
-where P_i = position of child i, n = number of children
-```
-
-#### Direction Vector Normalization
-```
-D = (P_object - C_parent) / ||P_object - C_parent||
-```
-
-#### Target Position Calculation
-```
-P_target = P_current + (D_local × distance)
-where D_local = world-to-local transformation of D
-```
-
-**Documentation:**
-- Implementation: `utils/assemblyAlgorithm.js`
-- Detailed explanation: `docs/assembly_algorithm.md`
-- Pseudocode reference: `docs/assembly_pseudocode.md`
-
----
-
-## 🎮 WebGPU Migration
-
-Three21 uses WebGPU for enhanced performance with automatic fallback to WebGL.
-
-### Browser Compatibility
-
-| Browser | WebGPU Support | Version |
-|---------|----------------|---------|
-| Chrome  | ✅ Full Support | 113+    |
-| Edge    | ✅ Full Support | 113+    |
-| Safari  | ⚠️ Experimental | Tech Preview |
-| Firefox | ⚠️ Behind Flag  | Nightly |
-
-### How It Works
-
-1. **Detection**: Checks for `navigator.gpu` API
-2. **Async Init**: Loads `three/webgpu` and initializes renderer
-3. **Fallback**: Automatically uses WebGL if WebGPU unavailable
-4. **Logging**: Console shows which renderer is active
-
-**Check Console for:**
-- `✅ WebGPU Renderer initialized successfully` - WebGPU active
-- `ℹ️ WebGL Renderer initialized` - WebGL fallback
-
-See `docs/webgpu_migration.md` for complete migration details.
-
----
-
-## 📁 Project Structure
-
-```
-Three21/
-├── app/                        # Next.js App Router
-│   ├── page.js                 # Home page
-│   ├── layout.js               # Root layout
-│   ├── globals.css             # Global styles
-│   └── components/             # App-specific components
-├── components/                 # Shared React components
-│   ├── AnyModelViewer.js       # Main viewer (WebGPU)
-│   ├── DisassemblyUI.js        # Controls UI
-│   ├── Three21Bot.js           # AI assistant
-│   └── VantaFog.js             # Background effects
-├── hooks/                      # Custom React hooks
-│   ├── useAIChat.js            # AI chat logic
-│   └── useModelInteractions.js # Model interaction hooks
-├── utils/                      # Utility functions
-│   ├── assemblyAlgorithm.js    # HSD algorithm
-│   └── speechRecognitionManager.js # Voice (deprecated)
-├── pages/                      # Next.js Pages Router
-│   ├── model.js                # Model viewer page
-│   ├── import-model.js         # Model import page
-│   └── api/                    # API routes
-│       └── chat.js             # AI chat endpoint
-├── docs/                       # Documentation
-│   ├── assembly_algorithm.md   # Algorithm explanation
-│   ├── assembly_pseudocode.md  # Pseudocode reference
-│   └── webgpu_migration.md     # WebGPU guide
-├── public/                     # Static assets
-├── package.json                # Dependencies
-├── next.config.mjs             # Next.js configuration
-└── README.md                   # This file
-```
-
----
-
-## 🔑 Key Components
-
-### 1. AnyModelViewer.js (Main Viewer)
-
-**Purpose**: Core 3D rendering component that orchestrates all systems
-
-**Key Responsibilities:**
-- Scene graph management
-- Camera & lighting setup
-- Model loading (GLB, FBX, etc.)
-- Integration with LayerManager
-- Highlight system coordination
-- Screenshot capture
-- AI bot integration
-
-**Technical Details:**
-```javascript
-// React Three Fiber Canvas setup
-<Canvas
-  ref={canvasRef}
-  camera={{ position: [0, 2, 5], fov: 50 }}
-  gl={{ 
-    preserveDrawingBuffer: true,
-    antialias: true,
-    alpha: true
-  }}
->
-  <OrbitControls ref={orbitControlsRef} />
-  <ambientLight intensity={0.5} />
-  <directionalLight position={[10, 10, 5]} intensity={1} />
-  <InteractiveModelPrimitive 
-    url={modelUrl}
-    onModelLoad={handleModelLoad}
-    onObjectClick={handleObjectClick}
-  />
-</Canvas>
-```
-
-### 2. LayerManager.js (Algorithm Hook)
-
-**Purpose**: Implements the HSD algorithm and manages layer state
-
-**Core Functions:**
-```javascript
-// Initialize layer hierarchy
-const initializeLayers = useCallback((rootObject) => {
-  const layers = performBFS(rootObject);
-  layersRef.current = layers;
-  storeOriginalPositions(layers);
-}, []);
-
-// Disassemble next layer
-const disassembleNextLayer = useCallback(() => {
-  const layer = layersRef.current[currentLayer];
-  const targets = calculateRadialExpansion(layer, separationDistance);
-  animateTransition(targets, duration);
-  setCurrentLayer(prev => prev + 1);
-}, [currentLayer, separationDistance]);
-```
-
-### 3. DisassemblyUI.js (Control Panel)
-
-**Purpose**: User interface for controlling disassembly and viewing metrics
-
-**Features:**
-- Layer slider with real-time updates
-- Numeric inputs with validation (0-1000, 2 decimals)
-- Figma-style tree panel showing hierarchy
-- Geometry statistics (triangles, vertices, nodes)
-- Responsive design (desktop & mobile)
-
-### 4. Three21Bot.js (AI Assistant)
-
-**Purpose**: AI-powered chatbot for model analysis
-
-**Capabilities:**
-- Context-aware conversations with chat history
-- Screenshot analysis (removes UI elements)
-- Component identification via double-click
-- Engineering insights (materials, manufacturing, design)
-- Voice commands with speech recognition
-- Persistent storage using IndexedDB
-
-### 5. HighlightManager.js (Highlighting System)
-
-**Purpose**: Visual feedback for selected components
-
-**Features:**
-- Dual-layer rendering (glow + wireframe)
-- Dynamic position tracking during animations
-- Customizable colors and opacity
-- Pulse animation with sine wave modulation
-- Automatic cleanup on deselection
-
----
-
-## 🔌 API & Integration
-
-### Chat API Endpoint
-
-**Endpoint**: `/api/chat`  
-**Method**: POST  
-**Purpose**: Streaming AI responses using Vercel AI SDK
-
-**Request Format:**
-```javascript
-{
-  "messages": [
-    {
-      "role": "user",
-      "content": "Analyze this component",
-      "metadata": {
-        "modelInfo": { ... },
-        "selectedPart": { ... },
-        "screenshot": "base64_image_data"
-      }
-    }
-  ]
-}
-```
-
-**Response Format (Streaming):**
-```javascript
-// Server-Sent Events (SSE) stream
-data: {"type": "text", "content": "Analyzing..."}
-data: {"type": "text", "content": " component"}
-data: [DONE]
-```
-
----
-
-## ⚡ Performance Optimizations
-
-### 1. Lazy Loading & Code Splitting
-```javascript
-const EmbeddedDemoViewer = dynamic(
-  () => import('../components/EmbeddedDemoViewer'),
-  { ssr: false, loading: () => <Loader /> }
-);
-```
-
-### 2. Memoization
-```javascript
-const { totalTriangles, totalVertices } = useMemo(
-  () => calculateSceneTotals(sceneTree),
-  [sceneTree]
-);
-```
-
-### 3. Ref-Based Storage
-```javascript
-const layersRef = useRef([]);
-const originalPositionsRef = useRef(new Map());
-```
-
-### 4. RequestAnimationFrame Optimization
-```javascript
-let lastUpdate = 0;
-const animate = (timestamp) => {
-  if (timestamp - lastUpdate > 16) {  // ~60 FPS
-    updateHighlights();
-    lastUpdate = timestamp;
-  }
-  requestAnimationFrame(animate);
-};
-```
-
----
-
-## 🔧 Configuration
-
-### Environment Variables
-
-Create a `.env.local` file:
-
-```env
-# Gemini AI API Key (required for AI features)
-NEXT_PUBLIC_GEMINI_API_KEY=your_api_key_here
-
-# Optional: Custom API endpoint
-NEXT_PUBLIC_API_URL=http://localhost:3000/api
-```
-
-### Vanta Fog Settings
-
-Edit `components/VantaFog.js`:
-
-```javascript
-<VantaFog
-  highlightColor={0x4a90e2}
-  midtoneColor={0x2a5298}
-  lowlightColor={0x1a1a2e}
-  baseColor={0x000000}
-  speed={1.0}
-  blurFactor={0.6}
-  zoom={1.0}
-/>
-```
-
----
-
-## 🧪 Development
-
-### Running Tests
-
-```bash
-npm test
-```
-
-### Linting
-
-```bash
-npm run lint
-```
-
-### Code Style
-
-The project uses:
-- ESLint for JavaScript linting
-- Prettier for code formatting (optional)
-- "use client" directives for client components
-
----
-
-## 📝 API Reference
-
-### AnyModelViewer Component
-
-```javascript
-<AnyModelViewer
-  url="/path/to/model.glb"
-  type="glb"
-  isDemoMode={false}
-  demoConfig={null}
-  onModelLoad={(scene, info) => {}}
-/>
-```
-
-### DisassemblyUI Component
-
-```javascript
-<DisassemblyUI
-  separationDistance={80}
-  onSeparationChange={(val) => {}}
-  modelScale={1.0}
-  onScaleChange={(val) => {}}
-  currentLayer={0}
-  totalLayers={5}
-  onLayerChange={(val) => {}}
-  isAnimating={false}
-/>
-```
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Code Guidelines
-
-- Use meaningful variable names
-- Add comments for complex logic
-- Follow React best practices
-- Test on multiple browsers
-- Ensure WebGPU fallback works
-
 ---
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
----
-
-## 🙏 Acknowledgments
-
-- **Three.js**: Powerful 3D graphics library
-- **React Three Fiber**: React renderer for Three.js
-- **Vanta.js**: Animated backgrounds
-- **Google Gemini**: AI capabilities
-- **Next.js Team**: Amazing framework
-- **Open Source Community**: Inspiration and support
-
----
-
-## 📞 Support
-
-- **Documentation**: Check `/docs` folder
-- **Issues**: GitHub Issues tab
-- **Discussions**: GitHub Discussions tab
-
----
-
-## 🗺️ Roadmap
-
-### Current Version (v1.0)
-
-- ✅ WebGPU rendering with fallback
-- ✅ Interactive disassembly
-- ✅ AI-powered analysis
-- ✅ Vanta fog effects
-- ✅ Numeric precision controls
-
-### Future Releases
-
-**v1.1** (Next)
-- [ ] WebGPU status indicator in UI
-- [ ] Manual renderer toggle
-- [ ] Performance statistics display
-- [ ] Mobile optimization
-
-**v1.2**
-- [ ] Compute shader integration
-- [ ] Advanced lighting presets
-- [ ] Model annotation system
 - [ ] Export functionality
 
 **v2.0**

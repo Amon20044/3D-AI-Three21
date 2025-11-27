@@ -7,96 +7,67 @@ import AIPromptGenerator from './AIPromptGenerator';
 import chatStorageManager from './ChatStorageManager';
 import { Mic, MicOff, Send, Camera, X } from 'react-feather';
 import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport } from 'ai';
+import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls } from 'ai';
 // Error Boundary for Markdown rendering
-class MarkdownErrorBoundary extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { hasError: false };
-    }
-
-    static getDerivedStateFromError(error) {
-        return { hasError: true };
-    }
-
-    componentDidCatch(error, errorInfo) {
-        console.error("Markdown rendering error:", error, errorInfo);
-    }
-
-    render() {
-        if (this.state.hasError) {
-            // Fallback to displaying raw text if markdown fails
-            return (
-                <div className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-gray-200 p-2 border border-red-500/30 rounded bg-red-500/10">
-                    {this.props.content}
-                </div>
-            );
-        }
-
-        return this.props.children;
-    }
-}
 
 // Memoized Markdown Component to prevent re-renders
 const MarkdownMessage = React.memo(({ content }) => {
     // console.log('📝 MarkdownMessage rendering:', { contentLength: content?.length, preview: content?.substring(0, 20) });
     return (
-        <MarkdownErrorBoundary content={content}>
-            <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeRaw]}
-                components={{
-                    h1: ({ children }) => <h1 className="markdown-h1">{children}</h1>,
-                    h2: ({ children }) => <h2 className="markdown-h2">{children}</h2>,
-                    h3: ({ children }) => <h3 className="markdown-h3">{children}</h3>,
-                    h4: ({ children }) => <h4 className="markdown-h4">{children}</h4>,
-                    h5: ({ children }) => <h5 className="markdown-h5">{children}</h5>,
-                    h6: ({ children }) => <h6 className="markdown-h6">{children}</h6>,
-                    p: ({ children }) => <p className="markdown-p">{children}</p>,
-                    ul: ({ children }) => <ul className="markdown-ul">{children}</ul>,
-                    ol: ({ children }) => <ol className="markdown-ol">{children}</ol>,
-                    li: ({ children }) => <li className="markdown-li">{children}</li>,
-                    strong: ({ children }) => <strong className="markdown-strong">{children}</strong>,
-                    em: ({ children }) => <em className="markdown-em">{children}</em>,
-                    code: ({ inline, children }) =>
-                        inline ? (
-                            <code className="markdown-code-inline">{children}</code>
-                        ) : (
-                            <code className="markdown-code-block">{children}</code>
-                        ),
-                    pre: ({ children }) => <pre className="markdown-pre">{children}</pre>,
-                    blockquote: ({ children }) => <blockquote className="markdown-blockquote">{children}</blockquote>,
-                    a: ({ href, children }) => (
-                        <a href={href} className="markdown-link" target="_blank" rel="noopener noreferrer">
-                            {children}
-                        </a>
+        <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeRaw]}
+            components={{
+                h1: ({ children }) => <h1 className="markdown-h1">{children}</h1>,
+                h2: ({ children }) => <h2 className="markdown-h2">{children}</h2>,
+                h3: ({ children }) => <h3 className="markdown-h3">{children}</h3>,
+                h4: ({ children }) => <h4 className="markdown-h4">{children}</h4>,
+                h5: ({ children }) => <h5 className="markdown-h5">{children}</h5>,
+                h6: ({ children }) => <h6 className="markdown-h6">{children}</h6>,
+                p: ({ children }) => <p className="markdown-p">{children}</p>,
+                ul: ({ children }) => <ul className="markdown-ul">{children}</ul>,
+                ol: ({ children }) => <ol className="markdown-ol">{children}</ol>,
+                li: ({ children }) => <li className="markdown-li">{children}</li>,
+                strong: ({ children }) => <strong className="markdown-strong">{children}</strong>,
+                em: ({ children }) => <em className="markdown-em">{children}</em>,
+                code: ({ inline, children }) =>
+                    inline ? (
+                        <code className="markdown-code-inline">{children}</code>
+                    ) : (
+                        <code className="markdown-code-block">{children}</code>
                     ),
-                    table: ({ children }) => (
-                        <div className="table-wrapper">
-                            <table className="markdown-table">{children}</table>
-                        </div>
-                    ),
-                    thead: ({ children }) => <thead className="markdown-thead">{children}</thead>,
-                    tbody: ({ children }) => <tbody className="markdown-tbody">{children}</tbody>,
-                    tr: ({ children }) => <tr className="markdown-tr">{children}</tr>,
-                    th: ({ children }) => <th className="markdown-th">{children}</th>,
-                    td: ({ children }) => <td className="markdown-td">{children}</td>,
-                    hr: () => <hr className="markdown-hr" />,
-                    del: ({ children }) => <del className="markdown-del">{children}</del>,
-                    input: ({ checked, ...props }) => (
-                        <input
-                            type="checkbox"
-                            checked={checked}
-                            disabled
-                            className="markdown-checkbox"
-                            {...props}
-                        />
-                    ),
-                }}
-            >
-                {content}
-            </ReactMarkdown>
-        </MarkdownErrorBoundary>
+                pre: ({ children }) => <pre className="markdown-pre">{children}</pre>,
+                blockquote: ({ children }) => <blockquote className="markdown-blockquote">{children}</blockquote>,
+                a: ({ href, children }) => (
+                    <a href={href} className="markdown-link" target="_blank" rel="noopener noreferrer">
+                        {children}
+                    </a>
+                ),
+                table: ({ children }) => (
+                    <div className="table-wrapper">
+                        <table className="markdown-table">{children}</table>
+                    </div>
+                ),
+                thead: ({ children }) => <thead className="markdown-thead">{children}</thead>,
+                tbody: ({ children }) => <tbody className="markdown-tbody">{children}</tbody>,
+                tr: ({ children }) => <tr className="markdown-tr">{children}</tr>,
+                th: ({ children }) => <th className="markdown-th">{children}</th>,
+                td: ({ children }) => <td className="markdown-td">{children}</td>,
+                hr: () => <hr className="markdown-hr" />,
+                del: ({ children }) => <del className="markdown-del">{children}</del>,
+                input: ({ checked, ...props }) => (
+                    <input
+                        type="checkbox"
+                        checked={checked}
+                        disabled
+                        className="markdown-checkbox"
+                        {...props}
+                    />
+                ),
+            }}
+        >
+            {content}
+        </ReactMarkdown>
     );
 }, (prevProps, nextProps) => {
     // Custom comparison function for React.memo
@@ -104,6 +75,8 @@ const MarkdownMessage = React.memo(({ content }) => {
     // This helps with streaming performance but we must be careful not to block updates
     return prevProps.content === nextProps.content;
 });
+
+
 
 export default function Three21Bot({
     isOpen,
@@ -169,7 +142,7 @@ export default function Three21Bot({
             }
         }),
         onFinish: (...args) => {
-            console.log('✅ Chat finished. All args:', args);
+            console.log('✅ Chat finished. All args:', ...args);
 
             // useChat signature: onFinish(message, { messages })
             // - message: the current/latest message
@@ -177,27 +150,13 @@ export default function Three21Bot({
             let currentMessage = null;
             let allMessages = null;
 
-            if (args.length >= 2 && args[1]?.messages) {
-                // Standard signature: (message, options)
-                currentMessage = args[0];
-                allMessages = args[1].messages;
-                console.log('📨 Current message:', currentMessage);
-                console.log('📚 All messages:', allMessages.length, 'total');
-            } else if (args.length === 1 && args[0]?.messages) {
-                // Single object parameter
-                allMessages = args[0].messages;
-                console.log('📚 All messages:', allMessages.length, 'total');
-            } else {
-                // Fallback to current state
-                console.log('⚠️ Unexpected onFinish signature, using current messages state');
-                allMessages = messages;
-            }
-
-            if (!allMessages || allMessages.length === 0) {
-                console.log('❌ No messages to save');
-                return;
-            }
-
+            // Standard signature: (message, options)
+            // currentMessage = args[0];
+            // currentMessageID = currentMessage.message.id;
+            // currentMessageMetadata = currentMessage.message.metadata;
+            // currentMessageRole = currentMessage.message.role;
+            // currentMessagePartType1 = currentMessage.message.parts[0];
+            // currentMessagePartType2 = currentMessage.message.parts[1];
             console.log('💾 Saving', allMessages.length, 'messages to storage...');
             saveChatToStorage(allMessages);
         },
@@ -207,7 +166,26 @@ export default function Three21Bot({
         onData: data => {
             console.log('Received data part from server:', data);
         },
+        onToolCall: ({ toolCall }) => {
+            console.log('🛠️ Tool Call Received on Client:', {
+                toolName: toolCall.toolName,
+                toolCallId: toolCall.toolCallId,
+                state: toolCall.state,
+                args: toolCall.args
+            });
 
+            // Log when results arrive
+            if (toolCall.state === 'result' && toolCall.result) {
+                if (toolCall.toolName === 'searchGoogleScholar') {
+                    const count = toolCall.result.count || toolCall.result.results?.length || 0;
+                    console.log(`✅ Google Scholar Results: ${count} papers found`);
+                    console.log('📊 Results Preview:', toolCall.result.results?.slice(0, 3));
+                }
+            }
+            // The tool executes on the server automatically
+            // We just log it here for visibility
+            // The result will stream back and update the UI
+        },
     });
 
 
@@ -245,15 +223,34 @@ export default function Three21Bot({
             console.log('📦 Raw messages from storage:', existingMessages);
 
             if (existingMessages.length > 0) {
-                // Convert storage messages to useChat format and filter empty ones
+                // Check if messages already have parts (new format) or need conversion (old format)
                 const convertedMessages = existingMessages
-                    .filter(msg => msg.content && msg.content.trim().length > 0) // Only non-empty
-                    .map(msg => ({
-                        id: msg.id || `msg-${Date.now()}-${Math.random()}`,
-                        role: msg.role,
-                        parts: [{ type: 'text', text: msg.content || '' }],
-                        createdAt: msg.timestamp ? new Date(msg.timestamp) : new Date()
-                    }));
+                    .filter(msg => {
+                        // Keep messages that have parts OR non-empty content
+                        const hasParts = msg.parts && msg.parts.length > 0;
+                        const hasContent = msg.content && msg.content.trim().length > 0;
+                        return hasParts || hasContent;
+                    })
+                    .map(msg => {
+                        // If message already has parts (new format), use them directly
+                        if (msg.parts && msg.parts.length > 0) {
+                            return {
+                                id: msg.id || `msg-${Date.now()}-${Math.random()}`,
+                                role: msg.role,
+                                parts: msg.parts, // Preserve all parts including tool calls!
+                                metadata: msg.metadata,
+                                createdAt: msg.createdAt || (msg.timestamp ? new Date(msg.timestamp) : new Date())
+                            };
+                        }
+
+                        // Otherwise convert old format (just content string) to parts
+                        return {
+                            id: msg.id || `msg-${Date.now()}-${Math.random()}`,
+                            role: msg.role,
+                            parts: [{ type: 'text', text: msg.content || '' }],
+                            createdAt: msg.timestamp ? new Date(msg.timestamp) : new Date()
+                        };
+                    });
 
                 console.log('✨ Converted messages for UI:', convertedMessages);
 
@@ -299,14 +296,20 @@ export default function Three21Bot({
 
             console.log(`💾 Saving ${targetMessages.length} messages to storage...`);
 
-            // Convert useChat messages (with parts) to storage format
+            // Store messages with full parts array to preserve tool calls
             const chatModelInfo = demoConfig || modelInfo;
             const storageMessages = targetMessages.map(msg => ({
                 id: msg.id,
                 role: msg.role,
-                content: msg.parts?.map(p => p.type === 'text' ? p.text : '').join('') || msg.content || '',
-                timestamp: msg.createdAt ? new Date(msg.createdAt).getTime() : Date.now()
+                parts: msg.parts || [{ type: 'text', text: msg.content || '' }], // Preserve all parts!
+                metadata: msg.metadata,
+                createdAt: msg.createdAt,
+                timestamp: msg.createdAt ? new Date(msg.createdAt).getTime() : Date.now(),
+                // Keep content for backward compatibility with old code
+                content: msg.parts?.map(p => p.type === 'text' ? p.text : '').join('') || msg.content || ''
             }));
+
+            console.log('💾 Storage format preview:', storageMessages[storageMessages.length - 1]);
 
             await chatStorageManager.saveChatForModel(chatModelInfo, storageMessages);
             console.log('✅ Chat saved successfully');
@@ -684,7 +687,19 @@ What aspect of your model would you like to explore first?` }],
                         <div className="bot-info">
                             <h3>Three21Bot</h3>
                             <span className="bot-status">
-                                {isLoading ? '🔄 Analyzing...' : '✅ Ready'}
+                                {(() => {
+                                    // Check if there's an active tool call
+                                    const lastMessage = messages[messages.length - 1];
+                                    const hasActiveToolCall = lastMessage?.role === 'assistant' &&
+                                        lastMessage.parts?.some(p => p.type === 'tool-call' && p.state === 'call');
+
+                                    if (isLoading) {
+                                        return hasActiveToolCall
+                                            ? '🔍 APIFY Actor Scraping Google Scholar...'
+                                            : '🔄 Analyzing...';
+                                    }
+                                    return '✅ Ready';
+                                })()}
                             </span>
                         </div>
                         {currentSelectedPart && (
@@ -706,15 +721,204 @@ What aspect of your model would you like to explore first?` }],
                         <div key={message.id} className={`message ${message.role}`}>
                             <div className="message-content">
                                 {message.role === 'assistant' ? (
-                                    <MarkdownMessage
-                                        content={message.parts?.map(p => p.text || '').join('') || message.content || ''}
-                                    />
+                                    <>
+                                        {message.parts?.map((part, index) => {
+                                            // Handle different part types
+                                            switch (part.type) {
+                                                case 'text':
+                                                    return part.text ? (
+                                                        <MarkdownMessage
+                                                            key={`text-${index}`}
+                                                            content={part.text}
+                                                        />
+                                                    ) : null;
+
+                                                case 'tool-call':
+                                                case 'tool-invocation': {
+                                                    // Handle searchGoogleScholar tool specifically
+                                                    if (part.toolName === 'searchGoogleScholar') {
+                                                        const callId = part.toolCallId;
+                                                        // Handle both old (args) and new (input) property names
+                                                        const args = part.args || part.input || {};
+                                                        // Handle both old (result) and new (output) property names
+                                                        const result = part.result || part.output;
+
+                                                        // Map states to UI (using correct AI SDK types)
+                                                        const isSearching = part.type === 'tool-input-start' || part.type === 'tool-input-delta' || part.type === 'tool-input-available';
+                                                        const isComplete = part.type === 'tool-output-available';
+                                                        const isError = part.type === 'tool-output-error' || part.type === 'tool-input-error';
+                                                        const isPreparing = part.type === 'tool-input-delta';
+
+                                                        return (
+                                                            <div key={`tool-${callId}`} className="tool-call-container">
+                                                                <div className="tool-call-header">
+                                                                    <span className="tool-icon">🔍</span>
+                                                                    <span className="tool-name">Google Scholar Search</span>
+                                                                    {isSearching && (
+                                                                        <span className="tool-status searching">Searching...</span>
+                                                                    )}
+                                                                    {isComplete && (
+                                                                        <span className="tool-status complete">✓ Complete</span>
+                                                                    )}
+                                                                    {isPreparing && (
+                                                                        <span className="tool-status preparing">Preparing...</span>
+                                                                    )}
+                                                                    {isError && (
+                                                                        <span className="tool-status error">Error</span>
+                                                                    )}
+                                                                </div>
+
+                                                                <div className="tool-call-body">
+                                                                    {/* Query parameter */}
+                                                                    {args.query && (
+                                                                        <div className="tool-param">
+                                                                            <span className="param-label">Query:</span>
+                                                                            <span className="param-value">{args.query}</span>
+                                                                        </div>
+                                                                    )}
+
+                                                                    {/* Additional parameters */}
+                                                                    <div className="tool-params-row">
+                                                                        {args.minYear && (
+                                                                            <div className="tool-param-small">
+                                                                                <span className="param-label">Min Year:</span>
+                                                                                <span className="param-value">{args.minYear}</span>
+                                                                            </div>
+                                                                        )}
+                                                                        {args.maxYear && (
+                                                                            <div className="tool-param-small">
+                                                                                <span className="param-label">Max Year:</span>
+                                                                                <span className="param-value">{args.maxYear}</span>
+                                                                            </div>
+                                                                        )}
+                                                                        {args.maxItems && (
+                                                                            <div className="tool-param-small">
+                                                                                <span className="param-label">Max Results:</span>
+                                                                                <span className="param-value">{args.maxItems}</span>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+
+                                                                    {/* Results - only show when complete */}
+                                                                    {isComplete && result && (
+                                                                        <div className="tool-result">
+                                                                            {result.error ? (
+                                                                                <div className="result-error">
+                                                                                    <span>⚠️ {result.message || result.error}</span>
+                                                                                </div>
+                                                                            ) : (result.results && result.results.length > 0) || (Array.isArray(result) && result.length > 0) ? (
+                                                                                <div className="result-success">
+                                                                                    <div className="result-count">
+                                                                                        📚 Found <strong>{result.count || result.results?.length || result.length}</strong> papers
+                                                                                    </div>
+                                                                                    <div className="scholar-results-list">
+                                                                                        {(result.results || result).map((paper, idx) => (
+                                                                                            <div key={idx} className="scholar-paper-card">
+                                                                                                <div className="paper-number">{idx + 1}</div>
+                                                                                                <div className="paper-content">
+                                                                                                    <a
+                                                                                                        href={paper.link}
+                                                                                                        target="_blank"
+                                                                                                        rel="noopener noreferrer"
+                                                                                                        className="paper-title-link"
+                                                                                                    >
+                                                                                                        {paper.title}
+                                                                                                    </a>
+                                                                                                    {paper.snippet && (
+                                                                                                        <p className="paper-snippet">{paper.snippet}</p>
+                                                                                                    )}
+                                                                                                    <div className="paper-meta">
+                                                                                                        {paper.year && (
+                                                                                                            <span className="paper-year">📅 {paper.year}</span>
+                                                                                                        )}
+                                                                                                        {paper.citations !== undefined && (
+                                                                                                            <span className="paper-citations">📖 {paper.citations} citations</span>
+                                                                                                        )}
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        ))}
+                                                                                    </div>
+                                                                                </div>
+                                                                            ) : (
+                                                                                <div className="result-empty">No results found</div>
+                                                                            )}
+                                                                        </div>
+                                                                    )}
+
+                                                                    {/* Error State */}
+                                                                    {isError && (
+                                                                        <div className="tool-result">
+                                                                            <div className="result-error">
+                                                                                <span>⚠️ {part.errorText || "An error occurred"}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    }
+
+                                                    // Generic tool call fallback
+                                                    return (
+                                                        <div key={`tool-${part.toolCallId}`} className="tool-call-container">
+                                                            <div className="tool-call-header">
+                                                                <span className="tool-icon">🛠️</span>
+                                                                <span className="tool-name">{part.toolName}</span>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                }
+
+                                                default:
+                                                    return null;
+                                            }
+                                        })}
+                                    </>
                                 ) : (
-                                    <div className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-gray-200">
-                                        {message.parts?.map((part, index) =>
-                                            part.type === 'text' ? <span key={index}>{part.text}</span> : null
-                                        ) || message.content}
-                                    </div>
+                                    <>
+                                        {message.parts?.map((part, index) => {
+                                            if (part.type === 'text') {
+                                                return <MarkdownMessage key={index} content={part.text} />;
+                                            }
+
+                                            // Handle tool invocations
+                                            if (part.type === 'tool-invocation') {
+                                                const toolInvocation = part.toolInvocation;
+                                                const callId = toolInvocation.toolCallId;
+
+                                                if (toolInvocation.toolName === 'searchGoogleScholar') {
+                                                    // Render tool state
+                                                    if (toolInvocation.state === 'call') {
+                                                        return (
+                                                            <div key={callId} className="tool-status searching">
+                                                                <span className="animate-pulse">🔍 Searching Google Scholar...</span>
+                                                            </div>
+                                                        );
+                                                    }
+                                                    if (toolInvocation.state === 'result') {
+                                                        const result = toolInvocation.result;
+                                                        // If result has error property
+                                                        if (result?.error) {
+                                                            return (
+                                                                <div key={callId} className="tool-status error">
+                                                                    ❌ {result.error}
+                                                                </div>
+                                                            );
+                                                        }
+                                                        return (
+                                                            <div key={callId} className="tool-status success">
+                                                                ✅ Found {result?.count || 0} papers
+                                                            </div>
+                                                        );
+                                                    }
+                                                }
+                                            }
+
+                                            return null;
+                                        })}
+                                        {!message.parts && <MarkdownMessage content={message.content} />}
+                                    </>
                                 )}
                             </div>
                             <div className="message-timestamp">
@@ -1388,6 +1592,293 @@ What aspect of your model would you like to explore first?` }],
                     border-radius: 50%;
                     animation: spin 0.8s linear infinite;
                 }
+
+                /* Tool Call Styles */
+                .tool-call-container {
+                    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+                    border: 1px solid #334155;
+                    border-radius: 12px;
+                    padding: 1rem;
+                    margin: 0.75rem 0;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                }
+
+                .tool-call-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                    margin-bottom: 0.75rem;
+                    padding-bottom: 0.75rem;
+                    border-bottom: 1px solid #334155;
+                }
+
+                .tool-icon {
+                    font-size: 1.25rem;
+                    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+                }
+
+                .tool-name {
+                    font-weight: 600;
+                    color: #f1f5f9;
+                    font-size: 0.9rem;
+                }
+
+                .tool-status {
+                    margin-left: auto;
+                    font-size: 0.75rem;
+                    padding: 0.25rem 0.75rem;
+                    border-radius: 12px;
+                    font-weight: 500;
+                }
+
+                .tool-status.searching {
+                    background: rgba(59, 130, 246, 0.15);
+                    color: #60a5fa;
+                    border: 1px solid rgba(59, 130, 246, 0.3);
+                    animation: pulse 1.5s infinite;
+                }
+
+                .tool-status.complete {
+                    background: rgba(34, 197, 94, 0.15);
+                    color: #4ade80;
+                    border: 1px solid rgba(34, 197, 94, 0.3);
+                }
+
+                .tool-call-body {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.75rem;
+                }
+
+                .tool-param {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.25rem;
+                }
+
+                .tool-params-row {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 0.75rem;
+                }
+
+                .tool-param-small {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    background: rgba(30, 41, 59, 0.6);
+                    padding: 0.5rem 0.75rem;
+                    border-radius: 8px;
+                    border: 1px solid #334155;
+                }
+
+                .param-label {
+                    color: #94a3b8;
+                    font-size: 0.75rem;
+                    font-weight: 500;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                }
+
+                .param-value {
+                    color: #e2e8f0;
+                    font-size: 0.85rem;
+                    font-weight: 500;
+                }
+
+                .tool-result {
+                    margin-top: 0.5rem;
+                    border-top: 1px solid #334155;
+                    padding-top: 0.75rem;
+                }
+
+                .result-success {
+                    color: #4ade80;
+                }
+
+                .result-count {
+                    font-weight: 600;
+                    font-size: 0.85rem;
+                    margin-bottom: 0.75rem;
+                    padding: 0.5rem 0.75rem;
+                    background: rgba(34, 197, 94, 0.1);
+                    border-left: 3px solid #4ade80;
+                    border-radius: 4px;
+                }
+
+                .result-preview {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem;
+                }
+
+                .paper-preview {
+                    padding: 0.75rem;
+                    background: rgba(30, 41, 59, 0.5);
+                    border-radius: 8px;
+                    border: 1px solid #334155;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem;
+                }
+
+                .paper-title {
+                    color: #f1f5f9;
+                    font-size: 0.85rem;
+                    font-weight: 500;
+                    line-height: 1.4;
+                }
+
+                .paper-year {
+                    color: #94a3b8;
+                    font-size: 0.75rem;
+                    font-weight: 400;
+                }
+
+                .paper-citations {
+                    color: #fbbf24;
+                    font-size: 0.75rem;
+                    font-weight: 500;
+                }
+
+                .scholar-results-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.75rem;
+                    margin-top: 0.75rem;
+                    max-height: 500px;
+                    overflow-y: auto;
+                    padding-right: 0.5rem;
+                }
+
+                .scholar-results-list::-webkit-scrollbar {
+                    width: 6px;
+                }
+
+                .scholar-results-list::-webkit-scrollbar-track {
+                    background: rgba(30, 41, 59, 0.4);
+                    border-radius: 3px;
+                }
+
+                .scholar-results-list::-webkit-scrollbar-thumb {
+                    background: #475569;
+                    border-radius: 3px;
+                }
+
+                .scholar-results-list::-webkit-scrollbar-thumb:hover {
+                    background: #64748b;
+                }
+
+                .scholar-paper-card {
+                    display: flex;
+                    gap: 0.75rem;
+                    padding: 0.875rem;
+                    background: rgba(30, 41, 59, 0.4);
+                    border: 1px solid #334155;
+                    border-radius: 8px;
+                    transition: all 0.2s ease;
+                }
+
+                .scholar-paper-card:hover {
+                    background: rgba(30, 41, 59, 0.6);
+                    border-color: #475569;
+                    transform: translateX(4px);
+                }
+
+                .paper-number {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 28px;
+                    height: 28px;
+                    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+                    color: white;
+                    font-weight: 700;
+                    font-size: 0.75rem;
+                    border-radius: 6px;
+                    flex-shrink: 0;
+                    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+                }
+
+                .paper-content {
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem;
+                    min-width: 0;
+                }
+
+                .paper-title-link {
+                    color: #60a5fa;
+                    font-weight: 600;
+                    font-size: 0.875rem;
+                    line-height: 1.4;
+                    text-decoration: none;
+                    transition: color 0.2s ease;
+                    word-wrap: break-word;
+                }
+
+                .paper-title-link:hover {
+                    color: #93c5fd;
+                    text-decoration: underline;
+                }
+
+                .paper-snippet {
+                    color: #94a3b8;
+                    font-size: 0.75rem;
+                    line-height: 1.5;
+                    margin: 0;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+
+                .paper-meta {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 0.75rem;
+                    font-size: 0.7rem;
+                }
+
+                .paper-year,
+                .paper-citations {
+                    padding: 0.25rem 0.5rem;
+                    background: rgba(51, 65, 85, 0.5);
+                    border-radius: 4px;
+                    color: #cbd5e1;
+                    font-weight: 500;
+                }
+
+                .more-results {
+                    color: #60a5fa;
+                    font-size: 0.75rem;
+                    font-weight: 500;
+                    text-align: center;
+                    padding: 0.5rem;
+                    background: rgba(59, 130, 246, 0.1);
+                    border-radius: 6px;
+                    border: 1px dashed #3b82f6;
+                }
+
+                .result-error {
+                    color: #f87171;
+                    font-size: 0.85rem;
+                    padding: 0.75rem;
+                    background: rgba(239, 68, 68, 0.1);
+                    border-left: 3px solid #ef4444;
+                    border-radius: 4px;
+                }
+
+                .result-empty {
+                    color: #94a3b8;
+                    font-size: 0.85rem;
+                    text-align: center;
+                    padding: 0.75rem;
+                    background: rgba(30, 41, 59, 0.4);
+                    border-radius: 6px;
+                    border: 1px dashed #475569;
+                }
             `}</style>
 
             <style jsx global>{`
@@ -1489,10 +1980,41 @@ What aspect of your model would you like to explore first?` }],
                     padding: 0.15rem 0.4rem;
                     border-radius: 4px;
                     font-family: 'SF Mono', 'Monaco', 'Consolas', 'Courier New', monospace;
-                    font-size: 0.85em;
+                    font-size: 0.875em;
                     border: 1px solid #4b5563;
-                    white-space: pre-wrap; /* Allow wrapping on small screens */
-                    word-break: break-word;
+                }
+
+                .tool-status {
+                    font-size: 0.8rem;
+                    padding: 0.5rem 0.75rem;
+                    border-radius: 8px;
+                    margin: 0.5rem 0;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    font-weight: 500;
+                }
+
+                .tool-status.searching {
+                    background: rgba(59, 130, 246, 0.1);
+                    color: #60a5fa;
+                    border: 1px solid rgba(59, 130, 246, 0.2);
+                }
+
+                .tool-status.success {
+                    background: rgba(16, 185, 129, 0.1);
+                    color: #34d399;
+                    border: 1px solid rgba(16, 185, 129, 0.2);
+                }
+
+                .tool-status.error {
+                    background: rgba(239, 68, 68, 0.1);
+                    color: #f87171;
+                    border: 1px solid rgba(239, 68, 68, 0.2);
+                }
+
+                .animate-pulse {
+                    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
                 }
 
                 .markdown-pre {

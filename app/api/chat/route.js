@@ -1,7 +1,9 @@
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { streamText, convertToModelMessages } from 'ai';
+import { streamText, convertToModelMessages, tool } from 'ai';
+import { z } from 'zod';
+import { searchGoogleScholar } from '@/lib/apifyClient';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 const ENHANCED_SYSTEM_PROMPT = `You are **Three21Bot**, an AI for engineering-grade 3D model analysis.
 Mission: Provide **accurate, concise, manufacturing-aware intelligence**.
@@ -24,6 +26,17 @@ Mission: Provide **accurate, concise, manufacturing-aware intelligence**.
 - **Tables**: Use Markdown tables ONLY for structured data (specs, materials, comparisons).
 - **Visuals**: Ignore UI elements in images; focus on 3D geometry.
 - **Citations**: Cite standards (ISO, ASME, ASTM) where relevant.
+- **Keywords and tags**: This renders them as highlighted tags in the UI.
+
+**Tool Usage - Google Scholar Search:**
+- When users ask for research, papers, patents, or technical references, use the searchGoogleScholar tool.
+- **IMPORTANT**: Formulate detailed, academic search queries optimized for Google Scholar.
+- Include relevant technical terms, synonyms, and domain-specific terminology.
+- Examples:
+  - User: "find papers on soft robotics" → Query: "soft robotics actuation mechanisms control systems compliance"
+  - User: "research on quadruped robots" → Query: "quadruped locomotion gait planning kinematics control algorithms"
+  - User: "3D printing materials" → Query: "additive manufacturing materials PLA ABS PETG mechanical properties"
+- Always expand the query with relevant academic keywords to maximize search quality.
 `;
 
 // Allow streaming responses up to 30 seconds
@@ -171,14 +184,80 @@ export async function POST(req) {
         });
 
         // -------------------------
-        // STREAM THE RESPONSE
+        // STREAM THE RESPONSE WITH TOOL CALLING
         // -------------------------
         const result = await streamText({
             model: gemini("gemini-2.5-flash"),
-            system: contextPrompt, // Pass system prompt separately
-            messages: convertToModelMessages(messages), // Use helper to convert UIMessage[]
+            system: contextPrompt,
+            experimental_telemetry: false,
+            messages: convertToModelMessages(messages),
             temperature: 0.4,
             maxRetries: 3,
+            tools: {
+                searchGoogleScholar: tool({
+                    description: 'Search Google Scholar for academic research papers, citations, and patents. CRITICAL: Create a detailed, comprehensive search query optimized for academic search. Expand the user\'s request with relevant technical terms, synonyms, and domain keywords. Examples: "soft robotics" → "soft robotics actuation mechanisms control systems compliance"; "quadruped robot" → "quadruped locomotion gait planning kinematics control algorithms". Use scholarly terminology.',
+                    parameters: z.object({
+                        query: z.string().min(3).describe('A detailed, scholarly search query for Google Scholar. REQUIRED: Formulate a comprehensive query with technical terms, synonyms, and academic keywords based on the user\'s request. Expand simple phrases into detailed academic queries.'),
+                        maxItems: z.number().optional().describe('Maximum number of results to return (default 10).'),
+                        minYear: z.number().optional().describe('Minimum year for results (default 2022 for recent research).'),
+                        maxYear: z.number().optional().describe('Maximum year for results.'),
+                        country: z.string().optional().describe('Country code (e.g., "us", "uk").'),
+                        language: z.string().optional().describe('UI Language code (e.g., "en").'),
+                        sortBy: z.string().optional().describe('Sort by date (2) or relevance (default).'),
+                    }),
+                    execute: async ({ query, maxItems, minYear, maxYear, country, language, sortBy }) => {
+                        console.log("🛠️ Tool Call: searchGoogleScholar", { query, minYear });
+
+                        // Validate query
+                        if (!query || query.trim().length === 0) {
+                            return {
+                                error: "Search query is required. Please specify what you want to search for.",
+                                message: "I need a search query to find research papers. What topic would you like me to search for?"
+                            };
+                        }
+
+                        try {
+                            const results = await searchGoogleScholar({
+                                query: query.trim(),
+                                maxItems,
+                                minYear,
+                                maxYear,
+                                country,
+                                language,
+                                sortBy
+                            });
+
+                            if (!results || results.length === 0) {
+                                return {
+                                    message: `No research papers found for "${query}". Try a different search term.`,
+                                    results: []
+                                };
+                            }
+
+                            // Return a simplified version of results to save tokens
+                            return {
+                                query: query,
+                                count: results.length,
+                                results: results.map(item => ({
+                                    title: item.title,
+                                    link: item.link,
+                                    snippet: item.snippet,
+                                    year: item.publication_info?.year,
+                                    citations: item.cited_by_count
+                                }))
+                            };
+                        } catch (error) {
+                            console.error("Tool Execution Error:", error);
+                            return {
+                                error: "Failed to fetch research papers.",
+                                details: error.message,
+                                message: `I encountered an error while searching for "${query}". Please try again.`
+                            };
+                        }
+                    },
+                }),
+            },
+            maxSteps: 7, // Allow up to 5 steps for multi-turn tool usage
         });
 
         return result.toUIMessageStreamResponse();
@@ -189,5 +268,3 @@ export async function POST(req) {
         }), { status: 500 });
     }
 }
-
-export default POST;
