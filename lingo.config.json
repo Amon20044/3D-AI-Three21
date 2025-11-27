@@ -1,0 +1,12 @@
+{
+  "sourceLanguage": "en",
+  "targetLanguages": ["es", "de", "fr", "ja", "zh", "pt", "hi"],
+  "localesPath": "./locales",
+  "format": "json",
+  "engine": "lingo",
+  "context": {
+    "domain": "3D Engineering & Reverse Engineering",
+    "tone": "professional, technical",
+    "notes": "Keep technical terms like 'mesh', 'vertex', 'topology', 'CAD' consistent. Translate UI labels but preserve 3D modeling terminology."
+  }
+}
