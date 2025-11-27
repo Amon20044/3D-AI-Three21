@@ -1,0 +1,41 @@
+{
+  "name": "three21",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@ai-sdk/google": "^2.0.23",
+    "@ai-sdk/react": "^2.0.102",
+    "@ai-sdk/togetherai": "^1.0.23",
+    "@built-in-ai/core": "^2.0.0",
+    "@openrouter/ai-sdk-provider": "^1.2.0",
+    "@react-three/drei": "^10.3.0",
+    "@react-three/fiber": "^9.1.2",
+    "@splinetool/react-spline": "^4.0.0",
+    "@tanstack/react-query": "^5.90.5",
+    "@vercel/analytics": "^1.5.0",
+    "ai": "^5.0.76",
+    "bytez.js": "^1.1.16",
+    "html2canvas": "^1.4.1",
+    "idb": "^8.0.3",
+    "idb-keyval": "^6.2.2",
+    "next": "15.3.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-feather": "^2.0.10",
+    "react-markdown": "^10.1.0",
+    "rehype-raw": "^7.0.0",
+    "remark-gfm": "^4.0.1",
+    "sarvamai": "^0.1.7",
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "tailwindcss": "^4"
+  }
+}
