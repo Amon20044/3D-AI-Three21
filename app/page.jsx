@@ -195,7 +195,7 @@ export default function Home() {
           />
 
           {/* 8. Stats Card - Wide */}
-          <div className="card-stats">
+          <div className="card-feature">
             <div className="stat-item">
               <div className="stat-number text-white">2+</div>
               <div className="stat-label">Formats</div>
