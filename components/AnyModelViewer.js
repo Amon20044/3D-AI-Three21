@@ -10,7 +10,7 @@ import { useModelInfo } from './ModelInfoContext';
 import { Toast } from './Toast';
 import { HighlightManager } from './HighlightManager';
 import { ScreenshotManager } from './ScreenshotManager';
-import { DEMO_CONFIG } from '@/pages/model';
+// import { DEMO_CONFIG } from '@/pages/model';
 import html2canvas from 'html2canvas';
 import * as THREE from 'three';
 // WebGPU detection and fallback
@@ -35,7 +35,7 @@ const isWebGPUAvailable = async () => {
     }
 };
 
-export default forwardRef(function AnyModelViewer({ url, type, isDemoMode = false, demoConfig = null, onModelLoad }, ref) {
+export default forwardRef(function AnyModelViewer({ url, type, isDemoMode = false, demoConfig = null, onModelLoad, onError }, ref) {
     const modelRef = useRef();
     const canvasRef = useRef();
     const highlightManagerRef = useRef(null);
@@ -760,7 +760,7 @@ export default forwardRef(function AnyModelViewer({ url, type, isDemoMode = fals
             </div>
 
             <Canvas
-                camera={{ position: [0, 200, 400], fov: 60 }}
+                camera={{ position: [-100, 600, 400], fov: 60 }}
                 shadows
                 gl={getRendererConfig()}
                 onCreated={({ gl }) => {

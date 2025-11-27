@@ -1,0 +1,1800 @@
+{
+  "files": {
+    "../components/AnyModelViewer.jsx": {
+      "scopes": {
+        "15/declaration/0/body/37/consequent/0/argument": {
+          "type": "element",
+          "hash": "c7afb2320320254880927d1c74c6fdaf",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Initializing <expression/> Renderer..."
+        },
+        "15/declaration/0/body/38/argument/3/11/expression/right": {
+          "type": "element",
+          "hash": "89ff163773f26bf4f3b7292c7bb0f5bd",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "WebGPU Unavailable"
+        },
+        "15/declaration/0/body/38/argument/3/3/1": {
+          "type": "element",
+          "hash": "a8f649fed65970e66c5e98a43c5e8922",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "FPS"
+        },
+        "15/declaration/0/body/38/argument/3/7/1": {
+          "type": "element",
+          "hash": "f99fd3663823f0b9178f9f27d6b0b7f1",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Renderer"
+        },
+        "16/declaration/0/body/37/consequent/0/argument": {
+          "type": "element",
+          "hash": "c7afb2320320254880927d1c74c6fdaf",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Initializing <expression/> Renderer..."
+        },
+        "16/declaration/0/body/38/argument/3/11/expression/right": {
+          "type": "element",
+          "hash": "89ff163773f26bf4f3b7292c7bb0f5bd",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "WebGPU Unavailable"
+        },
+        "16/declaration/0/body/38/argument/3/3/1": {
+          "type": "element",
+          "hash": "a8f649fed65970e66c5e98a43c5e8922",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "FPS"
+        },
+        "16/declaration/0/body/38/argument/3/7/1": {
+          "type": "element",
+          "hash": "f99fd3663823f0b9178f9f27d6b0b7f1",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Renderer"
+        }
+      }
+    },
+    "../components/DisassemblyUI.jsx": {
+      "scopes": {
+        "4/declaration/body/17/argument/11/expression/right/1/1": {
+          "type": "element",
+          "hash": "57e7bd807107165585621c90ed300639",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:Layers></element:Layers> Layer {currentLayer}/{totalLayers}<expression/>"
+        },
+        "4/declaration/body/17/argument/11/expression/right/1/3-aria-label": {
+          "type": "attribute",
+          "hash": "79687240e452b82b35bdd1c49f625b81",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Hide status"
+        },
+        "4/declaration/body/17/argument/11/expression/right/13/1": {
+          "type": "element",
+          "hash": "7e7d0342f66cbcf12201c781013f7c80",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:Eye></element:Eye> Glow"
+        },
+        "4/declaration/body/17/argument/11/expression/right/13/3/1-aria-label": {
+          "type": "attribute",
+          "hash": "fdedfc5645e3dd185df5ad2d6acfe249",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Glow color"
+        },
+        "4/declaration/body/17/argument/11/expression/right/13/3/5-aria-label": {
+          "type": "attribute",
+          "hash": "8b8d0742275f1b2f43bf521f71af8e6a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Glow opacity percentage"
+        },
+        "4/declaration/body/17/argument/11/expression/right/13/3/7": {
+          "type": "element",
+          "hash": "5ffe4a4526d680df3dc6d6e7880cbc9a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<function:toFixed/>%"
+        },
+        "4/declaration/body/17/argument/11/expression/right/17/expression/right/1": {
+          "type": "element",
+          "hash": "5e479c6139598890383af3ff6ef45183",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:BarChart></element:BarChart> Size"
+        },
+        "4/declaration/body/17/argument/11/expression/right/17/expression/right/3/3-aria-label": {
+          "type": "attribute",
+          "hash": "972d36f602d55323517e86e48ddf4851",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Size multiplier"
+        },
+        "4/declaration/body/17/argument/11/expression/right/17/expression/right/3/5": {
+          "type": "element",
+          "hash": "6ddce4fa9eda1f7c6bb8de5547f39c80",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<expression/>x"
+        },
+        "4/declaration/body/17/argument/11/expression/right/21/1/expression/alternate/3": {
+          "type": "element",
+          "hash": "437c0eea608e15ad5cdab94bde2f4b48",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Ready"
+        },
+        "4/declaration/body/17/argument/11/expression/right/21/1/expression/consequent/3": {
+          "type": "element",
+          "hash": "068131698a67d7c2e9cddb9adf280170",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Animating"
+        },
+        "4/declaration/body/17/argument/11/expression/right/5/expression/right/1-aria-label": {
+          "type": "attribute",
+          "hash": "dd0200d5849ebb7d64c15098ae91d229",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Progress"
+        },
+        "4/declaration/body/17/argument/11/expression/right/5/expression/right/3": {
+          "type": "element",
+          "hash": "5ffe4a4526d680df3dc6d6e7880cbc9a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<function:Math.round/>%"
+        },
+        "4/declaration/body/17/argument/11/expression/right/9/1": {
+          "type": "element",
+          "hash": "e717d9f72682028c85f32aa473c65769",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:Maximize></element:Maximize> Gap"
+        },
+        "4/declaration/body/17/argument/11/expression/right/9/3/3-aria-label": {
+          "type": "attribute",
+          "hash": "259ce936a24e9fed34c0d6b7f0fceab0",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Gap value"
+        },
+        "4/declaration/body/17/argument/15/1-aria-label": {
+          "type": "attribute",
+          "hash": "23c9beaf21ad2f9d02437ad880be7875",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Disassembly controls"
+        },
+        "4/declaration/body/17/argument/15/1/1-aria-label": {
+          "type": "attribute",
+          "hash": "7e4439e18a5e554ca0ac70834af6fb20",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Assemble model"
+        },
+        "4/declaration/body/17/argument/15/1/1/3": {
+          "type": "element",
+          "hash": "42d32e323a04caaf02e864f030a7cf04",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Assemble"
+        },
+        "4/declaration/body/17/argument/15/1/3-aria-label": {
+          "type": "attribute",
+          "hash": "1ccebe2cbbaaf904722a3d2a36c038d7",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Disassemble model"
+        },
+        "4/declaration/body/17/argument/15/1/3/3": {
+          "type": "element",
+          "hash": "2bbba69fec2dc4c14658e63015e6f3f1",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Disassemble"
+        },
+        "4/declaration/body/17/argument/19/expression/right-aria-label": {
+          "type": "attribute",
+          "hash": "caa6e0d6b4cfcc4bd5ec34ead8ba4080",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Show disassembly controls"
+        },
+        "4/declaration/body/17/argument/19/expression/right/3": {
+          "type": "element",
+          "hash": "a3ae01f8363ab6feb4b1deeeb908db91",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Show Controls"
+        },
+        "4/declaration/body/17/argument/23/expression/right-aria-label": {
+          "type": "attribute",
+          "hash": "966770da3d0fb329c1d785f70f3f8a63",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Show status panel"
+        },
+        "4/declaration/body/17/argument/23/expression/right/3": {
+          "type": "element",
+          "hash": "76a034d68b6a1316703de7dea1078339",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Model Preferences"
+        },
+        "4/declaration/body/17/argument/27/expression/right/1/1/1": {
+          "type": "element",
+          "hash": "39e114f0088ba8f52840dee1e659381d",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:Layers></element:Layers> Layers"
+        },
+        "4/declaration/body/17/argument/27/expression/right/1/3/1-aria-label": {
+          "type": "attribute",
+          "hash": "ce45624227048b84d40d49be644bd614",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Close layers panel"
+        },
+        "4/declaration/body/17/argument/27/expression/right/3/1": {
+          "type": "element",
+          "hash": "98c91ab370adb244e372189b7fa226e0",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "nodes {nodeCount}"
+        },
+        "4/declaration/body/17/argument/27/expression/right/3/11": {
+          "type": "element",
+          "hash": "5f1c90d0fd46023ba1bfaaa2537f59fb",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "•"
+        },
+        "4/declaration/body/17/argument/27/expression/right/3/13/expression/right": {
+          "type": "element",
+          "hash": "ab35bb75ebcf6f29eb6d5a9944a403ef",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "◯ <function:totalVertices.toLocaleString/> Vertices"
+        },
+        "4/declaration/body/17/argument/27/expression/right/3/13/expression/right-title": {
+          "type": "attribute",
+          "hash": "2b699b51292a0d4e849fa4e38a36ac2c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Total Vertices"
+        },
+        "4/declaration/body/17/argument/27/expression/right/3/3": {
+          "type": "element",
+          "hash": "5f1c90d0fd46023ba1bfaaa2537f59fb",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "•"
+        },
+        "4/declaration/body/17/argument/27/expression/right/3/5": {
+          "type": "element",
+          "hash": "3336348fe5d57c9efe8dab0f14a372a8",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "children {childrenCount}"
+        },
+        "4/declaration/body/17/argument/27/expression/right/3/7": {
+          "type": "element",
+          "hash": "5f1c90d0fd46023ba1bfaaa2537f59fb",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "•"
+        },
+        "4/declaration/body/17/argument/27/expression/right/3/9/expression/right": {
+          "type": "element",
+          "hash": "c394287674d371b430f13bf82a5430a9",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "△ <function:totalTriangles.toLocaleString/> Triangles"
+        },
+        "4/declaration/body/17/argument/27/expression/right/3/9/expression/right-title": {
+          "type": "attribute",
+          "hash": "6db3aec29dd87e5ea2a9191b6556f3a4",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Total Triangles"
+        },
+        "4/declaration/body/17/argument/3/expression/right/3-aria-label": {
+          "type": "attribute",
+          "hash": "5707af86acf0b9881be8f240291fce41",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Hide instructions"
+        },
+        "4/declaration/body/17/argument/3/expression/right/3/3": {
+          "type": "element",
+          "hash": "6359071421abf7a7dbf4181c22bd79d2",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Got it"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/alternate/1/1": {
+          "type": "element",
+          "hash": "6d7d035fadd90f16709f50d838b4c06f",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Disassembly"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/alternate/1/3/1": {
+          "type": "element",
+          "hash": "7a95d592dd9a569274ad34aedb7cfa5b",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "👆"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/alternate/1/3/3": {
+          "type": "element",
+          "hash": "ec1956c04532c01edcdf5f7507bcf01a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Tap buttons below"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/alternate/3/1": {
+          "type": "element",
+          "hash": "68dc6a8af41393592c52f785d341623d",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Camera"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/alternate/3/3/1": {
+          "type": "element",
+          "hash": "ccdfaa6057fb68fe96cbd0fe8bea3722",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "☝️"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/alternate/3/3/3": {
+          "type": "element",
+          "hash": "872d46183a58f514d8231fb5caea694e",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "1 finger: rotate"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/alternate/3/5/1": {
+          "type": "element",
+          "hash": "26ff6914413ccbd370bee98ccf5f69f0",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "✌️"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/alternate/3/5/3": {
+          "type": "element",
+          "hash": "0b622beb5543c58f03ebbd2ae3a67aba",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "2 fingers: pan"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/alternate/3/7/1": {
+          "type": "element",
+          "hash": "c1fe512b2591698009c38d5256a06238",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "🤏"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/alternate/3/7/3": {
+          "type": "element",
+          "hash": "558ba2e7a63f1b61ff1159b05b9f3d1c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Pinch: zoom"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/alternate/5/1": {
+          "type": "element",
+          "hash": "25b570dc6339916a7aada2142aca0cd1",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Selection"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/alternate/5/3/1": {
+          "type": "element",
+          "hash": "7a95d592dd9a569274ad34aedb7cfa5b",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "👆"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/alternate/5/3/3": {
+          "type": "element",
+          "hash": "5dad552344ddb756fac107d14a76eaf8",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Double-tap part to highlight"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/consequent/1/1": {
+          "type": "element",
+          "hash": "6d7d035fadd90f16709f50d838b4c06f",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Disassembly"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/consequent/1/3/1": {
+          "type": "element",
+          "hash": "d18e74cf11e2e8cc11bbd1c71d7e6973",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "E"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/consequent/1/3/1-aria-label": {
+          "type": "attribute",
+          "hash": "005711076ac30c33795d273dd73d7738",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "E key"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/consequent/1/3/3": {
+          "type": "element",
+          "hash": "4ca9bafbfa8ccdf1f23189e9b89bdedb",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Disassemble layer"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/consequent/1/5/1": {
+          "type": "element",
+          "hash": "55b9202a7d07d7c461b5fa174cc06041",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Q"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/consequent/1/5/1-aria-label": {
+          "type": "attribute",
+          "hash": "cc04f81522326ffbe27295b1baf4a645",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Q key"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/consequent/1/5/3": {
+          "type": "element",
+          "hash": "db31993a0b3b0ca3c8cc149861cd328d",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Reassemble layer"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/consequent/3/1": {
+          "type": "element",
+          "hash": "68dc6a8af41393592c52f785d341623d",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Camera"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/consequent/3/3/3": {
+          "type": "element",
+          "hash": "07160eeff219a69ab5edb347deeabb3d",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Drag to rotate"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/consequent/3/5/3": {
+          "type": "element",
+          "hash": "9627ee8d722023d61bba666a03b89694",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Right-drag to pan"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/consequent/3/7/3": {
+          "type": "element",
+          "hash": "307310b28dea3e4a1a018cb05e10e2fb",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Scroll to zoom"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/consequent/5/1": {
+          "type": "element",
+          "hash": "25b570dc6339916a7aada2142aca0cd1",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Selection"
+        },
+        "4/declaration/body/17/argument/3/expression/right/5/1/expression/consequent/5/3/3": {
+          "type": "element",
+          "hash": "f72864e65995cd6e6fba531e1069554c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Double-click part to highlight"
+        },
+        "4/declaration/body/17/argument/31/expression/right-aria-label": {
+          "type": "attribute",
+          "hash": "4482a3d449a6e8f68d53871ebed68bfc",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Show layers panel"
+        },
+        "4/declaration/body/17/argument/7-aria-label": {
+          "type": "attribute",
+          "hash": "ff0b05b41418760e56328bc6e935853e",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Open Three21Bot AI Assistant"
+        },
+        "4/declaration/body/17/argument/7/3": {
+          "type": "element",
+          "hash": "91b38bba71dcb002e38bf46846415d94",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Three21Bot AI"
+        }
+      }
+    },
+    "../components/EmbeddedDemoViewer.jsx": {
+      "scopes": {
+        "8/declaration/body/8/argument/7/1/3": {
+          "type": "element",
+          "hash": "42d32e323a04caaf02e864f030a7cf04",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Assemble"
+        },
+        "8/declaration/body/8/argument/7/3/3": {
+          "type": "element",
+          "hash": "2bbba69fec2dc4c14658e63015e6f3f1",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Disassemble"
+        }
+      }
+    },
+    "../components/Header.jsx": {
+      "scopes": {
+        "2/declaration/body/0/argument/1/1/3": {
+          "type": "element",
+          "hash": "4864d28555fea79eca28e98589ec2d8b",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Where 3D Meets Intelligence"
+        },
+        "2/declaration/body/0/argument/1/3/1": {
+          "type": "element",
+          "hash": "341ff316a339b106a178f0b8d362951b",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Features"
+        },
+        "2/declaration/body/0/argument/1/3/3": {
+          "type": "element",
+          "hash": "27d6fdfbcca2dba6e8ba7440251a8c4c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Demo"
+        },
+        "2/declaration/body/0/argument/1/3/5": {
+          "type": "element",
+          "hash": "944521eeeed2511833d2299931273c71",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "About"
+        },
+        "2/declaration/body/1/argument/1/3/1": {
+          "type": "element",
+          "hash": "e1eeeb379f86a015d6e581fcbc4af7f3",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "English"
+        },
+        "2/declaration/body/1/argument/1/3/1/1": {
+          "type": "element",
+          "hash": "e1eeeb379f86a015d6e581fcbc4af7f3",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "English"
+        },
+        "2/declaration/body/1/argument/1/3/1/1/1": {
+          "type": "element",
+          "hash": "e1eeeb379f86a015d6e581fcbc4af7f3",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "English"
+        },
+        "2/declaration/body/1/argument/1/3/1/1/3": {
+          "type": "element",
+          "hash": "e1cd9645ddb854071941a3a23af9eaaf",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Español"
+        },
+        "2/declaration/body/1/argument/1/3/1/1/5": {
+          "type": "element",
+          "hash": "f13cde514c5daa2cb08f5f22be97a066",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Deutsch"
+        },
+        "2/declaration/body/1/argument/1/3/1/1/7": {
+          "type": "element",
+          "hash": "965fbe07b0c6293182f71b3d09b84fda",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Français"
+        },
+        "2/declaration/body/1/argument/1/3/1/3": {
+          "type": "element",
+          "hash": "e1cd9645ddb854071941a3a23af9eaaf",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Español"
+        },
+        "2/declaration/body/1/argument/1/3/1/5": {
+          "type": "element",
+          "hash": "f13cde514c5daa2cb08f5f22be97a066",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Deutsch"
+        },
+        "2/declaration/body/1/argument/1/3/1/7": {
+          "type": "element",
+          "hash": "965fbe07b0c6293182f71b3d09b84fda",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Français"
+        },
+        "2/declaration/body/1/argument/1/3/3": {
+          "type": "element",
+          "hash": "e1cd9645ddb854071941a3a23af9eaaf",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Español"
+        },
+        "2/declaration/body/1/argument/1/3/5": {
+          "type": "element",
+          "hash": "f13cde514c5daa2cb08f5f22be97a066",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Deutsch"
+        },
+        "2/declaration/body/1/argument/1/3/7": {
+          "type": "element",
+          "hash": "965fbe07b0c6293182f71b3d09b84fda",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Français"
+        },
+        "2/declaration/body/1/argument/1/5/1/1": {
+          "type": "element",
+          "hash": "e1eeeb379f86a015d6e581fcbc4af7f3",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "English"
+        },
+        "2/declaration/body/1/argument/1/5/1/3": {
+          "type": "element",
+          "hash": "881640609abd94ca50cbafb21f085042",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Spanish"
+        },
+        "2/declaration/body/1/argument/1/5/1/5": {
+          "type": "element",
+          "hash": "1e23c97d063f7235e94e00517f1786c2",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "German"
+        },
+        "2/declaration/body/1/argument/1/5/1/7": {
+          "type": "element",
+          "hash": "b6c77a4e718a978af58895b27731413c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "French"
+        }
+      }
+    },
+    "../components/ModelInfoCollector.jsx": {
+      "scopes": {
+        "1/declaration/body/9/argument/1/1/3": {
+          "type": "element",
+          "hash": "5a837ce4872a9150fcd49d2446eea74a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Model Information *"
+        },
+        "1/declaration/body/9/argument/1/1/5": {
+          "type": "element",
+          "hash": "8418497a425f403d76d817fc6bf179ff",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Provide detailed information for enhanced AI analysis and research-grade insights"
+        },
+        "1/declaration/body/9/argument/1/1/7": {
+          "type": "element",
+          "hash": "e1dc5bedc547df1946b156d3e139248b",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:strong>⚠️ Required:</element:strong> All fields below are mandatory for optimal AI analysis quality"
+        },
+        "1/declaration/body/9/argument/1/5/1/1": {
+          "type": "element",
+          "hash": "82507b36882a97c38ea5f529924ce599",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Description *<element:span>Required</element:span>"
+        },
+        "1/declaration/body/9/argument/1/5/1/3-placeholder": {
+          "type": "attribute",
+          "hash": "6d2e7d0a5ce50af096b6e906f2c8d4da",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Describe what this model represents, its function, and key features..."
+        },
+        "1/declaration/body/9/argument/1/5/3/1/1": {
+          "type": "element",
+          "hash": "ac40f339489ddca561a2556002e24e08",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Category *"
+        },
+        "1/declaration/body/9/argument/1/5/3/1/3/1": {
+          "type": "element",
+          "hash": "2d6ce6602bdc1cefb57b921669ab4117",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Select category..."
+        },
+        "1/declaration/body/9/argument/1/5/3/3/1": {
+          "type": "element",
+          "hash": "4bc11640965f0a8f3d84fc281797956c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Purpose *"
+        },
+        "1/declaration/body/9/argument/1/5/3/3/3/1": {
+          "type": "element",
+          "hash": "ef6515cbf6b508d03f477d779ddec2d1",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Select purpose..."
+        },
+        "1/declaration/body/9/argument/1/5/5/1": {
+          "type": "element",
+          "hash": "54b3e87676f839d1144fd427774bbbbd",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Complexity Level *"
+        },
+        "1/declaration/body/9/argument/1/5/7/1": {
+          "type": "element",
+          "hash": "7d42f6610804fa1cca88da954cbfdbe8",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Tags *<element:span>Required</element:span>"
+        },
+        "1/declaration/body/9/argument/1/5/7/3-placeholder": {
+          "type": "attribute",
+          "hash": "866169d00440b9529259cf62a92068f6",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "mechanical, automotive, engine, gear, assembly..."
+        },
+        "1/declaration/body/9/argument/1/5/7/5": {
+          "type": "element",
+          "hash": "4064101df6267aa7d00cbd4cb9084a6e",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Add relevant keywords separated by commas (helps AI provide better analysis)"
+        },
+        "1/declaration/body/9/argument/1/5/9/1": {
+          "type": "element",
+          "hash": "d6284d453de2626f53f31e24d8400dd8",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Skip for now"
+        },
+        "1/declaration/body/9/argument/1/5/9/3/1/expression/alternate": {
+          "type": "element",
+          "hash": "0ed7e65156331a6b0aab4808873e23da",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Continue Analysis<element:svg><element:path></element:path></element:svg>"
+        },
+        "1/declaration/body/9/argument/1/5/9/3/1/expression/consequent": {
+          "type": "element",
+          "hash": "d4d369e03af9b50fc687be7845e48f93",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:div></element:div> Processing..."
+        },
+        "1/declaration/body/9/argument/1/7/1/3": {
+          "type": "element",
+          "hash": "ae053282e66314aa2a524cab5fa3e55e",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Enhanced AI Analysis with Your Input"
+        },
+        "1/declaration/body/9/argument/1/7/3/1": {
+          "type": "element",
+          "hash": "9bf997b3bf09c0a970d2fa0c624d3e5c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:strong>Description</element:strong>: Guides AI focus and analysis approach"
+        },
+        "1/declaration/body/9/argument/1/7/3/3": {
+          "type": "element",
+          "hash": "76bbed39a89c3c345643b63dfa780dfd",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:strong>Category</element:strong>: Applies domain-specific engineering knowledge"
+        },
+        "1/declaration/body/9/argument/1/7/3/5": {
+          "type": "element",
+          "hash": "09f632fed5bb9c7b9743f4d505ada6ad",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:strong>Purpose</element:strong>: Tailors insights for your specific goals"
+        },
+        "1/declaration/body/9/argument/1/7/3/7": {
+          "type": "element",
+          "hash": "ba78fd7aede4684cb0b79ed5fcc4f8a2",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:strong>Tags</element:strong>: Incorporates relevant technical expertise"
+        },
+        "1/declaration/body/9/argument/1/7/3/9": {
+          "type": "element",
+          "hash": "a659c4106cf8f8875875c9c7fe553dd9",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:strong>Complexity</element:strong>: Adjusts analysis depth and detail"
+        },
+        "1/declaration/body/9/argument/1/7/5": {
+          "type": "element",
+          "hash": "445899d8186482b8e804962d97b022ec",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "🎯 <element:strong>Research-Grade Analysis:</element:strong> Complete information enables citations, standards references, and industry-specific insights"
+        }
+      }
+    },
+    "../components/Three21Bot.jsx": {
+      "scopes": {
+        "12/declaration/body/37/argument/1/11/1/1/3": {
+          "type": "element",
+          "hash": "6b753b921d4f83a8cdbfa6b8a764922c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Analyze Current View"
+        },
+        "12/declaration/body/37/argument/1/11/1/3/expression/right": {
+          "type": "element",
+          "hash": "b8adc9b93dbf74cd04e2777fb36dd855",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:Camera></element:Camera> Screenshot ready"
+        },
+        "12/declaration/body/37/argument/1/11/3/1/1-placeholder": {
+          "type": "attribute",
+          "hash": "23359baa88cddd67a7fe8dae4414f77c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Ask about the model, parts, or engineering insights..."
+        },
+        "12/declaration/body/37/argument/1/11/3/1/5/expression/right/1/1": {
+          "type": "element",
+          "hash": "acf1385252b3ea42d74de473057aa074",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:Mic></element:Mic> Listening..."
+        },
+        "12/declaration/body/37/argument/1/11/3/1/5/expression/right/1/3/expression/right": {
+          "type": "element",
+          "hash": "8f2e71357b95994461da2d311d95f97d",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Auto-send in 4s"
+        },
+        "12/declaration/body/37/argument/1/11/3/1/7/expression/right": {
+          "type": "element",
+          "hash": "8e06b167c7b48828fb06838d2769775e",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "⚠️ {speechError}"
+        },
+        "12/declaration/body/37/argument/1/3/1/1/1": {
+          "type": "element",
+          "hash": "12fa0a6b30a4217cee6433a24a6e6052",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "🤖"
+        },
+        "12/declaration/body/37/argument/1/3/1/3/1": {
+          "type": "element",
+          "hash": "a315396f6148bf3faa382bf1d4884358",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Three21Bot"
+        },
+        "12/declaration/body/37/argument/1/3/1/5/expression/right/1": {
+          "type": "element",
+          "hash": "2c87d84a83609ffbd3a5a8556353d800",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "🎯 Focus: <expression/>"
+        }
+      }
+    },
+    "../components/Toast.jsx": {
+      "scopes": {
+        "1/declaration/body/3/argument/1/5-aria-label": {
+          "type": "attribute",
+          "hash": "ca1bec3b29ff7938ee28f6d9721ef372",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Close toast"
+        }
+      }
+    },
+    "../pages/import-model.jsx": {
+      "scopes": {
+        "5/declaration/body/15/argument/1/3/1": {
+          "type": "element",
+          "hash": "88d844d17a0d76eb7d56bdf082616e69",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Import Your Model"
+        },
+        "5/declaration/body/15/argument/1/3/3": {
+          "type": "element",
+          "hash": "ea5f4564aad341a244c78e22d979f6f8",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Upload your 3D models and start exploring with advanced visualization tools. Supports GLB, GLTF, and FBX formats."
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/3/1/1/3": {
+          "type": "element",
+          "hash": "0256926322718ad367063a168d4369c4",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Drop your model here"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/3/1/1/5": {
+          "type": "element",
+          "hash": "0cdc5eb323cd283db90bff659f24a05c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Or click to browse and select your file"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/3/1/1/7": {
+          "type": "element",
+          "hash": "22b9b1bc8f7417b1faea4ae53258b183",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Choose File"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/3/1/1/9/1": {
+          "type": "element",
+          "hash": "3b3ce5ec1565631623752a4a9977c171",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Supported formats:"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/3/1/1/9/3/1": {
+          "type": "element",
+          "hash": "beebcae18908bcdbc7ae115865724bf7",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "GLB"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/3/1/1/9/3/3": {
+          "type": "element",
+          "hash": "006babfae25828317cdac4504f8c760f",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "GLTF"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/3/1/1/9/3/5": {
+          "type": "element",
+          "hash": "7cd8c288d3fbc2ff41bc95c083117534",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "FBX"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/1": {
+          "type": "element",
+          "hash": "fbd403146395526d68ac68d142a50e21",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Getting Started"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/1/1": {
+          "type": "element",
+          "hash": "1ece64eb125a035164192e2eaf714ca0",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "1"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/1/3/1": {
+          "type": "element",
+          "hash": "2effae9fdf9a2e0dc79fb2ac1ad66490",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Choose Your Model"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/1/3/3": {
+          "type": "element",
+          "hash": "63c715fa6563a73c0314ab023962e8c3",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Select a GLB, GLTF, or FBX file from your device. File size limit is 100MB."
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/3/1": {
+          "type": "element",
+          "hash": "969b44032c99b5efb54f78e9c95d16f0",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "2"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/3/3/1": {
+          "type": "element",
+          "hash": "1c54b4a197ffc1c8b94f021c4bca82d7",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Add Information"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/3/3/3": {
+          "type": "element",
+          "hash": "e69f6d99ba6a600ce699e8bf72e83ab4",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Optionally add metadata and description for better organization."
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/5/1": {
+          "type": "element",
+          "hash": "e50c7ae359983791380f62fd061b3bb6",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "3"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/5/3/1": {
+          "type": "element",
+          "hash": "0d85b7081bdc86cf6537ccf5adcbe270",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Start Exploring"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/5/3/3": {
+          "type": "element",
+          "hash": "3f409d053e66e842c217b717881f8282",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Use our advanced tools to analyze, dissect, and visualize your 3D model."
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/7/1": {
+          "type": "element",
+          "hash": "ffacf6641976ed5ef76edd45fba94413",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "4"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/7/3/1": {
+          "type": "element",
+          "hash": "da6e955c721247ba238a2709b13f15ee",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "AI Analysis"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/7/3/3": {
+          "type": "element",
+          "hash": "638639e46e3566c31e2b968ae7a15e33",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Get intelligent insights and recommendations from Three21Bot AI."
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/7/1/1/3/1": {
+          "type": "element",
+          "hash": "f3ebbbc3f268ed60c3e37d48b5dcb51a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Real-time Preview"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/7/1/1/3/3": {
+          "type": "element",
+          "hash": "ab462fa529aa4a59e2e2b84edce8c0ff",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Instant visualization with advanced WebGL rendering and lighting effects."
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/7/3/1/3/1": {
+          "type": "element",
+          "hash": "da6e955c721247ba238a2709b13f15ee",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "AI Analysis"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/7/3/1/3/3": {
+          "type": "element",
+          "hash": "6a4e3a038741f94bb0f7b2bfe27db704",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Intelligent model analysis and optimization suggestions powered by AI."
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/7/5/1/3/1": {
+          "type": "element",
+          "hash": "52f5e443d152d2983a67966610106b43",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Secure Upload"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/7/5/1/3/3": {
+          "type": "element",
+          "hash": "04eae60d836b16ac5d6c3799025974f2",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Your models are processed locally and securely with no server uploads."
+        },
+        "5/declaration/body/15/argument/1/5/expression/consequent/1/3": {
+          "type": "element",
+          "hash": "16055fe5db1ee2c6903187b9788785cc",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Processing Model"
+        },
+        "5/declaration/body/15/argument/1/5/expression/consequent/1/5": {
+          "type": "element",
+          "hash": "a494c2d018c0bdc6043ac87d23e5ef15",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Analyzing your 3D model and preparing for visualization..."
+        }
+      }
+    },
+    "../pages/model.jsx": {
+      "scopes": {
+        "9/declaration/body/16/consequent/0/argument/5/expression/right": {
+          "type": "element",
+          "hash": "d4f554d3d10ab8a6c269d68618d528e9",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Go to Import Page"
+        }
+      }
+    },
+    "import-model/page.jsx": {
+      "scopes": {
+        "5/declaration/body/15/argument/1/3/1": {
+          "type": "element",
+          "hash": "88d844d17a0d76eb7d56bdf082616e69",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Import Your Model"
+        },
+        "5/declaration/body/15/argument/1/3/3": {
+          "type": "element",
+          "hash": "e3cdb3dc459e668dfa45a722739572a4",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Upload your 3D models and start exploring with advanced visualization tools. Supports GLB, GLTF, and FBX formats."
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/3/1/1/3": {
+          "type": "element",
+          "hash": "0256926322718ad367063a168d4369c4",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Drop your model here"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/3/1/1/5": {
+          "type": "element",
+          "hash": "0cdc5eb323cd283db90bff659f24a05c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Or click to browse and select your file"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/3/1/1/7": {
+          "type": "element",
+          "hash": "22b9b1bc8f7417b1faea4ae53258b183",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Choose File"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/3/1/1/9/1": {
+          "type": "element",
+          "hash": "3b3ce5ec1565631623752a4a9977c171",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Supported formats:"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/3/1/1/9/3/1": {
+          "type": "element",
+          "hash": "beebcae18908bcdbc7ae115865724bf7",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "GLB"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/3/1/1/9/3/3": {
+          "type": "element",
+          "hash": "006babfae25828317cdac4504f8c760f",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "GLTF"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/3/1/1/9/3/5": {
+          "type": "element",
+          "hash": "7cd8c288d3fbc2ff41bc95c083117534",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "FBX"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/1": {
+          "type": "element",
+          "hash": "fbd403146395526d68ac68d142a50e21",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Getting Started"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/1/1": {
+          "type": "element",
+          "hash": "1ece64eb125a035164192e2eaf714ca0",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "1"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/1/3/1": {
+          "type": "element",
+          "hash": "2effae9fdf9a2e0dc79fb2ac1ad66490",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Choose Your Model"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/1/3/3": {
+          "type": "element",
+          "hash": "63c715fa6563a73c0314ab023962e8c3",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Select a GLB, GLTF, or FBX file from your device. File size limit is 100MB."
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/3/1": {
+          "type": "element",
+          "hash": "969b44032c99b5efb54f78e9c95d16f0",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "2"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/3/3/1": {
+          "type": "element",
+          "hash": "1c54b4a197ffc1c8b94f021c4bca82d7",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Add Information"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/3/3/3": {
+          "type": "element",
+          "hash": "e69f6d99ba6a600ce699e8bf72e83ab4",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Optionally add metadata and description for better organization."
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/5/1": {
+          "type": "element",
+          "hash": "e50c7ae359983791380f62fd061b3bb6",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "3"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/5/3/1": {
+          "type": "element",
+          "hash": "0d85b7081bdc86cf6537ccf5adcbe270",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Start Exploring"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/5/3/3": {
+          "type": "element",
+          "hash": "3f409d053e66e842c217b717881f8282",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Use our advanced tools to analyze, dissect, and visualize your 3D model."
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/7/1": {
+          "type": "element",
+          "hash": "ffacf6641976ed5ef76edd45fba94413",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "4"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/7/3/1": {
+          "type": "element",
+          "hash": "da6e955c721247ba238a2709b13f15ee",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "AI Analysis"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/3/3/7/3/3": {
+          "type": "element",
+          "hash": "638639e46e3566c31e2b968ae7a15e33",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Get intelligent insights and recommendations from Three21Bot AI."
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/7/1/1/3/1": {
+          "type": "element",
+          "hash": "f3ebbbc3f268ed60c3e37d48b5dcb51a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Real-time Preview"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/7/1/1/3/3": {
+          "type": "element",
+          "hash": "ab462fa529aa4a59e2e2b84edce8c0ff",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Instant visualization with advanced WebGL rendering and lighting effects."
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/7/3/1/3/1": {
+          "type": "element",
+          "hash": "da6e955c721247ba238a2709b13f15ee",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "AI Analysis"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/7/3/1/3/3": {
+          "type": "element",
+          "hash": "6a4e3a038741f94bb0f7b2bfe27db704",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Intelligent model analysis and optimization suggestions powered by AI."
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/7/5/1/3/1": {
+          "type": "element",
+          "hash": "52f5e443d152d2983a67966610106b43",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Secure Upload"
+        },
+        "5/declaration/body/15/argument/1/5/expression/alternate/7/7/5/1/3/3": {
+          "type": "element",
+          "hash": "04eae60d836b16ac5d6c3799025974f2",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Your models are processed locally and securely with no server uploads."
+        },
+        "5/declaration/body/15/argument/1/5/expression/consequent/1/3": {
+          "type": "element",
+          "hash": "16055fe5db1ee2c6903187b9788785cc",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Processing Model"
+        },
+        "5/declaration/body/15/argument/1/5/expression/consequent/1/5": {
+          "type": "element",
+          "hash": "a494c2d018c0bdc6043ac87d23e5ef15",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Analyzing your 3D model and preparing for visualization..."
+        }
+      }
+    },
+    "model/page.jsx": {
+      "scopes": {
+        "9/declaration/body/17/consequent/0/argument/5/expression/right": {
+          "type": "element",
+          "hash": "d4f554d3d10ab8a6c269d68618d528e9",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Go to Import Page"
+        },
+        "9/declaration/body/19/consequent/0/argument/5/expression/right": {
+          "type": "element",
+          "hash": "d4f554d3d10ab8a6c269d68618d528e9",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Go to Import Page"
+        },
+        "9/declaration/body/20/argument/9/expression/right/7/expression/right": {
+          "type": "element",
+          "hash": "d42662bb2c2d2c2a26ef0ac03500d1e9",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Reload Page"
+        }
+      }
+    },
+    "page.jsx": {
+      "scopes": {
+        "9/declaration/body/2/argument/11/11/1": {
+          "type": "element",
+          "hash": "16a7ba61492ee7fb35aa4dfb904c6279",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Built with love by Avni & Amon with Three.js, Next.js, WebGPU and WebGL"
+        },
+        "9/declaration/body/2/argument/11/3/1": {
+          "type": "element",
+          "hash": "16d299952191157224813adaf15e48d5",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:div><element:BrandIcon></element:BrandIcon></element:div> Three21"
+        },
+        "9/declaration/body/2/argument/11/3/3": {
+          "type": "element",
+          "hash": "b352920b21c20b3e6c8d6c9f35af8912",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Advanced 3D model visualization and analysis platform."
+        },
+        "9/declaration/body/2/argument/11/7/11/3": {
+          "type": "element",
+          "hash": "04782226f3edec6af7c876cb44f07fbb",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Where 3D meets Intelligence"
+        },
+        "9/declaration/body/2/argument/11/7/15-description": {
+          "type": "attribute",
+          "hash": "ac33c7a4b2781caab57adec743c59e75",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Experience your models in high-fidelity. Our advanced rendering engine reveals every detail, texture, and nuance."
+        },
+        "9/declaration/body/2/argument/11/7/15-title": {
+          "type": "attribute",
+          "hash": "7e19d5cf1ecdb181ee5bb3dc31c5ec7c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Crystal Clear Visualization"
+        },
+        "9/declaration/body/2/argument/11/7/19-description": {
+          "type": "attribute",
+          "hash": "3847efc5b7346b7e718da28618e5ea8f",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Break it down. Disassemble models layer by layer to understand their internal structure and assembly."
+        },
+        "9/declaration/body/2/argument/11/7/19-title": {
+          "type": "attribute",
+          "hash": "c43f9ccd7243c8b89ac2482e4bd509d6",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Reverse Engineering"
+        },
+        "9/declaration/body/2/argument/11/7/23-description": {
+          "type": "attribute",
+          "hash": "7396398310b7c53702f23b44f73df63f",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Learn with Gemini 2.5 Flash and observe. AI-powered analysis provides deep insights into geometry, materials, and optimization."
+        },
+        "9/declaration/body/2/argument/11/7/23-title": {
+          "type": "attribute",
+          "hash": "fec0101047583d6c6361821beb637e36",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Intelligent Insights"
+        },
+        "9/declaration/body/2/argument/11/7/27-description": {
+          "type": "attribute",
+          "hash": "7f471c7fb6b57057888fa200844815ec",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Seamlessly work with industry-standard formats. From CAD to game assets, we handle it all."
+        },
+        "9/declaration/body/2/argument/11/7/27-title": {
+          "type": "attribute",
+          "hash": "ac177efca80fbe6b930308fdd2f2b0c8",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Universal Compatibility"
+        },
+        "9/declaration/body/2/argument/11/7/3-description": {
+          "type": "attribute",
+          "hash": "ab921b38ed6963eae5c77dd08e616384",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Begin by uploading your 3D model. We support GLB, GLTF, FBX, and more, instantly preparing them for deep analysis."
+        },
+        "9/declaration/body/2/argument/11/7/3-title": {
+          "type": "attribute",
+          "hash": "c64168d6d9beac8e511de565b049aca9",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Start Your Journey"
+        },
+        "9/declaration/body/2/argument/11/7/3/1/1/1/3": {
+          "type": "element",
+          "hash": "82f43110a4230127b865cb320ccbfe49",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Upload Model"
+        },
+        "9/declaration/body/2/argument/11/7/3/1/3/1/3": {
+          "type": "element",
+          "hash": "b85d00176fbd10f148706a81e664b28e",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Try Demo"
+        },
+        "9/declaration/body/2/argument/11/7/31/1/1": {
+          "type": "element",
+          "hash": "4b39c4e3fca0b87e739131b2b180d972",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "2+"
+        },
+        "9/declaration/body/2/argument/11/7/31/1/3": {
+          "type": "element",
+          "hash": "d7d513bf9fd2ae98757cecdee7f38264",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Formats"
+        },
+        "9/declaration/body/2/argument/11/7/31/5/1": {
+          "type": "element",
+          "hash": "a98a0ce512942bdb11f923c28fbe5bb2",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Real-time"
+        },
+        "9/declaration/body/2/argument/11/7/31/5/3": {
+          "type": "element",
+          "hash": "6d66d350f6278d4070242bc6ff4207a7",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Rendering"
+        },
+        "9/declaration/body/2/argument/11/7/31/9/1": {
+          "type": "element",
+          "hash": "b764382ca31f0c1570802ead170ad235",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "AI"
+        },
+        "9/declaration/body/2/argument/11/7/31/9/3": {
+          "type": "element",
+          "hash": "409bac6215382c47e59f5039cc4cdcdd",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Analysis"
+        },
+        "9/declaration/body/2/argument/11/7/7/1/1/3": {
+          "type": "element",
+          "hash": "d2de8e25edcd917ff426d6a557a65db0",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Interactive Demo"
+        }
+      }
+    },
+    "playground/page.jsx": {
+      "scopes": {
+        "1/0/init/0/body/1/argument": {
+          "type": "element",
+          "hash": "892d1459eeed42cd93f30eb21d36e60e",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Click Me"
+        },
+        "3/0/init/body/0/argument/1": {
+          "type": "element",
+          "hash": "d8eb3b76c6ad8039886c6520546ca5a3",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "useCallback Demo"
+        }
+      }
+    }
+  }
+}

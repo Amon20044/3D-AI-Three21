@@ -6,7 +6,7 @@ export function Toast({ message, isVisible, onHide, duration = 3000 }) {
     useEffect(() => {
         if (isVisible) {
             const timer = setTimeout(() => {
-            onHide();
+                onHide();
             }, duration);
             return () => clearTimeout(timer);
         }
@@ -23,13 +23,13 @@ export function Toast({ message, isVisible, onHide, duration = 3000 }) {
                     </svg>
                 </div>
                 <span className="toast-message">{message}</span>
-                <button 
+                <button
                     className="toast-close"
                     onClick={onHide}
                     aria-label="Close toast"
                 >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M18 6L6 18M6 6l12 12"/>
+                        <path d="M18 6L6 18M6 6l12 12" />
                     </svg>
                 </button>
             </div>
