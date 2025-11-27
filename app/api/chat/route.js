@@ -167,7 +167,7 @@ export async function POST(req) {
         // Initialize LLM
         // -------------------------
         const gemini = createGoogleGenerativeAI({
-            apiKey: process.env.GEMINI_AI_API_KEY
+            apiKey: process.env.GOOGLE_API_KEY
         });
 
         // -------------------------
