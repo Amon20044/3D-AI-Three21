@@ -206,7 +206,11 @@ export default function Three21Bot({
 
             // Use demo config or regular model info for chat loading
             const chatModelInfo = demoConfig || modelInfo;
+            console.log('🔄 Attempting to load chat for model:', chatModelInfo);
+
             const existingMessages = await chatStorageManager.loadChatForModel(chatModelInfo);
+            console.log('📦 Raw messages from storage:', existingMessages);
+
             if (existingMessages.length > 0) {
                 // Convert storage messages to useChat format and filter empty ones
                 const convertedMessages = existingMessages
@@ -218,16 +222,20 @@ export default function Three21Bot({
                         createdAt: msg.timestamp ? new Date(msg.timestamp) : new Date()
                     }));
 
+                console.log('✨ Converted messages for UI:', convertedMessages);
+
                 if (convertedMessages.length > 0) {
                     setMessages(convertedMessages);
                     lastMessageCountRef.current = convertedMessages.length;
                     console.log(`✅ Loaded ${convertedMessages.length} valid messages (filtered ${existingMessages.length - convertedMessages.length} empty)`);
                 } else {
+                    console.log('⚠️ No valid messages after conversion, showing greeting');
                     showInitialGreeting();
                     lastMessageCountRef.current = 1;
                 }
             } else {
                 // No existing chat, show initial greeting
+                console.log('📭 No existing chat found in storage, showing greeting');
                 showInitialGreeting();
                 lastMessageCountRef.current = 1;
             }
@@ -238,7 +246,7 @@ export default function Three21Bot({
                 isLoadingHistoryRef.current = false;
             }, 100);
         } catch (error) {
-            console.error('Failed to load existing chat:', error);
+            console.error('❌ Failed to load existing chat:', error);
             showInitialGreeting();
             lastMessageCountRef.current = 1;
             setChatLoaded(true);
@@ -1353,8 +1361,8 @@ What aspect of your model would you like to explore first?` }],
                 /* Enhanced Markdown Styles - Dark Theme - Responsive */
                 .markdown-h1 {
                     color: #f9fafb;
-                    font-size: clamp(1.1rem, 4vw, 1.5rem);
-                    margin: 1.25rem 0 0.75rem 0;
+                    font-size: clamp(1.25rem, 4vw, 1.5rem);
+                    margin: 1.5rem 0 1rem 0;
                     font-weight: 700;
                     line-height: 1.3;
                     border-bottom: 2px solid #374151;
@@ -1363,8 +1371,8 @@ What aspect of your model would you like to explore first?` }],
 
                 .markdown-h2 {
                     color: #f9fafb;
-                    font-size: clamp(1.0rem, 3vw, 1.25rem);
-                    margin: 1rem 0 0.625rem 0;
+                    font-size: clamp(1.1rem, 3vw, 1.25rem);
+                    margin: 1.25rem 0 0.75rem 0;
                     font-weight: 600;
                     line-height: 1.3;
                     border-bottom: 1px solid #374151;
@@ -1373,47 +1381,47 @@ What aspect of your model would you like to explore first?` }],
 
                 .markdown-h3 {
                     color: #e5e7eb;
-                    font-size: clamp(0.9rem, 2.5vw, 1.125rem);
-                    margin: 0.875rem 0 0.5rem 0;
+                    font-size: clamp(1rem, 2.5vw, 1.125rem);
+                    margin: 1rem 0 0.5rem 0;
                     font-weight: 600;
                     line-height: 1.4;
                 }
 
                 .markdown-h4 {
                     color: #d1d5db;
-                    font-size: clamp(0.85rem, 2vw, 1rem);
-                    margin: 0.75rem 0 0.375rem 0;
+                    font-size: 1rem;
+                    margin: 0.875rem 0 0.375rem 0;
                     font-weight: 600;
                     line-height: 1.4;
                 }
 
                 .markdown-h5 {
                     color: #d1d5db;
-                    font-size: clamp(0.8rem, 2vw, 0.925rem);
-                    margin: 0.625rem 0 0.25rem 0;
+                    font-size: 0.925rem;
+                    margin: 0.75rem 0 0.25rem 0;
                     font-weight: 600;
                     line-height: 1.4;
                 }
 
                 .markdown-h6 {
                     color: #9ca3af;
-                    font-size: clamp(0.75rem, 2vw, 0.875rem);
+                    font-size: 0.875rem;
                     margin: 0.5rem 0 0.25rem 0;
                     font-weight: 600;
                     line-height: 1.4;
                 }
 
                 .markdown-p {
-                    margin: 0.625rem 0;
-                    line-height: 1.6;
+                    margin: 0.75rem 0;
+                    line-height: 1.75;
                     color: #f9fafb;
-                    font-size: clamp(0.8rem, 2vw, 0.95rem);
+                    font-size: clamp(0.875rem, 2vw, 0.95rem);
                 }
 
                 .markdown-ul, .markdown-ol {
-                    margin: 0.625rem 0;
-                    padding-left: 1.25rem;
-                    line-height: 1.6;
+                    margin: 0.75rem 0;
+                    padding-left: 1.5rem;
+                    line-height: 1.75;
                 }
 
                 .markdown-ol {
@@ -1421,10 +1429,10 @@ What aspect of your model would you like to explore first?` }],
                 }
 
                 .markdown-li {
-                    margin: 0.25rem 0;
+                    margin: 0.375rem 0;
                     line-height: 1.6;
                     color: #f9fafb;
-                    font-size: clamp(0.8rem, 2vw, 0.95rem);
+                    font-size: clamp(0.875rem, 2vw, 0.95rem);
                 }
 
                 .markdown-li::marker {
@@ -1445,7 +1453,7 @@ What aspect of your model would you like to explore first?` }],
                 .markdown-code-inline {
                     background: #374151;
                     color: #fbbf24;
-                    padding: 0.1rem 0.3rem;
+                    padding: 0.15rem 0.4rem;
                     border-radius: 4px;
                     font-family: 'SF Mono', 'Monaco', 'Consolas', 'Courier New', monospace;
                     font-size: 0.85em;
@@ -1458,45 +1466,44 @@ What aspect of your model would you like to explore first?` }],
                     background: #1f2937;
                     border: 1px solid #374151;
                     border-radius: 8px;
-                    padding: 0.75rem;
-                    margin: 0.75rem 0;
+                    padding: 1rem;
+                    margin: 1rem 0;
                     overflow-x: auto;
                     -webkit-overflow-scrolling: touch;
                 }
 
                 .markdown-pre::-webkit-scrollbar {
-                    height: 6px;
+                    height: 8px;
                 }
 
                 .markdown-pre::-webkit-scrollbar-track {
                     background: #111827;
-                    border-radius: 3px;
+                    border-radius: 4px;
                 }
 
                 .markdown-pre::-webkit-scrollbar-thumb {
                     background: #4b5563;
-                    border-radius: 3px;
+                    border-radius: 4px;
                 }
 
                 .markdown-code-block {
                     background: transparent;
                     color: #e5e7eb;
                     font-family: 'SF Mono', 'Monaco', 'Consolas', 'Courier New', monospace;
-                    font-size: clamp(0.75rem, 2vw, 0.875rem);
-                    line-height: 1.5;
+                    font-size: 0.875rem;
+                    line-height: 1.6;
                     display: block;
                 }
 
                 .markdown-blockquote {
-                    border-left: 3px solid #3b82f6;
-                    padding-left: 0.75rem;
-                    margin: 0.75rem 0;
+                    border-left: 4px solid #3b82f6;
+                    padding-left: 1rem;
+                    margin: 1rem 0;
                     color: #d1d5db;
                     font-style: italic;
                     background: rgba(31, 41, 55, 0.5);
-                    padding: 0.5rem 0.75rem;
-                    border-radius: 0 6px 6px 0;
-                    font-size: clamp(0.8rem, 2vw, 0.9rem);
+                    padding: 0.75rem 1rem;
+                    border-radius: 0 8px 8px 0;
                 }
 
                 .markdown-link {
@@ -1514,8 +1521,8 @@ What aspect of your model would you like to explore first?` }],
 
                 .markdown-hr {
                     border: none;
-                    border-top: 1px solid #374151;
-                    margin: 1.5rem 0;
+                    border-top: 2px solid #374151;
+                    margin: 2rem 0;
                 }
 
                 .markdown-del {
@@ -1526,8 +1533,8 @@ What aspect of your model would you like to explore first?` }],
                 .markdown-checkbox {
                     margin-right: 0.5rem;
                     accent-color: #3b82f6;
-                    width: 0.9rem;
-                    height: 0.9rem;
+                    width: 1rem;
+                    height: 1rem;
                     vertical-align: middle;
                 }
 
@@ -1535,24 +1542,24 @@ What aspect of your model would you like to explore first?` }],
                 .table-wrapper {
                     overflow-x: auto;
                     -webkit-overflow-scrolling: touch;
-                    margin: 1rem 0;
+                    margin: 1.25rem 0;
                     border-radius: 8px;
                     border: 1px solid #374151;
                     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
                 }
 
                 .table-wrapper::-webkit-scrollbar {
-                    height: 6px;
+                    height: 8px;
                 }
 
                 .table-wrapper::-webkit-scrollbar-track {
                     background: #1f2937;
-                    border-radius: 0 0 4px 4px;
+                    border-radius: 0 0 8px 8px;
                 }
 
                 .table-wrapper::-webkit-scrollbar-thumb {
                     background: #4b5563;
-                    border-radius: 3px;
+                    border-radius: 4px;
                 }
 
                 .table-wrapper::-webkit-scrollbar-thumb:hover {
@@ -1564,7 +1571,7 @@ What aspect of your model would you like to explore first?` }],
                     width: 100%;
                     min-width: 100%;
                     border-collapse: collapse;
-                    font-size: clamp(0.7rem, 2vw, 0.85rem); /* Responsive table text */
+                    font-size: clamp(0.75rem, 2vw, 0.875rem); /* Responsive table text */
                     background: #1f2937;
                     margin: 0;
                 }
@@ -1575,7 +1582,7 @@ What aspect of your model would you like to explore first?` }],
                 }
 
                 .markdown-th {
-                    padding: 0.6rem 0.75rem;
+                    padding: 0.875rem 1rem;
                     text-align: left;
                     font-weight: 600;
                     color: #60a5fa;
@@ -1584,10 +1591,10 @@ What aspect of your model would you like to explore first?` }],
                 }
 
                 .markdown-td {
-                    padding: 0.5rem 0.75rem;
+                    padding: 0.75rem 1rem;
                     border: 1px solid #374151;
                     color: #f9fafb;
-                    line-height: 1.5;
+                    line-height: 1.6;
                 }
 
                 .markdown-tr:hover {

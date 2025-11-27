@@ -1,0 +1,31 @@
+reviews:
+  enable: true
+  pull_request: true
+  commit_message: true
+  suggestions: true
+  auto_review_comments: true
+
+rules:
+  require_tests: false             # disable if you don’t have test suite yet
+  max_review_comments: 50          # reduce noise
+  summarize_changes: true
+
+summaries:
+  enable: true
+  summarize_pull_requests: true
+
+style:
+  enforce_consistency: true        # adapts to your coding style
+  respect_existing_formatting: true
+
+knowledge:
+  learn_from_repo: true            # improves accuracy over time
+  track_rejected_suggestions: true
+  track_accepted_suggestions: true
+
+security:
+  scan_for_secrets: true
+  scan_for_vulnerabilities: true
+
+ci:
+  block_merge_on_major_issues: false   # keep it flexible for now
