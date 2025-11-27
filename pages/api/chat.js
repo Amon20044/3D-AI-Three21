@@ -26,6 +26,9 @@ Mission: Provide **accurate, concise, manufacturing-aware intelligence**.
 - **Citations**: Cite standards (ISO, ASME, ASTM) where relevant.
 `;
 
+// Allow streaming responses up to 30 seconds
+export const maxDuration = 30;
+
 export async function POST(req) {
     try {
         const {
@@ -135,31 +138,28 @@ export async function POST(req) {
         }
 
         // -------------------------
-        // Build conversation
+        // Prepare Messages
         // -------------------------
-        let conversationMessages = [
-            { role: "system", content: contextPrompt },
-            ...messages
-        ];
+        // Attach screenshot to the last user message if present
+        if (validScreenshot && messages.length > 0) {
+            const lastMessage = messages[messages.length - 1];
+            if (lastMessage.role === 'user') {
+                // If message uses 'content' string, convert to parts
+                if (typeof lastMessage.content === 'string' && (!lastMessage.parts || lastMessage.parts.length === 0)) {
+                    lastMessage.parts = [{ type: 'text', text: lastMessage.content }];
+                    lastMessage.content = undefined; // Clear content to prioritize parts
+                }
 
-        // Append screenshot to last user message
-        if (validScreenshot && conversationMessages.length > 1) {
-            const i = conversationMessages.length - 1;
-            if (conversationMessages[i].role === "user") {
-                conversationMessages[i] = {
-                    role: "user",
-                    content: [
-                        {
-                            type: "text",
-                            text: conversationMessages[i].content
-                                || "Analyze screenshot."
-                        },
-                        {
-                            type: "image",
-                            image: validScreenshot
-                        }
-                    ]
-                };
+                // Ensure parts array exists
+                if (!lastMessage.parts) {
+                    lastMessage.parts = [];
+                }
+
+                // Append image part
+                lastMessage.parts.push({
+                    type: 'image',
+                    image: validScreenshot
+                });
             }
         }
 
@@ -175,7 +175,8 @@ export async function POST(req) {
         // -------------------------
         const result = await streamText({
             model: gemini("gemini-2.5-flash"),
-            messages: conversationMessages,
+            system: contextPrompt, // Pass system prompt separately
+            messages: convertToModelMessages(messages), // Use helper to convert UIMessage[]
             temperature: 0.4,
             maxRetries: 3,
         });

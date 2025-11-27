@@ -8,65 +8,101 @@ import chatStorageManager from './ChatStorageManager';
 import { Mic, MicOff, Send, Camera, X } from 'react-feather';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
+// Error Boundary for Markdown rendering
+class MarkdownErrorBoundary extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { hasError: false };
+    }
+
+    static getDerivedStateFromError(error) {
+        return { hasError: true };
+    }
+
+    componentDidCatch(error, errorInfo) {
+        console.error("Markdown rendering error:", error, errorInfo);
+    }
+
+    render() {
+        if (this.state.hasError) {
+            // Fallback to displaying raw text if markdown fails
+            return (
+                <div className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-gray-200 p-2 border border-red-500/30 rounded bg-red-500/10">
+                    {this.props.content}
+                </div>
+            );
+        }
+
+        return this.props.children;
+    }
+}
+
 // Memoized Markdown Component to prevent re-renders
 const MarkdownMessage = React.memo(({ content }) => {
-    console.log('📝 MarkdownMessage rendering:', { contentLength: content?.length, preview: content?.substring(0, 20) });
+    // console.log('📝 MarkdownMessage rendering:', { contentLength: content?.length, preview: content?.substring(0, 20) });
     return (
-        <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeRaw]}
-            components={{
-                h1: ({ children }) => <h1 className="markdown-h1">{children}</h1>,
-                h2: ({ children }) => <h2 className="markdown-h2">{children}</h2>,
-                h3: ({ children }) => <h3 className="markdown-h3">{children}</h3>,
-                h4: ({ children }) => <h4 className="markdown-h4">{children}</h4>,
-                h5: ({ children }) => <h5 className="markdown-h5">{children}</h5>,
-                h6: ({ children }) => <h6 className="markdown-h6">{children}</h6>,
-                p: ({ children }) => <p className="markdown-p">{children}</p>,
-                ul: ({ children }) => <ul className="markdown-ul">{children}</ul>,
-                ol: ({ children }) => <ol className="markdown-ol">{children}</ol>,
-                li: ({ children }) => <li className="markdown-li">{children}</li>,
-                strong: ({ children }) => <strong className="markdown-strong">{children}</strong>,
-                em: ({ children }) => <em className="markdown-em">{children}</em>,
-                code: ({ inline, children }) =>
-                    inline ? (
-                        <code className="markdown-code-inline">{children}</code>
-                    ) : (
-                        <code className="markdown-code-block">{children}</code>
+        <MarkdownErrorBoundary content={content}>
+            <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
+                components={{
+                    h1: ({ children }) => <h1 className="markdown-h1">{children}</h1>,
+                    h2: ({ children }) => <h2 className="markdown-h2">{children}</h2>,
+                    h3: ({ children }) => <h3 className="markdown-h3">{children}</h3>,
+                    h4: ({ children }) => <h4 className="markdown-h4">{children}</h4>,
+                    h5: ({ children }) => <h5 className="markdown-h5">{children}</h5>,
+                    h6: ({ children }) => <h6 className="markdown-h6">{children}</h6>,
+                    p: ({ children }) => <p className="markdown-p">{children}</p>,
+                    ul: ({ children }) => <ul className="markdown-ul">{children}</ul>,
+                    ol: ({ children }) => <ol className="markdown-ol">{children}</ol>,
+                    li: ({ children }) => <li className="markdown-li">{children}</li>,
+                    strong: ({ children }) => <strong className="markdown-strong">{children}</strong>,
+                    em: ({ children }) => <em className="markdown-em">{children}</em>,
+                    code: ({ inline, children }) =>
+                        inline ? (
+                            <code className="markdown-code-inline">{children}</code>
+                        ) : (
+                            <code className="markdown-code-block">{children}</code>
+                        ),
+                    pre: ({ children }) => <pre className="markdown-pre">{children}</pre>,
+                    blockquote: ({ children }) => <blockquote className="markdown-blockquote">{children}</blockquote>,
+                    a: ({ href, children }) => (
+                        <a href={href} className="markdown-link" target="_blank" rel="noopener noreferrer">
+                            {children}
+                        </a>
                     ),
-                pre: ({ children }) => <pre className="markdown-pre">{children}</pre>,
-                blockquote: ({ children }) => <blockquote className="markdown-blockquote">{children}</blockquote>,
-                a: ({ href, children }) => (
-                    <a href={href} className="markdown-link" target="_blank" rel="noopener noreferrer">
-                        {children}
-                    </a>
-                ),
-                table: ({ children }) => (
-                    <div className="table-wrapper">
-                        <table className="markdown-table">{children}</table>
-                    </div>
-                ),
-                thead: ({ children }) => <thead className="markdown-thead">{children}</thead>,
-                tbody: ({ children }) => <tbody className="markdown-tbody">{children}</tbody>,
-                tr: ({ children }) => <tr className="markdown-tr">{children}</tr>,
-                th: ({ children }) => <th className="markdown-th">{children}</th>,
-                td: ({ children }) => <td className="markdown-td">{children}</td>,
-                hr: () => <hr className="markdown-hr" />,
-                del: ({ children }) => <del className="markdown-del">{children}</del>,
-                input: ({ checked, ...props }) => (
-                    <input
-                        type="checkbox"
-                        checked={checked}
-                        disabled
-                        className="markdown-checkbox"
-                        {...props}
-                    />
-                ),
-            }}
-        >
-            {content}
-        </ReactMarkdown>
+                    table: ({ children }) => (
+                        <div className="table-wrapper">
+                            <table className="markdown-table">{children}</table>
+                        </div>
+                    ),
+                    thead: ({ children }) => <thead className="markdown-thead">{children}</thead>,
+                    tbody: ({ children }) => <tbody className="markdown-tbody">{children}</tbody>,
+                    tr: ({ children }) => <tr className="markdown-tr">{children}</tr>,
+                    th: ({ children }) => <th className="markdown-th">{children}</th>,
+                    td: ({ children }) => <td className="markdown-td">{children}</td>,
+                    hr: () => <hr className="markdown-hr" />,
+                    del: ({ children }) => <del className="markdown-del">{children}</del>,
+                    input: ({ checked, ...props }) => (
+                        <input
+                            type="checkbox"
+                            checked={checked}
+                            disabled
+                            className="markdown-checkbox"
+                            {...props}
+                        />
+                    ),
+                }}
+            >
+                {content}
+            </ReactMarkdown>
+        </MarkdownErrorBoundary>
     );
+}, (prevProps, nextProps) => {
+    // Custom comparison function for React.memo
+    // Only re-render if content length changes significantly or if it's the final update
+    // This helps with streaming performance but we must be careful not to block updates
+    return prevProps.content === nextProps.content;
 });
 
 export default function Three21Bot({
@@ -106,11 +142,11 @@ export default function Three21Bot({
                     .filter(msg => {
                         const text = msg.parts?.map(p => p.text || '').join('').trim() || msg.content?.trim() || '';
                         return text.length > 0; // Only include non-empty messages
-                    })
-                    .map(msg => ({
-                        role: msg.role,
-                        content: msg.parts?.map(p => p.text || '').join('') || msg.content || ''
-                    }));
+                    });
+                // .map(msg => ({
+                //     role: msg.role,
+                //     content: msg.parts?.map(p => p.text || '').join('') || msg.content || ''
+                // }));
 
                 console.log('📤 Sending', validMessages.length, 'valid messages');
 
@@ -282,6 +318,12 @@ ${sceneAnalysis ? `🔧 Scene analyzed: ${sceneAnalysis.meshCount} components` :
 - Ask for study links and references for research purposes
 - I can analyze manufacturing methods, materials, and design decisions
 - All chats are saved locally for this specific model
+- ~Strikethrough test~ (GFM check)
+
+| Feature | Status |
+| :--- | :--- |
+| Table Rendering | ✅ |
+| GFM Support | ✅ |
 
 What aspect of your model would you like to explore first?` }],
             createdAt: new Date()
@@ -1509,14 +1551,17 @@ What aspect of your model would you like to explore first?` }],
 
                 /* Table Styles with Horizontal Overflow */
                 .markdown-table {
-                    width: auto;
+                    width: 100%;
+                    min-width: 100%;
                     border-collapse: collapse;
                     font-size: 0.875rem;
                     background: #1f2937;
+                    margin: 0;
                 }
 
                 .markdown-thead {
                     background: #111827;
+                    border-bottom: 2px solid #3b82f6;
                 }
 
                 .markdown-th {
@@ -1524,14 +1569,14 @@ What aspect of your model would you like to explore first?` }],
                     text-align: left;
                     font-weight: 600;
                     color: #60a5fa;
-                    border-bottom: 2px solid #3b82f6;
-                    white-space: nowrap;
+                    border: 1px solid #374151;
+                    white-space: nowrap;    
                     font-size: 0.875rem;
                 }
 
                 .markdown-td {
                     padding: 0.75rem 1rem;
-                    border-bottom: 1px solid #374151;
+                    border: 1px solid #374151;
                     color: #f9fafb;
                     line-height: 1.6;
                 }
@@ -1541,7 +1586,7 @@ What aspect of your model would you like to explore first?` }],
                 }
 
                 .markdown-tbody .markdown-tr:last-child .markdown-td {
-                    border-bottom: none;
+                    border-bottom: 1px solid #374151;
                 }
             `}</style>
 
