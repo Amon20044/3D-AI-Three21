@@ -1120,7 +1120,7 @@ What aspect of your model would you like to explore first?` }],
                 }
 
                 .message-content {
-                    max-width: 85%;
+                    max-width: 100%;
                     padding: 1rem 1.25rem;
                     border-radius: 16px;
                     font-size: 0.8rem;
@@ -1350,10 +1350,10 @@ What aspect of your model would you like to explore first?` }],
             `}</style>
 
             <style jsx global>{`
-                /* Enhanced Markdown Styles - Dark Theme */
+                /* Enhanced Markdown Styles - Dark Theme - Responsive */
                 .markdown-h1 {
                     color: #f9fafb;
-                    font-size: 1.5rem;
+                    font-size: clamp(1.1rem, 4vw, 1.5rem);
                     margin: 1.25rem 0 0.75rem 0;
                     font-weight: 700;
                     line-height: 1.3;
@@ -1363,8 +1363,8 @@ What aspect of your model would you like to explore first?` }],
 
                 .markdown-h2 {
                     color: #f9fafb;
-                    font-size: 1.25rem;
-                    margin: 1rem 0 0.5rem 0;
+                    font-size: clamp(1.0rem, 3vw, 1.25rem);
+                    margin: 1rem 0 0.625rem 0;
                     font-weight: 600;
                     line-height: 1.3;
                     border-bottom: 1px solid #374151;
@@ -1373,7 +1373,7 @@ What aspect of your model would you like to explore first?` }],
 
                 .markdown-h3 {
                     color: #e5e7eb;
-                    font-size: 1.125rem;
+                    font-size: clamp(0.9rem, 2.5vw, 1.125rem);
                     margin: 0.875rem 0 0.5rem 0;
                     font-weight: 600;
                     line-height: 1.4;
@@ -1381,7 +1381,7 @@ What aspect of your model would you like to explore first?` }],
 
                 .markdown-h4 {
                     color: #d1d5db;
-                    font-size: 1rem;
+                    font-size: clamp(0.85rem, 2vw, 1rem);
                     margin: 0.75rem 0 0.375rem 0;
                     font-weight: 600;
                     line-height: 1.4;
@@ -1389,7 +1389,7 @@ What aspect of your model would you like to explore first?` }],
 
                 .markdown-h5 {
                     color: #d1d5db;
-                    font-size: 0.925rem;
+                    font-size: clamp(0.8rem, 2vw, 0.925rem);
                     margin: 0.625rem 0 0.25rem 0;
                     font-weight: 600;
                     line-height: 1.4;
@@ -1397,7 +1397,7 @@ What aspect of your model would you like to explore first?` }],
 
                 .markdown-h6 {
                     color: #9ca3af;
-                    font-size: 0.875rem;
+                    font-size: clamp(0.75rem, 2vw, 0.875rem);
                     margin: 0.5rem 0 0.25rem 0;
                     font-weight: 600;
                     line-height: 1.4;
@@ -1405,14 +1405,15 @@ What aspect of your model would you like to explore first?` }],
 
                 .markdown-p {
                     margin: 0.625rem 0;
-                    line-height: 1.7;
+                    line-height: 1.6;
                     color: #f9fafb;
+                    font-size: clamp(0.8rem, 2vw, 0.95rem);
                 }
 
                 .markdown-ul, .markdown-ol {
-                    margin: 0.75rem 0;
-                    padding-left: 1.5rem;
-                    line-height: 1.7;
+                    margin: 0.625rem 0;
+                    padding-left: 1.25rem;
+                    line-height: 1.6;
                 }
 
                 .markdown-ol {
@@ -1420,9 +1421,10 @@ What aspect of your model would you like to explore first?` }],
                 }
 
                 .markdown-li {
-                    margin: 0.375rem 0;
+                    margin: 0.25rem 0;
                     line-height: 1.6;
                     color: #f9fafb;
+                    font-size: clamp(0.8rem, 2vw, 0.95rem);
                 }
 
                 .markdown-li::marker {
@@ -1443,55 +1445,58 @@ What aspect of your model would you like to explore first?` }],
                 .markdown-code-inline {
                     background: #374151;
                     color: #fbbf24;
-                    padding: 0.15rem 0.4rem;
+                    padding: 0.1rem 0.3rem;
                     border-radius: 4px;
                     font-family: 'SF Mono', 'Monaco', 'Consolas', 'Courier New', monospace;
-                    font-size: 0.875em;
+                    font-size: 0.85em;
                     border: 1px solid #4b5563;
+                    white-space: pre-wrap; /* Allow wrapping on small screens */
+                    word-break: break-word;
                 }
 
                 .markdown-pre {
                     background: #1f2937;
                     border: 1px solid #374151;
                     border-radius: 8px;
-                    padding: 1rem;
-                    margin: 1rem 0;
+                    padding: 0.75rem;
+                    margin: 0.75rem 0;
                     overflow-x: auto;
                     -webkit-overflow-scrolling: touch;
                 }
 
                 .markdown-pre::-webkit-scrollbar {
-                    height: 8px;
+                    height: 6px;
                 }
 
                 .markdown-pre::-webkit-scrollbar-track {
                     background: #111827;
-                    border-radius: 4px;
+                    border-radius: 3px;
                 }
 
                 .markdown-pre::-webkit-scrollbar-thumb {
                     background: #4b5563;
-                    border-radius: 4px;
+                    border-radius: 3px;
                 }
 
                 .markdown-code-block {
                     background: transparent;
                     color: #e5e7eb;
                     font-family: 'SF Mono', 'Monaco', 'Consolas', 'Courier New', monospace;
-                    font-size: 0.875rem;
-                    line-height: 1.6;
+                    font-size: clamp(0.75rem, 2vw, 0.875rem);
+                    line-height: 1.5;
                     display: block;
                 }
 
                 .markdown-blockquote {
-                    border-left: 4px solid #3b82f6;
-                    padding-left: 1rem;
-                    margin: 1rem 0;
+                    border-left: 3px solid #3b82f6;
+                    padding-left: 0.75rem;
+                    margin: 0.75rem 0;
                     color: #d1d5db;
                     font-style: italic;
-                    background: #1f2937;
-                    padding: 0.75rem 1rem;
-                    border-radius: 0 8px 8px 0;
+                    background: rgba(31, 41, 55, 0.5);
+                    padding: 0.5rem 0.75rem;
+                    border-radius: 0 6px 6px 0;
+                    font-size: clamp(0.8rem, 2vw, 0.9rem);
                 }
 
                 .markdown-link {
@@ -1499,6 +1504,7 @@ What aspect of your model would you like to explore first?` }],
                     text-decoration: none;
                     border-bottom: 1px solid transparent;
                     transition: all 0.2s ease;
+                    word-break: break-word; /* Prevent long links from breaking layout */
                 }
 
                 .markdown-link:hover {
@@ -1508,7 +1514,7 @@ What aspect of your model would you like to explore first?` }],
 
                 .markdown-hr {
                     border: none;
-                    border-top: 2px solid #374151;
+                    border-top: 1px solid #374151;
                     margin: 1.5rem 0;
                 }
 
@@ -1520,6 +1526,9 @@ What aspect of your model would you like to explore first?` }],
                 .markdown-checkbox {
                     margin-right: 0.5rem;
                     accent-color: #3b82f6;
+                    width: 0.9rem;
+                    height: 0.9rem;
+                    vertical-align: middle;
                 }
 
                 /* Table Wrapper for Horizontal Scroll */
@@ -1529,20 +1538,21 @@ What aspect of your model would you like to explore first?` }],
                     margin: 1rem 0;
                     border-radius: 8px;
                     border: 1px solid #374151;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
                 }
 
                 .table-wrapper::-webkit-scrollbar {
-                    height: 8px;
+                    height: 6px;
                 }
 
                 .table-wrapper::-webkit-scrollbar-track {
                     background: #1f2937;
-                    border-radius: 0 0 8px 8px;
+                    border-radius: 0 0 4px 4px;
                 }
 
                 .table-wrapper::-webkit-scrollbar-thumb {
                     background: #4b5563;
-                    border-radius: 4px;
+                    border-radius: 3px;
                 }
 
                 .table-wrapper::-webkit-scrollbar-thumb:hover {
@@ -1554,7 +1564,7 @@ What aspect of your model would you like to explore first?` }],
                     width: 100%;
                     min-width: 100%;
                     border-collapse: collapse;
-                    font-size: 0.875rem;
+                    font-size: clamp(0.7rem, 2vw, 0.85rem); /* Responsive table text */
                     background: #1f2937;
                     margin: 0;
                 }
@@ -1565,20 +1575,19 @@ What aspect of your model would you like to explore first?` }],
                 }
 
                 .markdown-th {
-                    padding: 0.875rem 1rem;
+                    padding: 0.6rem 0.75rem;
                     text-align: left;
                     font-weight: 600;
                     color: #60a5fa;
                     border: 1px solid #374151;
                     white-space: nowrap;    
-                    font-size: 0.875rem;
                 }
 
                 .markdown-td {
-                    padding: 0.75rem 1rem;
+                    padding: 0.5rem 0.75rem;
                     border: 1px solid #374151;
                     color: #f9fafb;
-                    line-height: 1.6;
+                    line-height: 1.5;
                 }
 
                 .markdown-tr:hover {
@@ -1682,12 +1691,12 @@ What aspect of your model would you like to explore first?` }],
 
             /* Mobile-First Responsive Design */
             @media (max-width: 768px) {
-                    .three21 - bot - overlay {
+                    .three21-bot-overlay {
                 padding: 0.5rem;
                     }
 
             .three21-bot-container {
-                height: 80dvh;
+                height: 90dvh;
             border-radius: 1rem;
             max-width: none;
                     }
