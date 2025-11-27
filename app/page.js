@@ -178,7 +178,7 @@ export default function Home() {
           <BentoCard
             title="Intelligent Insights"
             icon={Cpu}
-            description="Learn while observing. AI-powered analysis provides deep insights into geometry, materials, and optimization."
+            description="Learn with Gemini 2.5 Flash and observe. AI-powered analysis provides deep insights into geometry, materials, and optimization."
             className="card-feature"
           />
 
