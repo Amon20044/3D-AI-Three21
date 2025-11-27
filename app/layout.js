@@ -49,6 +49,9 @@ export const metadata = {
       'max-snippet': -1,
     },
   },
+};
+
+export const viewport = {
   themeColor: "#0f0f13",
   colorScheme: "dark",
 };

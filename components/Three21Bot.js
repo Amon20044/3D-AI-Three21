@@ -168,13 +168,46 @@ export default function Three21Bot({
                 };
             }
         }),
-        onFinish: (message, { messages: allMessages }) => {
-            console.log('✅ Chat finished. Saving to storage...');
+        onFinish: (...args) => {
+            console.log('✅ Chat finished. All args:', args);
+
+            // useChat signature: onFinish(message, { messages })
+            // - message: the current/latest message
+            // - messages: all chat history
+            let currentMessage = null;
+            let allMessages = null;
+
+            if (args.length >= 2 && args[1]?.messages) {
+                // Standard signature: (message, options)
+                currentMessage = args[0];
+                allMessages = args[1].messages;
+                console.log('📨 Current message:', currentMessage);
+                console.log('📚 All messages:', allMessages.length, 'total');
+            } else if (args.length === 1 && args[0]?.messages) {
+                // Single object parameter
+                allMessages = args[0].messages;
+                console.log('📚 All messages:', allMessages.length, 'total');
+            } else {
+                // Fallback to current state
+                console.log('⚠️ Unexpected onFinish signature, using current messages state');
+                allMessages = messages;
+            }
+
+            if (!allMessages || allMessages.length === 0) {
+                console.log('❌ No messages to save');
+                return;
+            }
+
+            console.log('💾 Saving', allMessages.length, 'messages to storage...');
             saveChatToStorage(allMessages);
         },
-        onError: (error) => {
-            console.error('❌ Chat error:', error);
-        }
+        onError: error => {
+            console.error('An error occurred:', error);
+        },
+        onData: data => {
+            console.log('Received data part from server:', data);
+        },
+
     });
 
 
