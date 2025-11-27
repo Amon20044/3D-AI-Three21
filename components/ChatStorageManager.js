@@ -22,8 +22,8 @@ class ChatStorageManager {
             this.db = await openDB(this.dbName, this.dbVersion, {
                 upgrade(db) {
                     if (!db.objectStoreNames.contains('modelChats')) {
-                        const store = db.createObjectStore('modelChats', { 
-                            keyPath: 'modelId' 
+                        const store = db.createObjectStore('modelChats', {
+                            keyPath: 'modelId'
                         });
                         store.createIndex('filename', 'filename', { unique: false });
                         store.createIndex('lastAccess', 'lastAccess', { unique: false });
@@ -44,18 +44,18 @@ class ChatStorageManager {
      */
     generateModelId(modelInfo) {
         if (!modelInfo) return 'unknown-model';
-        
+
         // Use only the filename as the key - this ensures consistency
         // across page reloads and different sessions
         const filename = modelInfo.filename || modelInfo.name || 'unnamed-model';
-        
+
         // Clean filename to create a valid key (remove special chars, keep alphanumeric and common chars)
         const cleanFilename = filename
             .replace(/\.[^/.]+$/, '')  // Remove file extension
             .replace(/[^a-zA-Z0-9_\-\.]/g, '_')  // Replace special chars with underscore
             .toLowerCase()
             .substring(0, 100);  // Limit length
-        
+
         console.log(`🔑 Generated modelId: "${cleanFilename}" from filename: "${filename}"`);
         return cleanFilename || 'unnamed-model';
     }
@@ -67,7 +67,7 @@ class ChatStorageManager {
         try {
             await this.init();
             const modelId = this.generateModelId(modelInfo);
-            
+
             const chatData = {
                 modelId,
                 filename: modelInfo?.filename || 'Unknown Model',
@@ -99,22 +99,24 @@ class ChatStorageManager {
         try {
             await this.init();
             const modelId = this.generateModelId(modelInfo);
-            
+            console.log(`🔍 ChatStorageManager: Loading chat for modelId: "${modelId}"`);
+
             const chatData = await this.db.get(this.storeName, modelId);
-            
+            console.log('💾 ChatStorageManager: Raw DB data:', chatData);
+
             if (chatData) {
                 // Update last access time
                 chatData.lastAccess = Date.now();
                 await this.db.put(this.storeName, chatData);
-                
-                console.log(`ChatStorageManager: Loaded chat for model ${modelId}`);
+
+                console.log(`✅ ChatStorageManager: Successfully loaded ${chatData.messages?.length || 0} messages`);
                 return chatData.messages || [];
             }
-            
-            console.log(`ChatStorageManager: No existing chat found for model ${modelId}`);
+
+            console.log(`⚠️ ChatStorageManager: No entry found for modelId: "${modelId}"`);
             return [];
         } catch (error) {
-            console.error('ChatStorageManager: Failed to load chat:', error);
+            console.error('❌ ChatStorageManager: Failed to load chat:', error);
             return [];
         }
     }
@@ -126,7 +128,7 @@ class ChatStorageManager {
         try {
             await this.init();
             const modelId = this.generateModelId(modelInfo);
-            
+
             await this.db.delete(this.storeName, modelId);
             console.log(`ChatStorageManager: Cleared chat for model ${modelId}`);
             return true;
@@ -143,7 +145,7 @@ class ChatStorageManager {
         try {
             await this.init();
             const allChats = await this.db.getAll(this.storeName);
-            
+
             return allChats.map(chat => ({
                 modelId: chat.modelId,
                 filename: chat.filename,
@@ -164,17 +166,17 @@ class ChatStorageManager {
         try {
             await this.init();
             const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
-            
+
             const allChats = await this.db.getAll(this.storeName);
             let cleanedCount = 0;
-            
+
             for (const chat of allChats) {
                 if (chat.lastAccess < thirtyDaysAgo) {
                     await this.db.delete(this.storeName, chat.modelId);
                     cleanedCount++;
                 }
             }
-            
+
             console.log(`ChatStorageManager: Cleaned up ${cleanedCount} old chats`);
             return cleanedCount;
         } catch (error) {
@@ -190,20 +192,20 @@ class ChatStorageManager {
         try {
             await this.init();
             const allChats = await this.db.getAll(this.storeName);
-            
+
             let totalSize = 0;
             let totalMessages = 0;
-            
+
             for (const chat of allChats) {
                 totalMessages += chat.messages?.length || 0;
                 totalSize += JSON.stringify(chat).length;
             }
-            
+
             return {
                 totalChats: allChats.length,
                 totalMessages,
                 estimatedSizeKB: Math.round(totalSize / 1024),
-                oldestChat: allChats.reduce((oldest, chat) => 
+                oldestChat: allChats.reduce((oldest, chat) =>
                     (!oldest || chat.createdAt < oldest.createdAt) ? chat : oldest, null
                 )
             };

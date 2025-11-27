@@ -18,6 +18,7 @@ import {
 import BentoGrid from '../components/landing/BentoGrid';
 import BentoCard from '../components/landing/BentoCard';
 import BrandIcon from '../components/icons/BrandIcon';
+import Header from '../components/Header';
 
 // Dynamic import for the embedded demo viewer
 const EmbeddedDemoViewer = dynamic(() => import('../components/EmbeddedDemoViewer'), {
@@ -89,6 +90,9 @@ export default function Home() {
     <div className="page-container">
       {/* Vanta Fog Background */}
       <div id="vanta-bg" className="vanta-bg"></div>
+
+      {/* Header */}
+      <Header />
 
       {/* Content Overlay */}
       <div className="content-overlay">
@@ -480,6 +484,16 @@ export default function Home() {
           :global(.card-feature) {
             grid-column: span 1;
           }
+        }
+
+        .content-overlay {
+          position: relative;
+          z-index: 1;
+          min-height: 100vh;
+          padding: 5rem 1rem 2rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
         }
 
         /* Stats Card */
