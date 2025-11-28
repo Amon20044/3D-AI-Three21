@@ -726,6 +726,86 @@
           "overrides": {},
           "content": "Français"
         },
+        "2/declaration/body/1/argument/1/3/11": {
+          "type": "element",
+          "hash": "6fd76188b5a616964f2b9310ad17821b",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "日本語"
+        },
+        "2/declaration/body/1/argument/1/3/13": {
+          "type": "element",
+          "hash": "89708d4d23d3082f2859ca04d74b7293",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "한국어"
+        },
+        "2/declaration/body/1/argument/1/3/15": {
+          "type": "element",
+          "hash": "204e56bbaca3e50027810e786569e3f3",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Português"
+        },
+        "2/declaration/body/1/argument/1/3/17": {
+          "type": "element",
+          "hash": "0f8097292914d69c25f3dcdacca1b9e7",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Русский"
+        },
+        "2/declaration/body/1/argument/1/3/19": {
+          "type": "element",
+          "hash": "50f718bf150ae7e23e4d5e91def35efe",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "中文"
+        },
+        "2/declaration/body/1/argument/1/3/21": {
+          "type": "element",
+          "hash": "11e7d9b96ea01bfe2f7d401c5ebe9fe1",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "العربية"
+        },
+        "2/declaration/body/1/argument/1/3/23": {
+          "type": "element",
+          "hash": "a84d44041dd3e712bb199e0081c45aff",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Bahasa Indonesia"
+        },
+        "2/declaration/body/1/argument/1/3/25": {
+          "type": "element",
+          "hash": "4352a28870762adb208d03d7997dd203",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Italiano"
+        },
+        "2/declaration/body/1/argument/1/3/27": {
+          "type": "element",
+          "hash": "16292d476fb6d1530f43fb43488984e9",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "ไทย"
+        },
+        "2/declaration/body/1/argument/1/3/29": {
+          "type": "element",
+          "hash": "0d4d2a0b1b6a975ddd9d7585227b34cc",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Tiếng Việt"
+        },
         "2/declaration/body/1/argument/1/3/3": {
           "type": "element",
           "hash": "e1cd9645ddb854071941a3a23af9eaaf",
@@ -749,6 +829,14 @@
           "skip": false,
           "overrides": {},
           "content": "Français"
+        },
+        "2/declaration/body/1/argument/1/3/9": {
+          "type": "element",
+          "hash": "124eb095c206059bdd40135112649ba1",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "हिन्दी"
         },
         "2/declaration/body/1/argument/1/5/1/1": {
           "type": "element",
@@ -1591,6 +1679,62 @@
     "page.jsx": {
       "scopes": {
         "9/declaration/body/2/argument/11/11/1": {
+          "type": "element",
+          "hash": "16a7ba61492ee7fb35aa4dfb904c6279",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Built with love by Avni & Amon with Three.js, Next.js, WebGPU and WebGL"
+        },
+        "9/declaration/body/2/argument/11/11/1/1": {
+          "type": "element",
+          "hash": "4b39c4e3fca0b87e739131b2b180d972",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "2+"
+        },
+        "9/declaration/body/2/argument/11/11/1/3": {
+          "type": "element",
+          "hash": "d7d513bf9fd2ae98757cecdee7f38264",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Formats"
+        },
+        "9/declaration/body/2/argument/11/11/5/1": {
+          "type": "element",
+          "hash": "a98a0ce512942bdb11f923c28fbe5bb2",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Real-time"
+        },
+        "9/declaration/body/2/argument/11/11/5/3": {
+          "type": "element",
+          "hash": "6d66d350f6278d4070242bc6ff4207a7",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Rendering"
+        },
+        "9/declaration/body/2/argument/11/11/9/1": {
+          "type": "element",
+          "hash": "b764382ca31f0c1570802ead170ad235",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "AI"
+        },
+        "9/declaration/body/2/argument/11/11/9/3": {
+          "type": "element",
+          "hash": "409bac6215382c47e59f5039cc4cdcdd",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Analysis"
+        },
+        "9/declaration/body/2/argument/11/15/1": {
           "type": "element",
           "hash": "16a7ba61492ee7fb35aa4dfb904c6279",
           "context": "",
