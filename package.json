@@ -21,7 +21,7 @@
     "@vercel/analytics": "^1.5.0",
     "ai": "^5.0.76",
     "apify-client": "^2.20.0",
-    "bytez.js": "^1.1.16",
+    "bytez.js": "^3.0.0",
     "eslint-config-next": "^16.0.5",
     "framer-motion": "^12.23.24",
     "html2canvas": "^1.4.1",
