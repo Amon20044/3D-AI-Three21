@@ -19,7 +19,13 @@ export class HighlightManager {
      * Set highlight color and properties
      */
     setHighlightProperties(color, opacity = 0.7, intensity = 1.0, pulse = true, pulseSpeed = 2.0) {
-        this.highlightColor = new THREE.Color(color);
+        // Handle 8-digit hex codes (RRGGBBAA) by stripping alpha
+        let safeColor = color;
+        if (typeof color === 'string' && color.startsWith('#') && color.length === 9) {
+            safeColor = color.substring(0, 7);
+        }
+
+        this.highlightColor = new THREE.Color(safeColor);
         this.highlightOpacity = opacity;
         this.highlightIntensity = intensity;
         this.pulseAnimation = pulse;
@@ -31,7 +37,7 @@ export class HighlightManager {
      */
     createHighlightMaterial(originalMaterial) {
         const baseColor = this.highlightColor.clone();
-        
+
         // Create a material that overlays the original with neon effect
         const highlightMaterial = new THREE.MeshBasicMaterial({
             color: baseColor,
@@ -132,7 +138,7 @@ export class HighlightManager {
         const highlightInfo = this.highlightedObjects.get(object.uuid);
         if (highlightInfo) {
             console.log('Removing highlight from:', object.name);
-            
+
             // Remove highlight meshes from scene
             if (highlightInfo.highlightMesh && highlightInfo.highlightMesh.parent) {
                 highlightInfo.highlightMesh.parent.remove(highlightInfo.highlightMesh);
@@ -179,7 +185,7 @@ export class HighlightManager {
 
         this.highlightedObjects.forEach((highlightInfo, uuid) => {
             const { highlightMesh, wireframeMesh, originalObject, startTime } = highlightInfo;
-            
+
             // Update highlight transforms to match original object
             if (originalObject) {
                 highlightMesh.position.copy(originalObject.position);
@@ -196,18 +202,18 @@ export class HighlightManager {
             }
 
             if (!this.pulseAnimation) return;
-            
+
             // Calculate pulse effect
             const elapsed = currentTime - startTime;
             const pulseValue = (Math.sin(elapsed * this.pulseSpeed) + 1) * 0.5; // 0 to 1
-            
+
             // Apply pulse to opacity and emissive intensity
             const baseOpacity = this.highlightOpacity;
             const pulsedOpacity = baseOpacity * (0.5 + pulseValue * 0.5); // Pulse between 50% and 100% of base opacity
-            
+
             highlightMesh.material.opacity = pulsedOpacity;
             wireframeMesh.material.opacity = pulsedOpacity * 0.5;
-            
+
             // Pulse emissive intensity
             const emissiveIntensity = this.highlightIntensity * (0.7 + pulseValue * 0.3);
             highlightMesh.material.emissiveIntensity = emissiveIntensity;

@@ -309,6 +309,10 @@ export class ScreenshotManager {
             components: []
         };
 
+        if (!scene) {
+            return analysis;
+        }
+
         const materials = new Set();
         const box = new THREE.Box3();
 
