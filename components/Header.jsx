@@ -29,7 +29,6 @@ export default function Header() {
           <option value="ru">Русский</option>
           <option value="zh">中文</option>
           <option value="ar">العربية</option>
-          <option value="bn">বাংলা</option>
           <option value="id">Bahasa Indonesia</option>
           <option value="it">Italiano</option>
           <option value="th">ไทย</option>
@@ -40,8 +39,8 @@ export default function Header() {
       <style jsx>{`
 
       .language-select {
-  background: #2b2b2b;            /* dark grey */
-  color: #e5e5e5;                 /* light grey text */
+  background: #2b2b2b38;            /* dark grey */
+  color: #e5e5e5d4;                 /* light grey text */
   padding: 10px 14px;
   border-radius: 8px;
   border: 1px solid #3d3d3d;      /* subtle border */
@@ -91,7 +90,7 @@ export default function Header() {
           left: 0;
           right: 0;
           z-index: 1000;
-          background: rgba(10, 10, 10, 0.8);
+          background: rgba(10, 10, 10, 0.24);
           backdrop-filter: blur(10px);
           border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }

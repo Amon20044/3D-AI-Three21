@@ -194,26 +194,24 @@ export default function Home() {
             className="card-feature"
           />
 
-          {/* 8. Stats Card - Wide */}
-          <div className="card-feature">
-            <div className="stat-item">
-              <div className="stat-number text-white">2+</div>
-              <div className="stat-label">Formats</div>
-            </div>
-            <div className="stat-divider"></div>
-            <div className="stat-item">
-              <div className="stat-number text-blue">Real-time</div>
-              <div className="stat-label">Rendering</div>
-            </div>
-            <div className="stat-divider"></div>
-            <div className="stat-item">
-              <div className="stat-number text-green">AI</div>
-              <div className="stat-label">Analysis</div>
-            </div>
-          </div>
-
         </BentoGrid>
-
+        {/* 8. Stats Card - Wide */}
+        <div className="card-feature-bottom">
+          <div className="stat-item">
+            <div className="stat-number text-white">2+</div>
+            <div className="stat-label">Formats</div>
+          </div>
+          <div className="stat-divider"></div>
+          <div className="stat-item">
+            <div className="stat-number text-blue">Real-time</div>
+            <div className="stat-label">Rendering</div>
+          </div>
+          <div className="stat-divider"></div>
+          <div className="stat-item">
+            <div className="stat-number text-green">AI</div>
+            <div className="stat-label">Analysis</div>
+          </div>
+        </div>
         {/* Footer */}
         <footer className="footer">
           <p>Built with love by Avni & Amon with Three.js, Next.js, WebGPU and WebGL</p>
@@ -483,6 +481,16 @@ export default function Home() {
         @media (min-width: 768px) {
           :global(.card-feature) {
             grid-column: span 1;
+          }
+          :global(.card-feature-bottom) {
+            width: 100%;
+            padding: 2rem;
+            display: flex;
+            gap:4rem;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
           }
         }
 

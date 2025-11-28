@@ -30,13 +30,11 @@ Mission: Provide **accurate, concise, manufacturing-aware intelligence**.
 
 **Tool Usage - Google Scholar Search:**
 - When users ask for research, papers, patents, or technical references, use the searchGoogleScholar tool.
-- **IMPORTANT**: Formulate detailed, academic search queries optimized for Google Scholar.
-- Include relevant technical terms, synonyms, and domain-specific terminology.
+- **IMPORTANT**: Formulate concise keywords relevant to user input only, academic search queries optimized for Google Scholar.
 - Examples:
-  - User: "find papers on soft robotics" → Query: "soft robotics actuation mechanisms control systems compliance"
-  - User: "research on quadruped robots" → Query: "quadruped locomotion gait planning kinematics control algorithms"
-  - User: "3D printing materials" → Query: "additive manufacturing materials PLA ABS PETG mechanical properties"
-- Always expand the query with relevant academic keywords to maximize search quality.
+  - User: "find papers on soft robotics" → Query: "Robotics"
+  - User: "research on quadruped robots" → Query: "Quadruped Robotics"
+  - User: "3D printing materials" → Query: "Additive Manufacturing Materials"
 `;
 
 // Allow streaming responses up to 30 seconds
@@ -197,15 +195,11 @@ export async function POST(req) {
                 searchGoogleScholar: tool({
                     description: 'Search Google Scholar for academic research papers, citations, and patents. CRITICAL: Create a detailed, comprehensive search query optimized for academic search. Expand the user\'s request with relevant technical terms, synonyms, and domain keywords. Examples: "soft robotics" → "soft robotics actuation mechanisms control systems compliance"; "quadruped robot" → "quadruped locomotion gait planning kinematics control algorithms". Use scholarly terminology.',
                     parameters: z.object({
-                        query: z.string().min(3).describe('A detailed, scholarly search query for Google Scholar. REQUIRED: Formulate a comprehensive query with technical terms, synonyms, and academic keywords based on the user\'s request. Expand simple phrases into detailed academic queries.'),
+                        query: z.string().min(3).describe('Query Keywords concise minimum for finding research papers on google scholar'),
                         maxItems: z.number().optional().describe('Maximum number of results to return (default 10).'),
                         minYear: z.number().optional().describe('Minimum year for results (default 2022 for recent research).'),
-                        maxYear: z.number().optional().describe('Maximum year for results.'),
-                        country: z.string().optional().describe('Country code (e.g., "us", "uk").'),
-                        language: z.string().optional().describe('UI Language code (e.g., "en").'),
-                        sortBy: z.string().optional().describe('Sort by date (2) or relevance (default).'),
                     }),
-                    execute: async ({ query, maxItems, minYear, maxYear, country, language, sortBy }) => {
+                    execute: async ({ query, maxItems, minYear }) => {
                         console.log("🛠️ Tool Call: searchGoogleScholar", { query, minYear });
 
                         // Validate query
@@ -221,10 +215,6 @@ export async function POST(req) {
                                 query: query.trim(),
                                 maxItems,
                                 minYear,
-                                maxYear,
-                                country,
-                                language,
-                                sortBy
                             });
 
                             if (!results || results.length === 0) {
@@ -238,13 +228,7 @@ export async function POST(req) {
                             return {
                                 query: query,
                                 count: results.length,
-                                results: results.map(item => ({
-                                    title: item.title,
-                                    link: item.link,
-                                    snippet: item.snippet,
-                                    year: item.publication_info?.year,
-                                    citations: item.cited_by_count
-                                }))
+                                results: results
                             };
                         } catch (error) {
                             console.error("Tool Execution Error:", error);

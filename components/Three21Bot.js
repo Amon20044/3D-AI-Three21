@@ -106,7 +106,7 @@ export default function Three21Bot({
     const isLoadingHistoryRef = useRef(false); // Track if we're loading chat history
     const lastMessageCountRef = useRef(0); // Track message count to detect new messages
 
-    const { messages, sendMessage: sendMsg, setMessages, status } = useChat({
+    const { messages, sendMessage: sendMsg, setMessages, status, addToolOutput } = useChat({
         transport: new DefaultChatTransport({
             api: '/api/chat',
             prepareSendMessagesRequest: ({ messages }) => {
@@ -141,24 +141,11 @@ export default function Three21Bot({
                 };
             }
         }),
-        onFinish: (...args) => {
-            console.log('✅ Chat finished. All args:', ...args);
-
-            // useChat signature: onFinish(message, { messages })
-            // - message: the current/latest message
-            // - messages: all chat history
-            let currentMessage = null;
-            let allMessages = null;
-
-            // Standard signature: (message, options)
-            // currentMessage = args[0];
-            // currentMessageID = currentMessage.message.id;
-            // currentMessageMetadata = currentMessage.message.metadata;
-            // currentMessageRole = currentMessage.message.role;
-            // currentMessagePartType1 = currentMessage.message.parts[0];
-            // currentMessagePartType2 = currentMessage.message.parts[1];
-            console.log('💾 Saving', allMessages.length, 'messages to storage...');
-            saveChatToStorage(allMessages);
+        onFinish: async (result) => {
+            console.log('✅ Chat finished:', result);
+            await chatStorageManager.saveChatForModel(demoConfig || modelInfo, result.messages);
+            // NOTE: Do NOT save here! The messages state hasn't updated yet.
+            // Save happens in useEffect when messages actually updates.
         },
         onError: error => {
             console.error('An error occurred:', error);
@@ -166,26 +153,19 @@ export default function Three21Bot({
         onData: data => {
             console.log('Received data part from server:', data);
         },
-        onToolCall: ({ toolCall }) => {
-            console.log('🛠️ Tool Call Received on Client:', {
-                toolName: toolCall.toolName,
-                toolCallId: toolCall.toolCallId,
-                state: toolCall.state,
-                args: toolCall.args
-            });
-
-            // Log when results arrive
-            if (toolCall.state === 'result' && toolCall.result) {
-                if (toolCall.toolName === 'searchGoogleScholar') {
-                    const count = toolCall.result.count || toolCall.result.results?.length || 0;
-                    console.log(`✅ Google Scholar Results: ${count} papers found`);
-                    console.log('📊 Results Preview:', toolCall.result.results?.slice(0, 3));
-                }
-            }
-            // The tool executes on the server automatically
-            // We just log it here for visibility
-            // The result will stream back and update the UI
-        },
+        // async onToolCall({ toolCall }) {
+        //     if (toolCall.dynamic) {
+        //         return;
+        //     }
+        //     if (toolCall.toolName === 'searchGoogleScholar') {
+        //         // No await - avoids potential deadlocks
+        //         addToolOutput({
+        //             tool: 'searchGoogleScholar',
+        //             toolCallId: toolCall.toolCallId,
+        //             output: toolCall.args[0].message,
+        //         });
+        //     }
+        // },
     });
 
 
@@ -286,33 +266,27 @@ export default function Three21Bot({
 
     const saveChatToStorage = async (messagesToSave = null) => {
         try {
-            // Use provided messages or fallback to state
+            // Use provided messages or fallback to state  
             const targetMessages = messagesToSave || messages;
 
+            console.log('🔍 saveChatToStorage:', {
+                provided: messagesToSave?.length || 0,
+                fromState: messages.length,
+                target: targetMessages.length,
+                sampleMessage: targetMessages[targetMessages.length - 1]
+            });
+
             if (!targetMessages || targetMessages.length === 0) {
-                console.warn('⚠️ Attempted to save empty chat history');
+                console.warn('⚠️ No messages to save');
                 return;
             }
 
-            console.log(`💾 Saving ${targetMessages.length} messages to storage...`);
-
-            // Store messages with full parts array to preserve tool calls
+            // Filter out the greeting if desired (keep all for now)
             const chatModelInfo = demoConfig || modelInfo;
-            const storageMessages = targetMessages.map(msg => ({
-                id: msg.id,
-                role: msg.role,
-                parts: msg.parts || [{ type: 'text', text: msg.content || '' }], // Preserve all parts!
-                metadata: msg.metadata,
-                createdAt: msg.createdAt,
-                timestamp: msg.createdAt ? new Date(msg.createdAt).getTime() : Date.now(),
-                // Keep content for backward compatibility with old code
-                content: msg.parts?.map(p => p.type === 'text' ? p.text : '').join('') || msg.content || ''
-            }));
 
-            console.log('💾 Storage format preview:', storageMessages[storageMessages.length - 1]);
-
-            await chatStorageManager.saveChatForModel(chatModelInfo, storageMessages);
-            console.log('✅ Chat saved successfully');
+            console.log(`💾 Saving ${targetMessages.length} messages to IndexedDB...`);
+            await chatStorageManager.saveChatForModel(chatModelInfo, targetMessages);
+            console.log('✅ Chat saved successfully to IndexedDB');
         } catch (error) {
             console.error('❌ Failed to save chat:', error);
         }
@@ -422,9 +396,24 @@ What aspect of your model would you like to explore first?` }],
 
         // Only scroll if message count increased (new message added)
         if (messages.length > lastMessageCountRef.current) {
-            console.log('📩 New message detected - scrolling to bottom');
+            console.log(`📩 New message detected (${messages.length} total) - scrolling`);
             scrollToBottom();
             lastMessageCountRef.current = messages.length;
+
+            // Auto-save chat when messages update (debounced)
+            const saveTimer = setTimeout(() => {
+                // Skip saving just the greeting
+                const isGreetingOnly = messages.length === 1 && messages[0].id === 'greeting';
+
+                if (!isGreetingOnly && messages.length > 0) {
+                    console.log(`💾 [useEffect] Auto-saving ${messages.length} messages...`);
+                    saveChatToStorage();
+                } else {
+                    console.log(`⏭️ Skipping save (greeting only or empty)`);
+                }
+            }, 800); // Wait 800ms to ensure state is fully updated
+
+            return () => clearTimeout(saveTimer);
         }
     }, [messages]);
 
@@ -673,6 +662,18 @@ What aspect of your model would you like to explore first?` }],
         }
     };
 
+    const handleClose = () => {
+        // Save chat before closing
+        console.log(`🚪 handleClose called - current messages: ${messages.length}`);
+        if (messages.length > 1) { // Don't save just the greeting
+            console.log('💾 Saving chat before closing...');
+            saveChatToStorage();
+        } else {
+            console.log('⚠️ Not saving - only greeting or empty');
+        }
+        onClose();
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -709,7 +710,7 @@ What aspect of your model would you like to explore first?` }],
                         )}
                     </div>
                     <div className="header-controls">
-                        <button className="close-button" onClick={onClose}>
+                        <button className="close-button" onClick={handleClose}>
                             <X size={14} />
                         </button>
                     </div>
@@ -733,88 +734,87 @@ What aspect of your model would you like to explore first?` }],
                                                         />
                                                     ) : null;
 
-                                                case 'tool-call':
-                                                case 'tool-invocation': {
-                                                    // Handle searchGoogleScholar tool specifically
-                                                    if (part.toolName === 'searchGoogleScholar') {
-                                                        const callId = part.toolCallId;
-                                                        // Handle both old (args) and new (input) property names
-                                                        const args = part.args || part.input || {};
-                                                        // Handle both old (result) and new (output) property names
-                                                        const result = part.result || part.output;
+                                                // Handle typed tool parts (AI SDK 5.0)
+                                                case 'tool-searchGoogleScholar': {
+                                                    const callId = part.toolCallId;
 
-                                                        // Map states to UI (using correct AI SDK types)
-                                                        const isSearching = part.type === 'tool-input-start' || part.type === 'tool-input-delta' || part.type === 'tool-input-available';
-                                                        const isComplete = part.type === 'tool-output-available';
-                                                        const isError = part.type === 'tool-output-error' || part.type === 'tool-input-error';
-                                                        const isPreparing = part.type === 'tool-input-delta';
+                                                    return (
+                                                        <div key={`tool-${callId}`} className="tool-call-container">
+                                                            <div className="tool-call-header">
+                                                                <span className="tool-icon">🔍</span>
+                                                                <span className="tool-name">Google Scholar Search</span>
+                                                                {part.state === 'input-streaming' && (
+                                                                    <span className="tool-status preparing">Preparing query...</span>
+                                                                )}
+                                                                {part.state === 'input-available' && (
+                                                                    <span className="tool-status searching">Searching...</span>
+                                                                )}
+                                                                {part.state === 'output-available' && (
+                                                                    <span className="tool-status complete">✓ Complete</span>
+                                                                )}
+                                                                {part.state === 'output-error' && (
+                                                                    <span className="tool-status error">Error</span>
+                                                                )}
+                                                            </div>
 
-                                                        return (
-                                                            <div key={`tool-${callId}`} className="tool-call-container">
-                                                                <div className="tool-call-header">
-                                                                    <span className="tool-icon">🔍</span>
-                                                                    <span className="tool-name">Google Scholar Search</span>
-                                                                    {isSearching && (
-                                                                        <span className="tool-status searching">Searching...</span>
-                                                                    )}
-                                                                    {isComplete && (
-                                                                        <span className="tool-status complete">✓ Complete</span>
-                                                                    )}
-                                                                    {isPreparing && (
-                                                                        <span className="tool-status preparing">Preparing...</span>
-                                                                    )}
-                                                                    {isError && (
-                                                                        <span className="tool-status error">Error</span>
-                                                                    )}
-                                                                </div>
-
-                                                                <div className="tool-call-body">
-                                                                    {/* Query parameter */}
-                                                                    {args.query && (
-                                                                        <div className="tool-param">
-                                                                            <span className="param-label">Query:</span>
-                                                                            <span className="param-value">{args.query}</span>
-                                                                        </div>
-                                                                    )}
-
-                                                                    {/* Additional parameters */}
-                                                                    <div className="tool-params-row">
-                                                                        {args.minYear && (
-                                                                            <div className="tool-param-small">
-                                                                                <span className="param-label">Min Year:</span>
-                                                                                <span className="param-value">{args.minYear}</span>
+                                                            <div className="tool-call-body">
+                                                                {/* Show query parameters when available */}
+                                                                {(part.state === 'input-streaming' || part.state === 'input-available' || part.state === 'output-available') && part.input && (
+                                                                    <>
+                                                                        {/* Query parameter */}
+                                                                        {part.input.query && (
+                                                                            <div className="tool-param">
+                                                                                <span className="param-label">Query:</span>
+                                                                                <span className="param-value">{part.input.query}</span>
                                                                             </div>
                                                                         )}
-                                                                        {args.maxYear && (
-                                                                            <div className="tool-param-small">
-                                                                                <span className="param-label">Max Year:</span>
-                                                                                <span className="param-value">{args.maxYear}</span>
-                                                                            </div>
-                                                                        )}
-                                                                        {args.maxItems && (
-                                                                            <div className="tool-param-small">
-                                                                                <span className="param-label">Max Results:</span>
-                                                                                <span className="param-value">{args.maxItems}</span>
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
 
-                                                                    {/* Results - only show when complete */}
-                                                                    {isComplete && result && (
-                                                                        <div className="tool-result">
-                                                                            {result.error ? (
-                                                                                <div className="result-error">
-                                                                                    <span>⚠️ {result.message || result.error}</span>
+                                                                        {/* Additional parameters */}
+                                                                        <div className="tool-params-row">
+                                                                            {part.input.minYear && (
+                                                                                <div className="tool-param-small">
+                                                                                    <span className="param-label">Min Year:</span>
+                                                                                    <span className="param-value">{part.input.minYear}</span>
                                                                                 </div>
-                                                                            ) : (result.results && result.results.length > 0) || (Array.isArray(result) && result.length > 0) ? (
+                                                                            )}
+                                                                            {part.input.maxYear && (
+                                                                                <div className="tool-param-small">
+                                                                                    <span className="param-label">Max Year:</span>
+                                                                                    <span className="param-value">{part.input.maxYear}</span>
+                                                                                </div>
+                                                                            )}
+                                                                            {part.input.maxItems && (
+                                                                                <div className="tool-param-small">
+                                                                                    <span className="param-label">Max Results:</span>
+                                                                                    <span className="param-value">{part.input.maxItems}</span>
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                    </>
+                                                                )}
+
+                                                                {/* Results - show when output is available */}
+                                                                {part.state === 'output-available' && part.output && (
+                                                                    <div className="tool-result">
+                                                                        {/* Handle error in output */}
+                                                                        {part.output.error ? (
+                                                                            <div className="result-error">
+                                                                                <span>⚠️ {part.output.message || part.output.error}</span>
+                                                                            </div>
+                                                                        ) : (
+                                                                            /* Handle array of results */
+                                                                            Array.isArray(part.output.results) && part.output.results.length > 0 ? (
                                                                                 <div className="result-success">
                                                                                     <div className="result-count">
-                                                                                        📚 Found <strong>{result.count || result.results?.length || result.length}</strong> papers
+                                                                                        📚 Found <strong>{part.output.results.length}</strong> papers
                                                                                     </div>
                                                                                     <div className="scholar-results-list">
-                                                                                        {(result.results || result).map((paper, idx) => (
-                                                                                            <div key={idx} className="scholar-paper-card">
-                                                                                                <div className="paper-number">{idx + 1}</div>
+                                                                                        <div>
+                                                                                            Results fetched: {part.output.count}
+                                                                                        </div>
+                                                                                        {part.output.results.map((paper, idx) => (
+                                                                                            <div key={paper.aidCode || idx} className="scholar-paper-card">
+                                                                                                <div className="paper-number">{paper.resultIndex || idx + 1}</div>
                                                                                                 <div className="paper-content">
                                                                                                     <a
                                                                                                         href={paper.link}
@@ -824,15 +824,60 @@ What aspect of your model would you like to explore first?` }],
                                                                                                     >
                                                                                                         {paper.title}
                                                                                                     </a>
-                                                                                                    {paper.snippet && (
-                                                                                                        <p className="paper-snippet">{paper.snippet}</p>
+
+                                                                                                    {/* Authors */}
+                                                                                                    {paper.authors && (
+                                                                                                        <p className="paper-authors">
+                                                                                                            <strong>Authors:</strong> {paper.authors}
+                                                                                                        </p>
                                                                                                     )}
+
+                                                                                                    {/* Full attribution */}
+                                                                                                    {paper.fullAttribution && (
+                                                                                                        <p className="paper-attribution">{paper.fullAttribution}</p>
+                                                                                                    )}
+
+                                                                                                    {/* Search match snippet */}
+                                                                                                    {paper.searchMatch && (
+                                                                                                        <p className="paper-snippet">{paper.searchMatch}</p>
+                                                                                                    )}
+
                                                                                                     <div className="paper-meta">
                                                                                                         {paper.year && (
                                                                                                             <span className="paper-year">📅 {paper.year}</span>
                                                                                                         )}
-                                                                                                        {paper.citations !== undefined && (
-                                                                                                            <span className="paper-citations">📖 {paper.citations} citations</span>
+                                                                                                        {paper.citations !== undefined && paper.citations !== 0 && (
+                                                                                                            <span className="paper-citations">
+                                                                                                                📖 {paper.citations} citation{paper.citations !== 1 ? 's' : ''}
+                                                                                                            </span>
+                                                                                                        )}
+                                                                                                        {paper.publication && (
+                                                                                                            <span className="paper-publication">📰 {paper.publication}</span>
+                                                                                                        )}
+                                                                                                        {paper.source && (
+                                                                                                            <span className="paper-source">🌐 {paper.source}</span>
+                                                                                                        )}
+                                                                                                        {paper.type && (
+                                                                                                            <span className="paper-type">📄 {paper.type}</span>
+                                                                                                        )}
+                                                                                                    </div>
+
+                                                                                                    {/* Additional links */}
+                                                                                                    <div className="paper-links">
+                                                                                                        {paper.citationsLink && paper.citationsLink !== 'N/A' && (
+                                                                                                            <a href={paper.citationsLink} target="_blank" rel="noopener noreferrer">
+                                                                                                                View Citations
+                                                                                                            </a>
+                                                                                                        )}
+                                                                                                        {paper.relatedArticlesLink && paper.relatedArticlesLink !== 'N/A' && (
+                                                                                                            <a href={paper.relatedArticlesLink} target="_blank" rel="noopener noreferrer">
+                                                                                                                Related Articles
+                                                                                                            </a>
+                                                                                                        )}
+                                                                                                        {paper.versionsLink && paper.versionsLink !== 'N/A' && paper.versions > 0 && (
+                                                                                                            <a href={paper.versionsLink} target="_blank" rel="noopener noreferrer">
+                                                                                                                {paper.versions} Version{paper.versions !== 1 ? 's' : ''}
+                                                                                                            </a>
                                                                                                         )}
                                                                                                     </div>
                                                                                                 </div>
@@ -842,30 +887,61 @@ What aspect of your model would you like to explore first?` }],
                                                                                 </div>
                                                                             ) : (
                                                                                 <div className="result-empty">No results found</div>
-                                                                            )}
-                                                                        </div>
-                                                                    )}
+                                                                            )
+                                                                        )}
+                                                                    </div>
+                                                                )}
 
-                                                                    {/* Error State */}
-                                                                    {isError && (
-                                                                        <div className="tool-result">
-                                                                            <div className="result-error">
-                                                                                <span>⚠️ {part.errorText || "An error occurred"}</span>
-                                                                            </div>
+                                                                {/* Error State */}
+                                                                {part.state === 'output-error' && (
+                                                                    <div className="tool-result">
+                                                                        <div className="result-error">
+                                                                            <span>⚠️ {part.errorText || "An error occurred during search"}</span>
                                                                         </div>
-                                                                    )}
-                                                                </div>
+                                                                    </div>
+                                                                )}
                                                             </div>
-                                                        );
-                                                    }
+                                                        </div>
+                                                    );
+                                                }
 
+                                                // Legacy support for old tool-call/tool-invocation types
+                                                case 'tool-call':
+                                                case 'tool-invocation': {
                                                     // Generic tool call fallback
                                                     return (
                                                         <div key={`tool-${part.toolCallId}`} className="tool-call-container">
                                                             <div className="tool-call-header">
                                                                 <span className="tool-icon">🛠️</span>
+                                                                <span className="tool-name">{part.toolName || 'Tool'}</span>
+                                                                {part.state && (
+                                                                    <span className="tool-status">{part.state}</span>
+                                                                )}
+                                                            </div>
+                                                            <div className="tool-call-body">
+                                                                <pre>{JSON.stringify(part, null, 2)}</pre>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                }
+
+                                                case 'dynamic-tool': {
+                                                    // Handle dynamic tools
+                                                    return (
+                                                        <div key={`tool-${part.toolCallId}`} className="tool-call-container">
+                                                            <div className="tool-call-header">
+                                                                <span className="tool-icon">🔧</span>
                                                                 <span className="tool-name">{part.toolName}</span>
                                                             </div>
+                                                            {part.state === 'input-streaming' && (
+                                                                <pre>{JSON.stringify(part.input, null, 2)}</pre>
+                                                            )}
+                                                            {part.state === 'output-available' && (
+                                                                <pre>{JSON.stringify(part.output, null, 2)}</pre>
+                                                            )}
+                                                            {part.state === 'output-error' && (
+                                                                <div>Error: {part.errorText}</div>
+                                                            )}
                                                         </div>
                                                     );
                                                 }
@@ -1806,6 +1882,7 @@ What aspect of your model would you like to explore first?` }],
                     flex-direction: column;
                     gap: 0.5rem;
                     min-width: 0;
+                    overflow: hidden;
                 }
 
                 .paper-title-link {
@@ -1816,11 +1893,30 @@ What aspect of your model would you like to explore first?` }],
                     text-decoration: none;
                     transition: color 0.2s ease;
                     word-wrap: break-word;
+                    overflow-wrap: break-word;
+                    hyphens: auto;
                 }
 
                 .paper-title-link:hover {
                     color: #93c5fd;
                     text-decoration: underline;
+                }
+
+                .paper-authors {
+                    color: #cbd5e1;
+                    font-size: 0.75rem;
+                    line-height: 1.4;
+                    margin: 0;
+                    word-wrap: break-word;
+                }
+
+                .paper-attribution {
+                    color: #94a3b8;
+                    font-size: 0.7rem;
+                    line-height: 1.4;
+                    margin: 0;
+                    font-style: italic;
+                    word-wrap: break-word;
                 }
 
                 .paper-snippet {
@@ -1829,25 +1925,108 @@ What aspect of your model would you like to explore first?` }],
                     line-height: 1.5;
                     margin: 0;
                     display: -webkit-box;
-                    -webkit-line-clamp: 2;
+                    -webkit-line-clamp: 3;
                     -webkit-box-orient: vertical;
                     overflow: hidden;
+                    word-wrap: break-word;
                 }
 
                 .paper-meta {
                     display: flex;
                     flex-wrap: wrap;
-                    gap: 0.75rem;
+                    gap: 0.5rem;
                     font-size: 0.7rem;
+                    align-items: center;
                 }
 
                 .paper-year,
-                .paper-citations {
+                .paper-citations,
+                .paper-publication,
+                .paper-source,
+                .paper-type {
                     padding: 0.25rem 0.5rem;
                     background: rgba(51, 65, 85, 0.5);
                     border-radius: 4px;
                     color: #cbd5e1;
                     font-weight: 500;
+                    white-space: nowrap;
+                }
+
+                .paper-links {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 0.5rem;
+                    margin-top: 0.25rem;
+                }
+
+                .paper-links a {
+                    font-size: 0.7rem;
+                    color: #60a5fa;
+                    text-decoration: none;
+                    padding: 0.25rem 0.5rem;
+                    background: rgba(59, 130, 246, 0.1);
+                    border-radius: 4px;
+                    border: 1px solid rgba(59, 130, 246, 0.3);
+                    transition: all 0.2s ease;
+                    white-space: nowrap;
+                }
+
+                .paper-links a:hover {
+                    background: rgba(59, 130, 246, 0.2);
+                    border-color: rgba(59, 130, 246, 0.5);
+                    color: #93c5fd;
+                }
+
+                /* Responsive Styles for Mobile */
+                @media (max-width: 768px) {
+                    .scholar-paper-card {
+                        flex-direction: column;
+                        gap: 0.5rem;
+                        padding: 0.75rem;
+                    }
+
+                    .paper-number {
+                        width: 24px;
+                        height: 24px;
+                        font-size: 0.7rem;
+                    }
+
+                    .paper-title-link {
+                        font-size: 0.8rem;
+                    }
+
+                    .paper-authors,
+                    .paper-attribution,
+                    .paper-snippet {
+                        font-size: 0.7rem;
+                    }
+
+                    .paper-meta {
+                        gap: 0.375rem;
+                        font-size: 0.65rem;
+                    }
+
+                    .paper-year,
+                    .paper-citations,
+                    .paper-publication,
+                    .paper-source,
+                    .paper-type {
+                        padding: 0.2rem 0.4rem;
+                        font-size: 0.65rem;
+                    }
+
+                    .paper-links a {
+                        font-size: 0.65rem;
+                        padding: 0.2rem 0.4rem;
+                    }
+
+                    .tool-call-container {
+                        padding: 0.75rem;
+                    }
+
+                    .scholar-results-list {
+                        max-height: 400px;
+                    }
                 }
 
                 .more-results {
@@ -2123,17 +2302,14 @@ What aspect of your model would you like to explore first?` }],
 
                 /* Table Styles with Horizontal Overflow */
                 .markdown-table {
-                    width: 100%;
-                    min-width: 100%;
+                    width: auto;
                     border-collapse: collapse;
-                    font-size: clamp(0.75rem, 2vw, 0.875rem); /* Responsive table text */
+                    font-size: 0.875rem;
                     background: #1f2937;
-                    margin: 0;
                 }
 
                 .markdown-thead {
                     background: #111827;
-                    border-bottom: 2px solid #3b82f6;
                 }
 
                 .markdown-th {
@@ -2141,13 +2317,14 @@ What aspect of your model would you like to explore first?` }],
                     text-align: left;
                     font-weight: 600;
                     color: #60a5fa;
-                    border: 1px solid #374151;
-                    white-space: nowrap;    
+                    border-bottom: 2px solid #3b82f6;
+                    white-space: nowrap;
+                    font-size: 0.875rem;
                 }
 
                 .markdown-td {
                     padding: 0.75rem 1rem;
-                    border: 1px solid #374151;
+                    border-bottom: 1px solid #374151;
                     color: #f9fafb;
                     line-height: 1.6;
                 }
@@ -2157,7 +2334,7 @@ What aspect of your model would you like to explore first?` }],
                 }
 
                 .markdown-tbody .markdown-tr:last-child .markdown-td {
-                    border-bottom: 1px solid #374151;
+                    border-bottom: none;
                 }
             `}</style>
 

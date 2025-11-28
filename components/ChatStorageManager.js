@@ -68,26 +68,121 @@ class ChatStorageManager {
             await this.init();
             const modelId = this.generateModelId(modelInfo);
 
+            console.log(`\ud83d\udcbe ChatStorageManager.saveChatForModel:`, {
+                modelId,
+                inputMessagesCount: messages.length,
+                inputSample: messages.length > 0 ? {
+                    id: messages[messages.length - 1]?.id,
+                    role: messages[messages.length - 1]?.role,
+                    partsCount: messages[messages.length - 1]?.parts?.length
+                } : null
+            });
+
             const chatData = {
                 modelId,
                 filename: modelInfo?.filename || 'Unknown Model',
                 modelInfo,
-                messages: messages.map(msg => ({
-                    role: msg.role,
-                    content: msg.content,
-                    originalQuery: msg.originalQuery || msg.content,
-                    timestamp: msg.timestamp || Date.now(),
-                    hasScreenshot: msg.hasScreenshot || false
-                })),
+                messages: messages.map(msg => {
+                    // Preserve the complete message structure from AI SDK 5.0
+                    const savedMsg = {
+                        id: msg.id,
+                        role: msg.role,
+                        timestamp: msg.timestamp || (msg.createdAt ? new Date(msg.createdAt).getTime() : Date.now()),
+                        createdAt: msg.createdAt,
+                        metadata: msg.metadata
+                    };
+
+                    // Preserve parts array (contains text, tool calls, tool results, etc.)
+                    if (msg.parts && Array.isArray(msg.parts)) {
+                        savedMsg.parts = msg.parts.map(part => {
+                            // Create a clean copy of the part
+                            const cleanPart = { ...part };
+
+                            // For tool parts, ensure we preserve all states
+                            if (part.type && part.type.startsWith('tool-')) {
+                                return {
+                                    type: part.type,
+                                    toolCallId: part.toolCallId,
+                                    toolName: part.toolName,
+                                    state: part.state,
+                                    input: part.input,
+                                    output: part.output,
+                                    errorText: part.errorText
+                                };
+                            }
+
+                            // For legacy tool-call/tool-invocation types
+                            if (part.type === 'tool-call' || part.type === 'tool-invocation') {
+                                return {
+                                    type: part.type,
+                                    toolCallId: part.toolCallId,
+                                    toolName: part.toolName,
+                                    state: part.state,
+                                    args: part.args,
+                                    input: part.input,
+                                    result: part.result,
+                                    output: part.output,
+                                    errorText: part.errorText
+                                };
+                            }
+
+                            // For dynamic tools
+                            if (part.type === 'dynamic-tool') {
+                                return {
+                                    type: part.type,
+                                    toolCallId: part.toolCallId,
+                                    toolName: part.toolName,
+                                    state: part.state,
+                                    input: part.input,
+                                    output: part.output,
+                                    errorText: part.errorText
+                                };
+                            }
+
+                            // For text parts, just return as is
+                            if (part.type === 'text') {
+                                return {
+                                    type: 'text',
+                                    text: part.text
+                                };
+                            }
+
+                            // For step-start parts
+                            if (part.type === 'step-start') {
+                                return {
+                                    type: 'step-start',
+                                    step: part.step
+                                };
+                            }
+
+                            // Default: return the part as is
+                            return cleanPart;
+                        });
+                    }
+
+                    // Also keep content for backward compatibility
+                    savedMsg.content = msg.content || msg.parts?.map(p => p.type === 'text' ? p.text : '').join('') || '';
+
+                    // Legacy fields for backward compatibility
+                    savedMsg.originalQuery = msg.originalQuery || savedMsg.content;
+                    savedMsg.hasScreenshot = msg.hasScreenshot || false;
+
+                    return savedMsg;
+                }),
                 lastAccess: Date.now(),
                 createdAt: Date.now()
             };
 
             await this.db.put(this.storeName, chatData);
-            console.log(`ChatStorageManager: Saved chat for model ${modelId}`);
+
+            console.log(`\u2705 ChatStorageManager: Successfully saved ${chatData.messages.length} messages for model "${modelId}"`, {
+                messageCount: chatData.messages.length,
+                lastMessageParts: chatData.messages[chatData.messages.length - 1]?.parts?.length || 0
+            });
+
             return modelId;
         } catch (error) {
-            console.error('ChatStorageManager: Failed to save chat:', error);
+            console.error('\u274c ChatStorageManager: Failed to save chat:', error);
             throw error;
         }
     }
