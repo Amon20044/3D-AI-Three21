@@ -70,6 +70,7 @@ export function DisassemblyUI({
     totalLayers,
     isAnimating,
     onOpenAI,
+    isOpenAI,
     separationDistance = 0.2,
     onSeparationDistanceChange,
     highlightColor = '#00ffff',
@@ -572,7 +573,7 @@ export function DisassemblyUI({
 
 
             {/* Show/Hide Instructions Button */}
-            {!showInstructions && (
+            {!isOpenAI && !showInstructions && (
                 <button
                     onClick={() => setShowInstructions(true)}
                     className="show-controls-btn"
@@ -665,7 +666,7 @@ export function DisassemblyUI({
                     border: 1px solid var(--border);
                     border-radius: 12px;
                     padding: 1rem;
-                    z-index: 9999;
+                    z-index: 99;
                     box-shadow: 
                         0 16px 32px rgba(0, 0, 0, 0.15),
                         0 0 0 1px rgba(255, 255, 255, 0.08);
@@ -956,7 +957,9 @@ export function DisassemblyUI({
                     cursor: pointer;
                     font-size: 0.8rem;
                     font-weight: 600;
-                    z-index: 9999;
+                    font-weight: 600;
+                    z-index: 50;
+                    transition: all 0.3s ease;
                     transition: all 0.3s ease;
                     box-shadow: 0 4px 16px var(--primary-shadow);
                     display: flex;
@@ -1010,7 +1013,10 @@ export function DisassemblyUI({
                     border: 1px solid var(--border);
                     border-radius: 12px;
                     padding: 1rem;
-                    z-index: 9999;
+                    border-radius: 12px;
+                    padding: 1rem;
+                    z-index: 50;
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
                     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
                     backdrop-filter: blur(20px);
                     min-width: 220px;
@@ -1388,7 +1394,10 @@ export function DisassemblyUI({
                     cursor: pointer;
                     font-size: 0.75rem;
                     font-weight: 600;
-                    z-index: 9999;
+                    font-size: 0.75rem;
+                    font-weight: 600;
+                    z-index: 50;
+                    transition: all 0.3s ease;
                     transition: all 0.3s ease;
                     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
                     display: flex;

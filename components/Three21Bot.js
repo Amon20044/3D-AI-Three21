@@ -5,6 +5,7 @@ import rehypeRaw from 'rehype-raw';
 import html2canvas from 'html2canvas';
 import AIPromptGenerator from './AIPromptGenerator';
 import chatStorageManager from './ChatStorageManager';
+import { Toast } from './Toast';
 import { Mic, MicOff, Send, Camera, X } from 'react-feather';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls } from 'ai';
@@ -86,7 +87,9 @@ export default function Three21Bot({
     selectedPart,
     onScreenshot,
     sceneAnalysis = null,
-    autoScreenshot = null
+    autoScreenshot = null,
+    className,
+    style
 }) {
     // const [messages, setMessages] = useState([]);
     const [inputMessage, setInputMessage] = useState('');
@@ -98,6 +101,13 @@ export default function Three21Bot({
     const [speechTranscript, setSpeechTranscript] = useState('');
     const [speechError, setSpeechError] = useState('');
     const [currentSelectedPart, setCurrentSelectedPart] = useState(selectedPart); // Track selected part locally
+
+    // Background processing state
+    const [isProcessingInBackground, setIsProcessingInBackground] = useState(false);
+    const [unreadResponseCount, setUnreadResponseCount] = useState(0);
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+
     const messagesEndRef = useRef(null);
     const chatContainerRef = useRef(null);
     const recognitionRef = useRef(null);
@@ -105,6 +115,7 @@ export default function Three21Bot({
     const inputMessageRef = useRef(''); // Keep track of current input message
     const isLoadingHistoryRef = useRef(false); // Track if we're loading chat history
     const lastMessageCountRef = useRef(0); // Track message count to detect new messages
+    const wasOpenDuringStreamingRef = useRef(true); // Track if chatbot was open during streaming
 
     const { messages, sendMessage: sendMsg, setMessages, status, addToolOutput } = useChat({
         transport: new DefaultChatTransport({
@@ -144,8 +155,20 @@ export default function Three21Bot({
         onFinish: async (result) => {
             console.log('✅ Chat finished:', result);
             await chatStorageManager.saveChatForModel(demoConfig || modelInfo, result.messages);
-            // NOTE: Do NOT save here! The messages state hasn't updated yet.
-            // Save happens in useEffect when messages actually updates.
+
+            // Check if chatbot was closed during streaming (background mode)
+            if (!wasOpenDuringStreamingRef.current) {
+                console.log('🔔 Response completed in background - showing toast');
+                setIsProcessingInBackground(false);
+                setUnreadResponseCount(prev => prev + 1);
+                setToastMessage('🤖 Your AI Assistant is ready with answers!');
+                setShowToast(true);
+
+                // Update browser tab title with notification
+                if (typeof document !== 'undefined') {
+                    document.title = '(1) Three21 - AI Response Ready';
+                }
+            }
         },
         onError: error => {
             console.error('An error occurred:', error);
@@ -171,10 +194,33 @@ export default function Three21Bot({
 
     const isLoading = status === 'streaming' || status === 'submitted';
 
-    // Update ref whenever inputMessage changes
     useEffect(() => {
         inputMessageRef.current = inputMessage;
     }, [inputMessage]);
+
+    // Track chatbot visibility and clear unread count when opened
+    useEffect(() => {
+        wasOpenDuringStreamingRef.current = isOpen;
+
+        // When chatbot opens, clear unread count and reset title
+        if (isOpen && unreadResponseCount > 0) {
+            console.log('👁️ Chatbot opened - clearing unread count');
+            setUnreadResponseCount(0);
+            setIsProcessingInBackground(false);
+            if (typeof document !== 'undefined') {
+                document.title = 'Three21 - 3D Model Analysis';
+            }
+        }
+    }, [isOpen, unreadResponseCount]);
+
+    // Detect when user closes chatbot during streaming (background mode)
+    useEffect(() => {
+        if (!isOpen && isLoading) {
+            console.log('🔄 Chatbot closed during streaming - enabling background mode');
+            setIsProcessingInBackground(true);
+            wasOpenDuringStreamingRef.current = false;
+        }
+    }, [isOpen, isLoading]);
 
     // Load existing chat when component opens
     useEffect(() => {
@@ -674,381 +720,314 @@ What aspect of your model would you like to explore first?` }],
         onClose();
     };
 
-    if (!isOpen) return null;
-
     return (
-        <div className="three21-bot-overlay">
-            <div className="three21-bot-container" ref={chatContainerRef}>
-                {/* Header */}
-                <div className="three21-bot-header">
-                    <div className="header-content">
-                        <div className="bot-avatar">
-                            <span>🤖</span>
-                        </div>
-                        <div className="bot-info">
-                            <h3>Three21Bot</h3>
-                            <span className="bot-status">
-                                {(() => {
-                                    // Check if there's an active tool call
-                                    const lastMessage = messages[messages.length - 1];
-                                    const hasActiveToolCall = lastMessage?.role === 'assistant' &&
-                                        lastMessage.parts?.some(p => p.type === 'tool-call' && p.state === 'call');
+        <>
+            {/* Toast notification - always rendered to show background updates */}
+            <Toast
+                message={toastMessage}
+                isVisible={showToast}
+                onHide={() => setShowToast(false)}
+                duration={5000}
+            />
 
-                                    if (isLoading) {
-                                        return hasActiveToolCall
-                                            ? '🔍 APIFY Actor Scraping Google Scholar...'
-                                            : '🔄 Analyzing...';
-                                    }
-                                    return '✅ Ready';
-                                })()}
-                            </span>
-                        </div>
-                        {currentSelectedPart && (
-                            <div className="selected-part">
-                                <span>🎯 Focus: {typeof currentSelectedPart === 'object' ? currentSelectedPart.name : currentSelectedPart}</span>
-                            </div>
-                        )}
-                    </div>
-                    <div className="header-controls">
-                        <button className="close-button" onClick={handleClose}>
-                            <X size={14} />
-                        </button>
-                    </div>
-                </div>
-
-                {/* Messages */}
-                <div className="three21-bot-messages">
-                    {messages.map((message) => (
-                        <div key={message.id} className={`message ${message.role}`}>
-                            <div className="message-content">
-                                {message.role === 'assistant' ? (
-                                    <>
-                                        {message.parts?.map((part, index) => {
-                                            // Handle different part types
-                                            switch (part.type) {
-                                                case 'text':
-                                                    return part.text ? (
-                                                        <MarkdownMessage
-                                                            key={`text-${index}`}
-                                                            content={part.text}
-                                                        />
-                                                    ) : null;
-
-                                                // Handle typed tool parts (AI SDK 5.0)
-                                                case 'tool-searchGoogleScholar': {
-                                                    const callId = part.toolCallId;
-
-                                                    return (
-                                                        <div key={`tool-${callId}`} className="tool-call-container">
-                                                            <div className="tool-call-header">
-                                                                <span className="tool-icon">🔍</span>
-                                                                <span className="tool-name">Google Scholar Search</span>
-                                                                {part.state === 'input-streaming' && (
-                                                                    <span className="tool-status preparing">Preparing query...</span>
-                                                                )}
-                                                                {part.state === 'input-available' && (
-                                                                    <span className="tool-status searching">Searching...</span>
-                                                                )}
-                                                                {part.state === 'output-available' && (
-                                                                    <span className="tool-status complete">✓ Complete</span>
-                                                                )}
-                                                                {part.state === 'output-error' && (
-                                                                    <span className="tool-status error">Error</span>
-                                                                )}
-                                                            </div>
-
-                                                            <div className="tool-call-body">
-                                                                {/* Show query parameters when available */}
-                                                                {(part.state === 'input-streaming' || part.state === 'input-available' || part.state === 'output-available') && part.input && (
-                                                                    <>
-                                                                        {/* Query parameter */}
-                                                                        {part.input.query && (
-                                                                            <div className="tool-param">
-                                                                                <span className="param-label">Query:</span>
-                                                                                <span className="param-value">{part.input.query}</span>
-                                                                            </div>
-                                                                        )}
-
-                                                                        {/* Additional parameters */}
-                                                                        <div className="tool-params-row">
-                                                                            {part.input.minYear && (
-                                                                                <div className="tool-param-small">
-                                                                                    <span className="param-label">Min Year:</span>
-                                                                                    <span className="param-value">{part.input.minYear}</span>
-                                                                                </div>
-                                                                            )}
-                                                                            {part.input.maxYear && (
-                                                                                <div className="tool-param-small">
-                                                                                    <span className="param-label">Max Year:</span>
-                                                                                    <span className="param-value">{part.input.maxYear}</span>
-                                                                                </div>
-                                                                            )}
-                                                                            {part.input.maxItems && (
-                                                                                <div className="tool-param-small">
-                                                                                    <span className="param-label">Max Results:</span>
-                                                                                    <span className="param-value">{part.input.maxItems}</span>
-                                                                                </div>
-                                                                            )}
-                                                                        </div>
-                                                                    </>
-                                                                )}
-
-                                                                {/* Results - show when output is available */}
-                                                                {part.state === 'output-available' && part.output && (
-                                                                    <div className="tool-result">
-                                                                        {/* Handle error in output */}
-                                                                        {part.output.error ? (
-                                                                            <div className="result-error">
-                                                                                <span>⚠️ {part.output.message || part.output.error}</span>
-                                                                            </div>
-                                                                        ) : (
-                                                                            /* Handle array of results */
-                                                                            Array.isArray(part.output.results) && part.output.results.length > 0 ? (
-                                                                                <div className="result-success">
-                                                                                    <div className="result-count">
-                                                                                        📚 Found <strong>{part.output.results.length}</strong> papers
-                                                                                    </div>
-                                                                                    <div className="scholar-results-list">
-                                                                                        <div>
-                                                                                            Results fetched: {part.output.count}
-                                                                                        </div>
-                                                                                        {part.output.results.map((paper, idx) => (
-                                                                                            <div key={paper.aidCode || idx} className="scholar-paper-card">
-                                                                                                <div className="paper-number">{paper.resultIndex || idx + 1}</div>
-                                                                                                <div className="paper-content">
-                                                                                                    <a
-                                                                                                        href={paper.link}
-                                                                                                        target="_blank"
-                                                                                                        rel="noopener noreferrer"
-                                                                                                        className="paper-title-link"
-                                                                                                    >
-                                                                                                        {paper.title}
-                                                                                                    </a>
-
-                                                                                                    {/* Authors */}
-                                                                                                    {paper.authors && (
-                                                                                                        <p className="paper-authors">
-                                                                                                            <strong>Authors:</strong> {paper.authors}
-                                                                                                        </p>
-                                                                                                    )}
-
-                                                                                                    {/* Full attribution */}
-                                                                                                    {paper.fullAttribution && (
-                                                                                                        <p className="paper-attribution">{paper.fullAttribution}</p>
-                                                                                                    )}
-
-                                                                                                    {/* Search match snippet */}
-                                                                                                    {paper.searchMatch && (
-                                                                                                        <p className="paper-snippet">{paper.searchMatch}</p>
-                                                                                                    )}
-
-                                                                                                    <div className="paper-meta">
-                                                                                                        {paper.year && (
-                                                                                                            <span className="paper-year">📅 {paper.year}</span>
-                                                                                                        )}
-                                                                                                        {paper.citations !== undefined && paper.citations !== 0 && (
-                                                                                                            <span className="paper-citations">
-                                                                                                                📖 {paper.citations} citation{paper.citations !== 1 ? 's' : ''}
-                                                                                                            </span>
-                                                                                                        )}
-                                                                                                        {paper.publication && (
-                                                                                                            <span className="paper-publication">📰 {paper.publication}</span>
-                                                                                                        )}
-                                                                                                        {paper.source && (
-                                                                                                            <span className="paper-source">🌐 {paper.source}</span>
-                                                                                                        )}
-                                                                                                        {paper.type && (
-                                                                                                            <span className="paper-type">📄 {paper.type}</span>
-                                                                                                        )}
-                                                                                                    </div>
-
-                                                                                                    {/* Additional links */}
-                                                                                                    <div className="paper-links">
-                                                                                                        {paper.citationsLink && paper.citationsLink !== 'N/A' && (
-                                                                                                            <a href={paper.citationsLink} target="_blank" rel="noopener noreferrer">
-                                                                                                                View Citations
-                                                                                                            </a>
-                                                                                                        )}
-                                                                                                        {paper.relatedArticlesLink && paper.relatedArticlesLink !== 'N/A' && (
-                                                                                                            <a href={paper.relatedArticlesLink} target="_blank" rel="noopener noreferrer">
-                                                                                                                Related Articles
-                                                                                                            </a>
-                                                                                                        )}
-                                                                                                        {paper.versionsLink && paper.versionsLink !== 'N/A' && paper.versions > 0 && (
-                                                                                                            <a href={paper.versionsLink} target="_blank" rel="noopener noreferrer">
-                                                                                                                {paper.versions} Version{paper.versions !== 1 ? 's' : ''}
-                                                                                                            </a>
-                                                                                                        )}
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        ))}
-                                                                                    </div>
-                                                                                </div>
-                                                                            ) : (
-                                                                                <div className="result-empty">No results found</div>
-                                                                            )
-                                                                        )}
-                                                                    </div>
-                                                                )}
-
-                                                                {/* Error State */}
-                                                                {part.state === 'output-error' && (
-                                                                    <div className="tool-result">
-                                                                        <div className="result-error">
-                                                                            <span>⚠️ {part.errorText || "An error occurred during search"}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                }
-
-                                                // Legacy support for old tool-call/tool-invocation types
-                                                case 'tool-call':
-                                                case 'tool-invocation': {
-                                                    // Generic tool call fallback
-                                                    return (
-                                                        <div key={`tool-${part.toolCallId}`} className="tool-call-container">
-                                                            <div className="tool-call-header">
-                                                                <span className="tool-icon">🛠️</span>
-                                                                <span className="tool-name">{part.toolName || 'Tool'}</span>
-                                                                {part.state && (
-                                                                    <span className="tool-status">{part.state}</span>
-                                                                )}
-                                                            </div>
-                                                            <div className="tool-call-body">
-                                                                <pre>{JSON.stringify(part, null, 2)}</pre>
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                }
-
-                                                case 'dynamic-tool': {
-                                                    // Handle dynamic tools
-                                                    return (
-                                                        <div key={`tool-${part.toolCallId}`} className="tool-call-container">
-                                                            <div className="tool-call-header">
-                                                                <span className="tool-icon">🔧</span>
-                                                                <span className="tool-name">{part.toolName}</span>
-                                                            </div>
-                                                            {part.state === 'input-streaming' && (
-                                                                <pre>{JSON.stringify(part.input, null, 2)}</pre>
-                                                            )}
-                                                            {part.state === 'output-available' && (
-                                                                <pre>{JSON.stringify(part.output, null, 2)}</pre>
-                                                            )}
-                                                            {part.state === 'output-error' && (
-                                                                <div>Error: {part.errorText}</div>
-                                                            )}
-                                                        </div>
-                                                    );
-                                                }
-
-                                                default:
-                                                    return null;
-                                            }
-                                        })}
-                                    </>
-                                ) : (
-                                    <>
-                                        {message.parts?.map((part, index) => {
-                                            if (part.type === 'text') {
-                                                return <MarkdownMessage key={index} content={part.text} />;
-                                            }
-
-                                            // Handle tool invocations
-                                            if (part.type === 'tool-invocation') {
-                                                const toolInvocation = part.toolInvocation;
-                                                const callId = toolInvocation.toolCallId;
-
-                                                if (toolInvocation.toolName === 'searchGoogleScholar') {
-                                                    // Render tool state
-                                                    if (toolInvocation.state === 'call') {
-                                                        return (
-                                                            <div key={callId} className="tool-status searching">
-                                                                <span className="animate-pulse">🔍 Searching Google Scholar...</span>
-                                                            </div>
-                                                        );
-                                                    }
-                                                    if (toolInvocation.state === 'result') {
-                                                        const result = toolInvocation.result;
-                                                        // If result has error property
-                                                        if (result?.error) {
-                                                            return (
-                                                                <div key={callId} className="tool-status error">
-                                                                    ❌ {result.error}
-                                                                </div>
-                                                            );
-                                                        }
-                                                        return (
-                                                            <div key={callId} className="tool-status success">
-                                                                ✅ Found {result?.count || 0} papers
-                                                            </div>
-                                                        );
-                                                    }
-                                                }
-                                            }
-
-                                            return null;
-                                        })}
-                                        {!message.parts && <MarkdownMessage content={message.content} />}
-                                    </>
+            {/* Chatbot overlay - always mounted, visibility controlled by styles */}
+            <div className={`three21-bot-overlay ${className || ''}`} style={{
+                zIndex: isOpen ? 999 : -999,
+                opacity: isOpen ? 1 : 0,
+                pointerEvents: isOpen ? 'auto' : 'none',
+                visibility: isOpen ? 'visible' : 'hidden',
+                ...style
+            }}>
+                <div className="three21-bot-container" ref={chatContainerRef}>
+                    {/* Header */}
+                    <div className="three21-bot-header">
+                        <div className="header-content">
+                            <div className="bot-avatar">
+                                <span>🤖</span>
+                                {/* Unread badge indicator */}
+                                {unreadResponseCount > 0 && (
+                                    <span className="unread-badge">{unreadResponseCount}</span>
                                 )}
                             </div>
-                            <div className="message-timestamp">
-                                {new Date(message.createdAt || message.timestamp || Date.now()).toLocaleTimeString()}
-                            </div>
-                        </div>
-                    ))}
-                    {status === 'submitted' && (
-                        <div className="message assistant">
-                            <div className="message-content">
-                                <div className="typing-indicator">
-                                    <span></span>
-                                    <span></span>
-                                    <span></span>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                    <div ref={messagesEndRef} />
-                </div>
+                            <div className="bot-info">
+                                <h3>Three21Bot</h3>
+                                <span className="bot-status">
+                                    {(() => {
+                                        // Check if there's an active tool call
+                                        const lastMessage = messages[messages.length - 1];
+                                        const hasActiveToolCall = lastMessage?.role === 'assistant' &&
+                                            lastMessage.parts?.some(p => p.type === 'tool-call' && p.state === 'call');
 
-                {/* Input Area */}
-                <div className="three21-bot-input">
-                    <div className="quick-actions">
-                        <button
-                            className="quick-action-btn screenshot-btn"
-                            onClick={handleScreenshotAnalysis}
-                            disabled={isLoading}
-                        >
-                            <Camera size={14} />
-                            <span>Analyze Current View</span>
-                        </button>
-                        {screenshot && (
-                            <span className="screenshot-ready">
-                                <Camera size={12} />
-                                Screenshot ready
-                            </span>
-                        )}
+                                        if (isLoading) {
+                                            return hasActiveToolCall
+                                                ? '🔍 APIFY Actor Scraping Google Scholar...'
+                                                : '🔄 Analyzing...';
+                                        }
+                                        return '✅ Ready';
+                                    })()}
+                                </span>
+                            </div>
+                            {currentSelectedPart && (
+                                <div className="selected-part">
+                                    <span>🎯 Focus: {typeof currentSelectedPart === 'object' ? currentSelectedPart.name : currentSelectedPart}</span>
+                                </div>
+                            )}
+                        </div>
+                        <div className="header-controls">
+                            <button className="close-button" onClick={handleClose}>
+                                <X size={14} />
+                            </button>
+                        </div>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="input-form">
-                        <div className="input-container">
-                            <input
-                                type="text"
-                                value={inputMessage}
-                                onChange={(e) => setInputMessage(e.target.value)}
-                                placeholder="Ask about the model, parts, or engineering insights..."
-                                disabled={isLoading}
-                                className="message-input"
-                            />
+                    {/* Messages */}
+                    <div className="three21-bot-messages">
+                        {messages.map((message) => (
+                            <div key={message.id} className={`message ${message.role}`}>
+                                <div className="message-content">
+                                    {message.role === 'assistant' ? (
+                                        <>
+                                            {message.parts?.map((part, index) => {
+                                                // Handle different part types
+                                                switch (part.type) {
+                                                    case 'text':
+                                                        return part.text ? (
+                                                            <MarkdownMessage
+                                                                key={`text-${index}`}
+                                                                content={part.text}
+                                                            />
+                                                        ) : null;
 
-                            {/* Speech recognition feedback */}
-                            {isListening && (
-                                <div className="speech-feedback">
+                                                    // Handle typed tool parts (AI SDK 5.0)
+                                                    case 'tool-searchGoogleScholar': {
+                                                        const callId = part.toolCallId;
+
+                                                        return (
+                                                            <div key={`tool-${callId}`} className="tool-call-container">
+                                                                <div className="tool-call-header">
+                                                                    <span className="tool-icon">🔍</span>
+                                                                    <span className="tool-name">Google Scholar Search</span>
+                                                                    {part.state === 'input-streaming' && (
+                                                                        <span className="tool-status preparing">Preparing query...</span>
+                                                                    )}
+                                                                    {part.state === 'input-available' && (
+                                                                        <span className="tool-status searching">Searching...</span>
+                                                                    )}
+                                                                    {part.state === 'output-available' && (
+                                                                        <span className="tool-status complete">✓ Complete</span>
+                                                                    )}
+                                                                    {part.state === 'output-error' && (
+                                                                        <span className="tool-status error">Error</span>
+                                                                    )}
+                                                                </div>
+
+                                                                <div className="tool-call-body">
+                                                                    {/* Show query parameters when available */}
+                                                                    {(part.state === 'input-streaming' || part.state === 'input-available' || part.state === 'output-available') && part.input && (
+                                                                        <>
+                                                                            {/* Query parameter */}
+                                                                            {part.input.query && (
+                                                                                <div className="tool-param">
+                                                                                    <span className="param-label">Query:</span>
+                                                                                    <span className="param-value">{part.input.query}</span>
+                                                                                </div>
+                                                                            )}
+
+                                                                            {/* Additional parameters */}
+                                                                            <div className="tool-params-row">
+                                                                                {part.input.minYear && (
+                                                                                    <div className="tool-param-small">
+                                                                                        <span className="param-label">Min Year:</span>
+                                                                                        <span className="param-value">{part.input.minYear}</span>
+                                                                                    </div>
+                                                                                )}
+                                                                                {part.input.maxYear && (
+                                                                                    <div className="tool-param-small">
+                                                                                        <span className="param-label">Max Year:</span>
+                                                                                        <span className="param-value">{part.input.maxYear}</span>
+                                                                                    </div>
+                                                                                )}
+                                                                                {part.input.maxItems && (
+                                                                                    <div className="tool-param-small">
+                                                                                        <span className="param-label">Max Results:</span>
+                                                                                        <span className="param-value">{part.input.maxItems}</span>
+                                                                                    </div>
+                                                                                )}
+                                                                            </div>
+                                                                        </>
+                                                                    )}
+
+                                                                    {/* Results - show when output is available */}
+                                                                    {part.state === 'output-available' && part.output && (
+                                                                        <div className="tool-result">
+                                                                            {/* Handle error in output */}
+                                                                            {part.output.error ? (
+                                                                                <div className="result-error">
+                                                                                    <span>⚠️ {part.output.message || part.output.error}</span>
+                                                                                </div>
+                                                                            ) : (
+                                                                                /* Handle array of results */
+                                                                                Array.isArray(part.output.results) && part.output.results.length > 0 ? (
+                                                                                    <div className="result-success">
+                                                                                        <div className="result-count">
+                                                                                            📚 Found <strong>{part.output.results.length}</strong> papers
+                                                                                        </div>
+                                                                                        <div className="scholar-results-list">
+                                                                                            <div>
+                                                                                                Results fetched: {part.output.count}
+                                                                                            </div>
+                                                                                            {part.output.results.map((paper, idx) => (
+                                                                                                <div key={paper.aidCode || idx} className="scholar-paper-card">
+                                                                                                    <div className="paper-number">{paper.resultIndex || idx + 1}</div>
+                                                                                                    <div className="paper-content">
+                                                                                                        <a
+                                                                                                            href={paper.link}
+                                                                                                            target="_blank"
+                                                                                                            rel="noopener noreferrer"
+                                                                                                            className="paper-title-link"
+                                                                                                        >
+                                                                                                            {paper.title}
+                                                                                                        </a>
+
+                                                                                                        {/* Authors */}
+                                                                                                        {paper.authors && (
+                                                                                                            <p className="paper-authors">
+                                                                                                                <strong>Authors:</strong> {paper.authors}
+                                                                                                            </p>
+                                                                                                        )}
+
+                                                                                                        {/* Full attribution */}
+                                                                                                        {paper.fullAttribution && (
+                                                                                                            <p className="paper-attribution">{paper.fullAttribution}</p>
+                                                                                                        )}
+
+                                                                                                        {/* Search match snippet */}
+                                                                                                        {paper.searchMatch && (
+                                                                                                            <p className="paper-snippet">{paper.searchMatch}</p>
+                                                                                                        )}
+
+                                                                                                        <div className="paper-meta">
+                                                                                                            {paper.year && (
+                                                                                                                <span className="paper-year">📅 {paper.year}</span>
+                                                                                                            )}
+                                                                                                            {paper.citations !== undefined && paper.citations !== 0 && (
+                                                                                                                <span className="paper-citations">
+                                                                                                                    📖 {paper.citations} citation{paper.citations !== 1 ? 's' : ''}
+                                                                                                                </span>
+                                                                                                            )}
+                                                                                                            {paper.publication && (
+                                                                                                                <span className="paper-publication">📰 {paper.publication}</span>
+                                                                                                            )}
+                                                                                                            {paper.source && (
+                                                                                                                <span className="paper-source">🌐 {paper.source}</span>
+                                                                                                            )}
+                                                                                                            {paper.type && (
+                                                                                                                <span className="paper-type">📄 {paper.type}</span>
+                                                                                                            )}
+                                                                                                        </div>
+
+                                                                                                        {/* Additional links */}
+                                                                                                        <div className="paper-links">
+                                                                                                            {paper.citationsLink && paper.citationsLink !== 'N/A' && (
+                                                                                                                <a href={paper.citationsLink} target="_blank" rel="noopener noreferrer">
+                                                                                                                    View Citations
+                                                                                                                </a>
+                                                                                                            )}
+                                                                                                            {paper.relatedArticlesLink && paper.relatedArticlesLink !== 'N/A' && (
+                                                                                                                <a href={paper.relatedArticlesLink} target="_blank" rel="noopener noreferrer">
+                                                                                                                    Related Articles
+                                                                                                                </a>
+                                                                                                            )}
+                                                                                                            {paper.versionsLink && paper.versionsLink !== 'N/A' && paper.versions > 0 && (
+                                                                                                                <a href={paper.versionsLink} target="_blank" rel="noopener noreferrer">
+                                                                                                                    {paper.versions} Version{paper.versions !== 1 ? 's' : ''}
+                                                                                                                </a>
+                                                                                                            )}
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            ))}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                ) : (
+                                                                                    <div className="result-empty">No results found</div>
+                                                                                )
+                                                                            )}
+                                                                        </div>
+                                                                    )}
+
+                                                                    {/* Error State */}
+                                                                    {part.state === 'output-error' && (
+                                                                        <div className="tool-result">
+                                                                            <div className="result-error">
+                                                                                <span>⚠️ {part.errorText || "An error occurred during search"}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    }
+
+                                                    default:
+                                                        return null;
+                                                }
+                                            })}
+                                        </>
+                                    ) : (
+                                        <div className="user-message-text">
+                                            {message.content || (message.parts?.map(p => p.text).join('')) || ''}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                        {status === 'submitted' && (
+                            <div className="message assistant">
+                                <div className="message-content">
+                                    <div className="typing-indicator">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        <div ref={messagesEndRef} />
+                    </div>
+
+                    {/* Input Area */}
+                    <div className="three21-bot-input">
+                        <div className="quick-actions">
+                            <button
+                                className="quick-action-btn screenshot-btn"
+                                onClick={handleScreenshotAnalysis}
+                                disabled={isLoading}
+                            >
+                                <Camera size={14} />
+                                <span>Analyze Current View</span>
+                            </button>
+                            {screenshot && (
+                                <span className="screenshot-ready">
+                                    <Camera size={12} />
+                                    Screenshot ready
+                                </span>
+                            )}
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="input-form">
+                            <div className="input-container">
+                                <input
+                                    type="text"
+                                    value={inputMessage}
+                                    onChange={(e) => setInputMessage(e.target.value)}
+                                    placeholder="Ask about the model, parts, or engineering insights..."
+                                    disabled={isLoading}
+                                    className="message-input"
+                                />
+
+                                {/* Speech recognition feedback */}
+                                {isListening && (
                                     <div className="speech-status">
                                         <span className="speech-indicator">
                                             <Mic size={14} />
@@ -1058,1007 +1037,1012 @@ What aspect of your model would you like to explore first?` }],
                                             <span className="auto-send-indicator">Auto-send in 4s</span>
                                         )}
                                     </div>
-                                    {speechTranscript && (
-                                        <div className="interim-text">{speechTranscript}</div>
-                                    )}
-                                </div>
-                            )}
+                                )}
+                                {speechTranscript && (
+                                    <div className="interim-text">{speechTranscript}</div>
+                                )}
+                                {speechError && (
+                                    <div className="speech-error">
+                                        ⚠️ {speechError}
+                                    </div>
+                                )}
+                            </div>
 
-                            {speechError && (
-                                <div className="speech-error">
-                                    ⚠️ {speechError}
-                                </div>
-                            )}
-                        </div>
+                            <button
+                                type="button"
+                                className={`mic-button ${isListening ? 'listening' : ''}`}
+                                onClick={toggleListening}
+                                disabled={isLoading}
+                                title={isListening ? 'Stop listening' : 'Start voice input'}
+                            >
+                                {isListening ? <MicOff size={18} /> : <Mic size={18} />}
+                            </button>
 
-                        <button
-                            type="button"
-                            className={`mic-button ${isListening ? 'listening' : ''}`}
-                            onClick={toggleListening}
-                            disabled={isLoading}
-                            title={isListening ? 'Stop listening' : 'Start voice input'}
-                        >
-                            {isListening ? <MicOff size={18} /> : <Mic size={18} />}
-                        </button>
-
-                        <button
-                            type="submit"
-                            disabled={isLoading || !inputMessage.trim()}
-                            className="send-button"
-                        >
-                            {isLoading ? (
-                                <div className="loader-spin"></div>
-                            ) : (
-                                <Send size={18} />
-                            )}
-                        </button>
-                    </form>
+                            <button
+                                type="submit"
+                                disabled={isLoading || !inputMessage.trim()}
+                                className="send-button"
+                            >
+                                {isLoading ? (
+                                    <div className="loader-spin"></div>
+                                ) : (
+                                    <Send size={18} />
+                                )}
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
 
             <style jsx>{`
                 .three21-bot-overlay {
-                    position: fixed;
+                    position: absolute;
                     top: 0;
                     left: 0;
                     right: 0;
                     bottom: 0;
                     background: rgba(0, 0, 0, 0.8);
                     backdrop-filter: blur(8px);
-                    z-index: 10000;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 1rem;
-                    animation: overlayFadeIn 0.4s ease;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            animation: overlayFadeIn 0.4s ease;
                 }
 
-                @keyframes overlayFadeIn {
-                    from {
-                        opacity: 0;
+            @keyframes overlayFadeIn {
+                from {
+                opacity: 0;
                     }
-                    to {
-                        opacity: 1;
-                    }
-                }
-
-                .three21-bot-container {
-                    width: 100%;
-                    max-width: 65rem;
-                    height: 76vh;
-                    background: #1f2937;
-                    border: 1px solid #374151;
-                    border-radius: 20px;
-                    display: flex;
-                    flex-direction: column;
-                    overflow: hidden;
-                    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-                    animation: containerSlideIn 0.3s ease;
-                }
-
-                .three21-bot-container::before {
-                    content: '';
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    height: 2px;
-                    background: #3b82f6;
-                }
-
-                @keyframes containerSlideIn {
-                    from {
-                        opacity: 0;
-                        transform: translateY(20px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
+            to {
+                opacity: 1;
                     }
                 }
 
-                .three21-bot-header {
-                    background: #111827;
-                    border-bottom: 1px solid #374151;
-                    padding: 1rem 1.5rem;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
+            .three21-bot-container {
+                width: 100%;
+            max-width: 75dvw;
+            height: 95dvh;
+            background: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            animation: containerSlideIn 0.3s ease;
                 }
 
-                .three21-bot-header::before {
-                    content: '';
-                    position: absolute;
-                    bottom: 0;
-                    left: 0;
-                    right: 0;
-                    height: 1px;
-                    background: #3b82f6;
-                    opacity: 0.2;
+            .three21-bot-container::before {
+                content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #3b82f6;
                 }
 
-                .header-content {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.75rem;
-                    flex: 1;
-                }
-
-                .bot-avatar {
-                    width: 3rem;
-                    height: 3rem;
-                    background: #3b82f6;
-                    border-radius: 14px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 1.25rem;
-                    color: white;
-                    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
-                }
-
-                .bot-info h3 {
-                    color: #f9fafb;
-                    margin: 0;
-                    font-size: 1.125rem;
-                    font-weight: 700;
-                }
-
-                .bot-status {
-                    color: #9ca3af;
-                    font-size: 0.8rem;
-                    display: block;
-                    margin-top: 0.25rem;
-                    font-weight: 500;
-                }
-
-                .selected-part {
-                    background: #eff6ff;
-                    border: 1px solid #dbeafe;
-                    padding: 0.5rem 0.875rem;
-                    border-radius: 12px;
-                    color: #3b82f6;
-                    font-size: 0.8rem;
-                    font-weight: 600;
-                }
-
-                .sizecx{
-                    font-size: 2rem;
-                    line-height: 1;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-                .close-button {
-                    background: #f3f4f6;
-                    border: 1px solid #d1d5db;
-                    color: #1d3e75ff;
-                    font-size: 2rem;
-                    width: 2.5rem;
-                    height: 2.5rem;
-                    border-radius: 12px;
-                    cursor: pointer;
-                    margin-left: .5rem;
-                    transition: all 0.2s ease;
-                    display: flex;
-                    padding: 0;
-                    align-items: center;
-                    justify-content: center;
-                }
-
-                .header-controls {
-                    display: flex;
-                    gap: 0.5rem;
-                    align-items: center;
-                }
-
-                .tts-button {
-                    background: #f3f4f6;
-                    border: 1px solid #d1d5db;
-                    color: #6b7280;
-                    width: 2.5rem;
-                    height: 2.5rem;
-                    border-radius: 12px;
-                    cursor: pointer;
-                    font-size: 1rem;
-                    transition: all 0.2s ease;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-
-                .tts-button.active {
-                    background: #10b981;
-                    border-color: #059669;
-                    color: white;
-                }
-
-                .tts-button:hover {
-                    background: #e5e7eb;
-                    border-color: #9ca3af;
-                }
-
-                .tts-button.active:hover {
-                    background: #059669;
-                }
-
-                .tts-button:disabled {
-                    opacity: 0.5;
-                    cursor: not-allowed;
-                }
-
-                .speech-button {
-                    background: #f3f4f6;
-                    border: 1px solid #d1d5db;
-                    color: #6b7280;
-                    width: 2.5rem;
-                    height: 2.5rem;
-                    border-radius: 12px;
-                    cursor: pointer;
-                    font-size: 1rem;
-                    transition: all 0.2s ease;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-
-                .speech-button.listening {
-                    background: #ef4444;
-                    border-color: #dc2626;
-                    color: white;
-                }
-
-                .speech-button:hover {
-                    background: #e5e7eb;
-                    border-color: #9ca3af;
-                }
-
-                .speech-button.listening:hover {
-                    background: #dc2626;
-                }
-
-                .speech-button:disabled {
-                    opacity: 0.5;
-                    cursor: not-allowed;
-                }
-
-                .icon-pulse {
-                    animation: pulse 1.5s infinite;
-                }
-
-                @keyframes pulse {
-                    0% { opacity: 1; }
-                    50% { opacity: 0.5; }
-                    100% { opacity: 1; }
-                }
-
-                .input-container {
-                    flex: 1;
-                    position: relative;
-                    width: full;
-                }
-
-                .speech-feedback {
-                    position: absolute;
-                    top: -3.5rem;
-                    left: 0;
-                    right: 0;
-                    background: #1f2937;
-                    border: 1px solid #10b981;
-                    border-radius: 12px;
-                    padding: 0.75rem;
-                    font-size: 0.8rem;
-                    color: #10b981;
-                    z-index: 1000;
-                    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
-                }
-
-                .speech-status {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 0.5rem;
-                }
-
-                .speech-indicator {
-                    font-weight: 600;
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                }
-
-                .auto-send-indicator {
-                    font-size: 0.7rem;
-                    color: #f59e0b;
-                    font-weight: 500;
-                    background: rgba(245, 158, 11, 0.1);
-                    padding: 0.25rem 0.5rem;
-                    border-radius: 6px;
-                    border: 1px solid rgba(245, 158, 11, 0.3);
-                }
-
-                .interim-text {
-                    color: #9ca3af;
-                    font-style: italic;
-                    background: #374151;
-                    padding: 0.5rem;
-                    border-radius: 8px;
-                    border: 1px solid #4b5563;
-                    margin-top: 0.5rem;
-                }
-
-                .speech-error {
-                    position: absolute;
-                    top: -3rem;
-                    left: 0;
-                    right: 0;
-                    background: #1f2937;
-                    border: 1px solid #ef4444;
-                    border-radius: 12px;
-                    padding: 0.75rem;
-                    font-size: 0.8rem;
-                    color: #ef4444;
-                    z-index: 1000;
-                    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
-                }
-
-                .icon-spin {
-                    animation: spin 1s linear infinite;
-                }
-
-                @keyframes spin {
-                    from { transform: rotate(0deg); }
-                    to { transform: rotate(360deg); }
-                }
-
-                .close-button:hover {
-                    background: #e5e7eb;
-                    color: #374151;
-                }
-
-                .three21-bot-messages {
-                    flex: 1;
-                    overflow-y: auto;
-                    padding: 1rem 1.5rem;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 1rem;
-                    background: #1f2937;
-                }
-
-                .message {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 0.375rem;
-                }
-
-                .message.user {
-                    align-items: flex-end;
-                }
-
-                .message.assistant {
-                    align-items: flex-start;
-                }
-
-                .message-content {
-                    max-width: 100%;
-                    padding: 1rem 1.25rem;
-                    border-radius: 16px;
-                    font-size: 0.8rem;
-                    line-height: 1.5;
-                }
-
-                .message.user .message-content {
-                    background: #3b82f6;
-                    color: white;
-                    border-bottom-right-radius: 6px;
-                    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
-                }
-
-                .message.assistant .message-content {
-                    background: #111827;
-                    color: #f9fafb;
-                    border: 1px solid #374151;
-                    border-bottom-left-radius: 6px;
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-                }
-
-                .message-timestamp {
-                    font-size: 0.7rem;
-                    color: #9ca3af;
-                    margin: 0 1.25rem;
-                    font-weight: 500;
-                }
-
-                .screenshot-indicator {
-                    margin-top: 0.75rem;
-                    padding: 0.5rem 0.875rem;
-                    background: #eff6ff;
-                    border: 1px solid #dbeafe;
-                    border-radius: 10px;
-                    font-size: 0.8rem;
-                    color: #3b82f6;
-                    font-weight: 600;
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                }
-
-                .typing-indicator {
-                    display: flex;
-                    gap: 0.375rem;
-                    align-items: center;
-                    padding: 1rem;
-                }
-
-                .typing-indicator span {
-                    width: 0.5rem;
-                    height: 0.5rem;
-                    background: #3b82f6;
-                    border-radius: 50%;
-                    animation: typingBounce 1.4s infinite ease-in-out;
-                }
-
-                .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-                .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-
-                @keyframes typingBounce {
-                    0%, 80%, 100% { 
-                        opacity: 0.4; 
-                        transform: scale(0.8) translateY(0);
+            @keyframes containerSlideIn {
+                from {
+                opacity: 0;
+            transform: translateY(20px);
                     }
-                    40% { 
-                        opacity: 1; 
-                        transform: scale(1.1) translateY(-4px);
+            to {
+                opacity: 1;
+            transform: translateY(0);
                     }
                 }
 
-                .three21-bot-input {
-                    background: #111827;
-                    border-top: 1px solid #374151;
-                    padding: 1rem 1.5rem;
+            .three21-bot-header {
+                background: #111827;
+            border-bottom: 1px solid #374151;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
                 }
 
-                .quick-actions {
-                    display: flex;
-                    gap: 0.75rem;
-                    margin-bottom: 0.75rem;
-                    align-items: center;
-                    flex-wrap: wrap;
+            .three21-bot-header::before {
+                content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #3b82f6;
+            opacity: 0.2;
                 }
 
-                .quick-action-btn {
-                    background: #1f2937;
-                    border: 1px solid #374151;
-                    color: #f9fafb;
-                    padding: 0.5rem 0.875rem;
-                    border-radius: 10px;
-                    font-size: 0.75rem;
-                    font-weight: 600;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    white-space: nowrap;
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
+            .header-content {
+                display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
                 }
 
-                .quick-action-btn:hover:not(:disabled) {
-                    background: #374151;
-                    border-color: #9ca3af;
-                    transform: translateY(-1px);
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            .bot-avatar {
+                width: 3rem;
+            height: 3rem;
+            background: #3b82f6;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
                 }
 
-                .quick-action-btn:disabled {
-                    opacity: 0.5;
-                    cursor: not-allowed;
-                    transform: none;
+            .bot-info h3 {
+                color: #f9fafb;
+            margin: 0;
+            font-size: 1.125rem;
+            font-weight: 700;
                 }
 
-                .screenshot-ready {
-                    color: #10b981;
-                    font-size: 0.75rem;
-                    font-weight: 600;
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
+            .bot-status {
+                color: #9ca3af;
+            font-size: 0.8rem;
+            display: block;
+            margin-top: 0.25rem;
+            font-weight: 500;
                 }
 
-                .input-form {
-                    display: flex;
-                    gap: 0.5rem;
-                    align-items: flex-end;
+            .selected-part {
+                background: #eff6ff;
+            border: 1px solid #dbeafe;
+            padding: 0.5rem 0.875rem;
+            border-radius: 12px;
+            color: #3b82f6;
+            font-size: 0.8rem;
+            font-weight: 600;
                 }
 
-                .message-input {
-                    flex: 1;
-                    width: 100%;
-                    background: #1f2937;
-                    border: 1px solid #374151;
-                    border-radius: 14px;
-                    padding: 0.875rem 1rem;
-                    color: #f9fafb;
-                    font-size: 0.8rem;
-                    outline: none;
-                    transition: all 0.2s ease;
-                    resize: none;
-                    min-height: 2.75rem;
-                    max-height: 7rem;
-                    line-height: 1.4;
+            .sizecx{
+                font - size: 2rem;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+                }
+            .close-button {
+                background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            color: #1d3e75ff;
+            font-size: 2rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-left: .5rem;
+            transition: all 0.2s ease;
+            display: flex;
+            padding: 0;
+            align-items: center;
+            justify-content: center;
                 }
 
-                .message-input:focus {
-                    border-color: #3b82f6;
-                    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+            .header-controls {
+                display: flex;
+            gap: 0.5rem;
+            align-items: center;
                 }
 
-                .message-input::placeholder {
-                    color: #6b7280;
+            .tts-button {
+                background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            color: #6b7280;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
                 }
 
-                .send-button {
-                    background: #3b82f6;
-                    border: none;
-                    color: white;
-                    width: 2.75rem;
-                    height: 2.75rem;
-                    border-radius: 14px;
-                    font-size: 1rem;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
-                    flex-shrink: 0;
+            .tts-button.active {
+                background: #10b981;
+            border-color: #059669;
+            color: white;
                 }
 
-                .send-button:hover:not(:disabled) {
-                    background: #2563eb;
-                    transform: translateY(-1px);
-                    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            .tts-button:hover {
+                background: #e5e7eb;
+            border-color: #9ca3af;
                 }
 
-                .send-button:disabled {
-                    opacity: 0.5;
-                    cursor: not-allowed;
-                    transform: none;
+            .tts-button.active:hover {
+                background: #059669;
                 }
 
-                .mic-button {
-                    background: #1f2937;
-                    border: 1px solid #374151;
-                    color: #9ca3af;
-                    width: 2.75rem;
-                    height: 2.75rem;
-                    border-radius: 14px;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    flex-shrink: 0;
+            .tts-button:disabled {
+                opacity: 0.5;
+            cursor: not-allowed;
                 }
 
-                .mic-button:hover:not(:disabled) {
-                    background: #374151;
-                    color: #f9fafb;
-                    border-color: #9ca3af;
-                    transform: translateY(-1px);
+            .speech-button {
+                background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            color: #6b7280;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
                 }
 
-                .mic-button.listening {
-                    background: #ef4444;
-                    border-color: #ef4444;
-                    color: white;
-                    animation: pulse 1.5s infinite;
+            .speech-button.listening {
+                background: #ef4444;
+            border-color: #dc2626;
+            color: white;
                 }
 
-                .mic-button:disabled {
-                    opacity: 0.5;
-                    cursor: not-allowed;
+            .speech-button:hover {
+                background: #e5e7eb;
+            border-color: #9ca3af;
                 }
 
-                .loader-spin {
-                    width: 18px;
-                    height: 18px;
-                    border: 2px solid rgba(255, 255, 255, 0.3);
-                    border-top-color: white;
-                    border-radius: 50%;
-                    animation: spin 0.8s linear infinite;
+            .speech-button.listening:hover {
+                background: #dc2626;
                 }
 
-                /* Tool Call Styles */
-                .tool-call-container {
-                    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-                    border: 1px solid #334155;
-                    border-radius: 12px;
-                    padding: 1rem;
-                    margin: 0.75rem 0;
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            .speech-button:disabled {
+                opacity: 0.5;
+            cursor: not-allowed;
                 }
 
-                .tool-call-header {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.75rem;
-                    margin-bottom: 0.75rem;
-                    padding-bottom: 0.75rem;
-                    border-bottom: 1px solid #334155;
+            .icon-pulse {
+                animation: pulse 1.5s infinite;
                 }
 
-                .tool-icon {
-                    font-size: 1.25rem;
-                    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+            @keyframes pulse {
+                0 % { opacity: 1; }
+                    50% {opacity: 0.5; }
+            100% {opacity: 1; }
                 }
 
-                .tool-name {
-                    font-weight: 600;
-                    color: #f1f5f9;
-                    font-size: 0.9rem;
+            .input-container {
+                flex: 1;
+            position: relative;
+            width: full;
                 }
 
-                .tool-status {
-                    margin-left: auto;
-                    font-size: 0.75rem;
-                    padding: 0.25rem 0.75rem;
-                    border-radius: 12px;
-                    font-weight: 500;
+            .speech-feedback {
+                position: absolute;
+            top: -3.5rem;
+            left: 0;
+            right: 0;
+            background: #1f2937;
+            border: 1px solid #10b981;
+            border-radius: 12px;
+            padding: 0.75rem;
+            font-size: 0.8rem;
+            color: #10b981;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
                 }
 
-                .tool-status.searching {
-                    background: rgba(59, 130, 246, 0.15);
-                    color: #60a5fa;
-                    border: 1px solid rgba(59, 130, 246, 0.3);
-                    animation: pulse 1.5s infinite;
+            .speech-status {
+                display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
                 }
 
-                .tool-status.complete {
-                    background: rgba(34, 197, 94, 0.15);
-                    color: #4ade80;
-                    border: 1px solid rgba(34, 197, 94, 0.3);
+            .speech-indicator {
+                font - weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
                 }
 
-                .tool-call-body {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 0.75rem;
+            .auto-send-indicator {
+                font - size: 0.7rem;
+            color: #f59e0b;
+            font-weight: 500;
+            background: rgba(245, 158, 11, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            border: 1px solid rgba(245, 158, 11, 0.3);
                 }
 
-                .tool-param {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 0.25rem;
+            .interim-text {
+                color: #9ca3af;
+            font-style: italic;
+            background: #374151;
+            padding: 0.5rem;
+            border-radius: 8px;
+            border: 1px solid #4b5563;
+            margin-top: 0.5rem;
                 }
 
-                .tool-params-row {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 0.75rem;
+            .speech-error {
+                position: absolute;
+            top: -3rem;
+            left: 0;
+            right: 0;
+            background: #1f2937;
+            border: 1px solid #ef4444;
+            border-radius: 12px;
+            padding: 0.75rem;
+            font-size: 0.8rem;
+            color: #ef4444;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
                 }
 
-                .tool-param-small {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                    background: rgba(30, 41, 59, 0.6);
-                    padding: 0.5rem 0.75rem;
-                    border-radius: 8px;
-                    border: 1px solid #334155;
+            .icon-spin {
+                animation: spin 1s linear infinite;
                 }
 
-                .param-label {
-                    color: #94a3b8;
-                    font-size: 0.75rem;
-                    font-weight: 500;
-                    text-transform: uppercase;
-                    letter-spacing: 0.5px;
+            @keyframes spin {
+                from {transform: rotate(0deg); }
+            to {transform: rotate(360deg); }
                 }
 
-                .param-value {
-                    color: #e2e8f0;
-                    font-size: 0.85rem;
-                    font-weight: 500;
+            .close-button:hover {
+                background: #e5e7eb;
+            color: #374151;
                 }
 
-                .tool-result {
-                    margin-top: 0.5rem;
-                    border-top: 1px solid #334155;
-                    padding-top: 0.75rem;
+            .three21-bot-messages {
+                flex: 1;
+            overflow-y: auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            background: #1f2937;
                 }
 
-                .result-success {
-                    color: #4ade80;
+            .message {
+                display: flex;
+                flex-direction: column;
+                max-width: 85%;
+                gap: 0.375rem;
+            }
+                
+            .message.user {
+                align-self: flex-end;
+                align-items: flex-end;
+            }
+
+            .message.assistant {
+                width: 100%;
+                align-self: flex-start;
+                align-items: flex-start;
+            }
+
+            .message-content {
+                width: 100%;
+                padding: 1rem 1.25rem;
+                border-radius: 16px;
+                font-size: 1rem;
+                line-height: 1.5;
+                position: relative;
+                word-wrap: break-word;
+            }
+
+            .message.user .message-content {
+                background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+                color: white;
+                border-bottom-right-radius: 4px;
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+            }
+
+            .message.assistant .message-content {
+                background: #1f2937;
+                color: #f9fafb;
+                border: 1px solid #374151;
+                border-bottom-left-radius: 4px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .message-timestamp {
+                font - size: 0.7rem;
+            color: #9ca3af;
+            margin: 0 1.25rem;
+            font-weight: 500;
                 }
 
-                .result-count {
-                    font-weight: 600;
-                    font-size: 0.85rem;
-                    margin-bottom: 0.75rem;
-                    padding: 0.5rem 0.75rem;
-                    background: rgba(34, 197, 94, 0.1);
-                    border-left: 3px solid #4ade80;
-                    border-radius: 4px;
+            .screenshot-indicator {
+                margin - top: 0.75rem;
+            padding: 0.5rem 0.875rem;
+            background: #eff6ff;
+            border: 1px solid #dbeafe;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            color: #3b82f6;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
                 }
 
-                .result-preview {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 0.5rem;
+            .typing-indicator {
+                display: flex;
+            gap: 0.375rem;
+            align-items: center;
+            padding: 1rem;
                 }
 
-                .paper-preview {
-                    padding: 0.75rem;
-                    background: rgba(30, 41, 59, 0.5);
-                    border-radius: 8px;
-                    border: 1px solid #334155;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 0.5rem;
+            .typing-indicator span {
+                width: 0.5rem;
+            height: 0.5rem;
+            background: #3b82f6;
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite ease-in-out;
                 }
 
-                .paper-title {
-                    color: #f1f5f9;
-                    font-size: 0.85rem;
-                    font-weight: 500;
-                    line-height: 1.4;
+            .typing-indicator span:nth-child(1) {animation - delay: -0.32s; }
+            .typing-indicator span:nth-child(2) {animation - delay: -0.16s; }
+
+            @keyframes typingBounce {
+                0 %, 80 %, 100 % {
+                    opacity: 0.4;
+                    transform: scale(0.8) translateY(0);
                 }
-
-                .paper-year {
-                    color: #94a3b8;
-                    font-size: 0.75rem;
-                    font-weight: 400;
-                }
-
-                .paper-citations {
-                    color: #fbbf24;
-                    font-size: 0.75rem;
-                    font-weight: 500;
-                }
-
-                .scholar-results-list {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 0.75rem;
-                    margin-top: 0.75rem;
-                    max-height: 500px;
-                    overflow-y: auto;
-                    padding-right: 0.5rem;
-                }
-
-                .scholar-results-list::-webkit-scrollbar {
-                    width: 6px;
-                }
-
-                .scholar-results-list::-webkit-scrollbar-track {
-                    background: rgba(30, 41, 59, 0.4);
-                    border-radius: 3px;
-                }
-
-                .scholar-results-list::-webkit-scrollbar-thumb {
-                    background: #475569;
-                    border-radius: 3px;
-                }
-
-                .scholar-results-list::-webkit-scrollbar-thumb:hover {
-                    background: #64748b;
-                }
-
-                .scholar-paper-card {
-                    display: flex;
-                    gap: 0.75rem;
-                    padding: 0.875rem;
-                    background: rgba(30, 41, 59, 0.4);
-                    border: 1px solid #334155;
-                    border-radius: 8px;
-                    transition: all 0.2s ease;
-                }
-
-                .scholar-paper-card:hover {
-                    background: rgba(30, 41, 59, 0.6);
-                    border-color: #475569;
-                    transform: translateX(4px);
-                }
-
-                .paper-number {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 28px;
-                    height: 28px;
-                    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-                    color: white;
-                    font-weight: 700;
-                    font-size: 0.75rem;
-                    border-radius: 6px;
-                    flex-shrink: 0;
-                    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
-                }
-
-                .paper-content {
-                    flex: 1;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 0.5rem;
-                    min-width: 0;
-                    overflow: hidden;
-                }
-
-                .paper-title-link {
-                    color: #60a5fa;
-                    font-weight: 600;
-                    font-size: 0.875rem;
-                    line-height: 1.4;
-                    text-decoration: none;
-                    transition: color 0.2s ease;
-                    word-wrap: break-word;
-                    overflow-wrap: break-word;
-                    hyphens: auto;
-                }
-
-                .paper-title-link:hover {
-                    color: #93c5fd;
-                    text-decoration: underline;
-                }
-
-                .paper-authors {
-                    color: #cbd5e1;
-                    font-size: 0.75rem;
-                    line-height: 1.4;
-                    margin: 0;
-                    word-wrap: break-word;
-                }
-
-                .paper-attribution {
-                    color: #94a3b8;
-                    font-size: 0.7rem;
-                    line-height: 1.4;
-                    margin: 0;
-                    font-style: italic;
-                    word-wrap: break-word;
-                }
-
-                .paper-snippet {
-                    color: #94a3b8;
-                    font-size: 0.75rem;
-                    line-height: 1.5;
-                    margin: 0;
-                    display: -webkit-box;
-                    -webkit-line-clamp: 3;
-                    -webkit-box-orient: vertical;
-                    overflow: hidden;
-                    word-wrap: break-word;
-                }
-
-                .paper-meta {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 0.5rem;
-                    font-size: 0.7rem;
-                    align-items: center;
-                }
-
-                .paper-year,
-                .paper-citations,
-                .paper-publication,
-                .paper-source,
-                .paper-type {
-                    padding: 0.25rem 0.5rem;
-                    background: rgba(51, 65, 85, 0.5);
-                    border-radius: 4px;
-                    color: #cbd5e1;
-                    font-weight: 500;
-                    white-space: nowrap;
-                }
-
-                .paper-links {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 0.5rem;
-                    margin-top: 0.25rem;
-                }
-
-                .paper-links a {
-                    font-size: 0.7rem;
-                    color: #60a5fa;
-                    text-decoration: none;
-                    padding: 0.25rem 0.5rem;
-                    background: rgba(59, 130, 246, 0.1);
-                    border-radius: 4px;
-                    border: 1px solid rgba(59, 130, 246, 0.3);
-                    transition: all 0.2s ease;
-                    white-space: nowrap;
-                }
-
-                .paper-links a:hover {
-                    background: rgba(59, 130, 246, 0.2);
-                    border-color: rgba(59, 130, 246, 0.5);
-                    color: #93c5fd;
-                }
-
-                /* Responsive Styles for Mobile */
-                @media (max-width: 768px) {
-                    .scholar-paper-card {
-                        flex-direction: column;
-                        gap: 0.5rem;
-                        padding: 0.75rem;
-                    }
-
-                    .paper-number {
-                        width: 24px;
-                        height: 24px;
-                        font-size: 0.7rem;
-                    }
-
-                    .paper-title-link {
-                        font-size: 0.8rem;
-                    }
-
-                    .paper-authors,
-                    .paper-attribution,
-                    .paper-snippet {
-                        font-size: 0.7rem;
-                    }
-
-                    .paper-meta {
-                        gap: 0.375rem;
-                        font-size: 0.65rem;
-                    }
-
-                    .paper-year,
-                    .paper-citations,
-                    .paper-publication,
-                    .paper-source,
-                    .paper-type {
-                        padding: 0.2rem 0.4rem;
-                        font-size: 0.65rem;
-                    }
-
-                    .paper-links a {
-                        font-size: 0.65rem;
-                        padding: 0.2rem 0.4rem;
-                    }
-
-                    .tool-call-container {
-                        padding: 0.75rem;
-                    }
-
-                    .scholar-results-list {
-                        max-height: 400px;
+                    40% {
+                opacity: 1;
+            transform: scale(1.1) translateY(-4px);
                     }
                 }
 
-                .more-results {
-                    color: #60a5fa;
-                    font-size: 0.75rem;
-                    font-weight: 500;
-                    text-align: center;
-                    padding: 0.5rem;
-                    background: rgba(59, 130, 246, 0.1);
-                    border-radius: 6px;
-                    border: 1px dashed #3b82f6;
+            .three21-bot-input {
+                background: #111827;
+            border-top: 1px solid #374151;
+            padding: 1rem 1.5rem;
                 }
 
-                .result-error {
-                    color: #f87171;
-                    font-size: 0.85rem;
-                    padding: 0.75rem;
-                    background: rgba(239, 68, 68, 0.1);
-                    border-left: 3px solid #ef4444;
-                    border-radius: 4px;
+            .quick-actions {
+                display: flex;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            align-items: center;
+            flex-wrap: wrap;
                 }
 
-                .result-empty {
-                    color: #94a3b8;
-                    font-size: 0.85rem;
-                    text-align: center;
-                    padding: 0.75rem;
-                    background: rgba(30, 41, 59, 0.4);
-                    border-radius: 6px;
-                    border: 1px dashed #475569;
+            .quick-action-btn {
+                background: #1f2937;
+            border: 1px solid #374151;
+            color: #f9fafb;
+            padding: 0.5rem 0.875rem;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
                 }
-            `}</style>
+
+            .quick-action-btn:hover:not(:disabled) {
+                background: #374151;
+            border-color: #9ca3af;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                }
+
+            .quick-action-btn:disabled {
+                opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+                }
+
+            .screenshot-ready {
+                color: #10b981;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+                }
+
+            .input-form {
+                display: flex;
+            gap: 0.5rem;
+            align-items: flex-end;
+                }
+
+            .message-input {
+                flex: 1;
+            width: 100%;
+            background: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 14px;
+            padding: 0.875rem 1rem;
+            color: #f9fafb;
+            font-size: 0.8rem;
+            outline: none;
+            transition: all 0.2s ease;
+            resize: none;
+            min-height: 2.75rem;
+            max-height: 7rem;
+            line-height: 1.4;
+                }
+
+            .message-input:focus {
+                border - color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+                }
+
+            .message-input::placeholder {
+                color: #6b7280;
+                }
+
+            .send-button {
+                background: #3b82f6;
+            border: none;
+            color: white;
+            width: 2.75rem;
+            height: 2.75rem;
+            border-radius: 14px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
+            flex-shrink: 0;
+                }
+
+            .send-button:hover:not(:disabled) {
+                background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+                }
+
+            .send-button:disabled {
+                opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+                }
+
+            .mic-button {
+                background: #1f2937;
+            border: 1px solid #374151;
+            color: #9ca3af;
+            width: 2.75rem;
+            height: 2.75rem;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+                }
+
+            .mic-button:hover:not(:disabled) {
+                background: #374151;
+            color: #f9fafb;
+            border-color: #9ca3af;
+            transform: translateY(-1px);
+                }
+
+            .mic-button.listening {
+                background: #ef4444;
+            border-color: #ef4444;
+            color: white;
+            animation: pulse 1.5s infinite;
+                }
+
+            .mic-button:disabled {
+                opacity: 0.5;
+            cursor: not-allowed;
+                }
+
+            .loader-spin {
+                width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+                }
+
+            /* Tool Call Styles */
+            .tool-call-container {
+                background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 0.75rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                }
+
+            .tool-call-header {
+                display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #334155;
+                }
+
+            .tool-icon {
+                font - size: 1.25rem;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+                }
+
+            .tool-name {
+                font - weight: 600;
+            color: #f1f5f9;
+            font-size: 0.9rem;
+                }
+
+            .tool-status {
+                margin - left: auto;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-weight: 500;
+                }
+
+            .tool-status.searching {
+                background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            animation: pulse 1.5s infinite;
+                }
+
+            .tool-status.complete {
+                background: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+                }
+
+            .tool-call-body {
+                display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+                }
+
+            .tool-param {
+                display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+                }
+
+            .tool-params-row {
+                display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+                }
+
+            .tool-param-small {
+                display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(30, 41, 59, 0.6);
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            border: 1px solid #334155;
+                }
+
+            .param-label {
+                color: #94a3b8;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+                }
+
+            .param-value {
+                color: #e2e8f0;
+            font-size: 0.85rem;
+            font-weight: 500;
+                }
+
+            .tool-result {
+                margin - top: 0.5rem;
+            border-top: 1px solid #334155;
+            padding-top: 0.75rem;
+                }
+
+            .result-success {
+                color: #4ade80;
+                }
+
+            .result-count {
+                font - weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            background: rgba(34, 197, 94, 0.1);
+            border-left: 3px solid #4ade80;
+            border-radius: 4px;
+                }
+
+            .result-preview {
+                display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+                }
+
+            .paper-preview {
+                padding: 0.75rem;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 8px;
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+                }
+
+            .paper-title {
+                color: #f1f5f9;
+            font-size: 0.85rem;
+            font-weight: 500;
+            line-height: 1.4;
+                }
+
+            .paper-year {
+                color: #94a3b8;
+            font-size: 0.75rem;
+            font-weight: 400;
+                }
+
+            .paper-citations {
+                color: #fbbf24;
+            font-size: 0.75rem;
+            font-weight: 500;
+                }
+
+            .scholar-results-list {
+                display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+                }
+
+            .scholar-results-list::-webkit-scrollbar {
+                width: 6px;
+                }
+
+            .scholar-results-list::-webkit-scrollbar-track {
+                background: rgba(30, 41, 59, 0.4);
+            border-radius: 3px;
+                }
+
+            .scholar-results-list::-webkit-scrollbar-thumb {
+                background: #475569;
+            border-radius: 3px;
+                }
+
+            .scholar-results-list::-webkit-scrollbar-thumb:hover {
+                background: #64748b;
+                }
+
+            .scholar-paper-card {
+                display: flex;
+            gap: 0.75rem;
+            padding: 0.875rem;
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid #334155;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+                }
+
+            .scholar-paper-card:hover {
+                background: rgba(30, 41, 59, 0.6);
+            border-color: #475569;
+            transform: translateX(4px);
+                }
+
+            .paper-number {
+                display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            font-weight: 700;
+            font-size: 0.75rem;
+            border-radius: 6px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+                }
+
+            .paper-content {
+                flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            min-width: 0;
+            overflow: hidden;
+                }
+
+            .paper-title-link {
+                color: #60a5fa;
+            font-weight: 600;
+            font-size: 0.875rem;
+            line-height: 1.4;
+            text-decoration: none;
+            transition: color 0.2s ease;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+                }
+
+            .paper-title-link:hover {
+                color: #93c5fd;
+            text-decoration: underline;
+                }
+
+            .paper-authors {
+                color: #cbd5e1;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            margin: 0;
+            word-wrap: break-word;
+                }
+
+            .paper-attribution {
+                color: #94a3b8;
+            font-size: 0.7rem;
+            line-height: 1.4;
+            margin: 0;
+            font-style: italic;
+            word-wrap: break-word;
+                }
+
+            .paper-snippet {
+                color: #94a3b8;
+            font-size: 0.75rem;
+            line-height: 1.5;
+            margin: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            word-wrap: break-word;
+                }
+
+            .paper-meta {
+                display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            font-size: 0.7rem;
+            align-items: center;
+                }
+
+            .paper-year,
+            .paper-citations,
+            .paper-publication,
+            .paper-source,
+            .paper-type {
+                padding: 0.25rem 0.5rem;
+            background: rgba(51, 65, 85, 0.5);
+            border-radius: 4px;
+            color: #cbd5e1;
+            font-weight: 500;
+            white-space: nowrap;
+                }
+
+            .paper-links {
+                display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.25rem;
+                }
+
+            .paper-links a {
+                font - size: 0.7rem;
+            color: #60a5fa;
+            text-decoration: none;
+            padding: 0.25rem 0.5rem;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 4px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            transition: all 0.2s ease;
+            white-space: nowrap;
+                }
+
+            .paper-links a:hover {
+                background: rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.5);
+            color: #93c5fd;
+                }
+
+            /* Responsive Styles for Mobile */
+            @media (max-width: 768px) {
+                    .scholar - paper - card {
+                flex - direction: column;
+            gap: 0.5rem;
+            padding: 0.75rem;
+                    }
+
+            .paper-number {
+                width: 24px;
+            height: 24px;
+            font-size: 0.7rem;
+                    }
+
+            .paper-title-link {
+                font - size: 0.8rem;
+                    }
+
+            .paper-authors,
+            .paper-attribution,
+            .paper-snippet {
+                font - size: 0.7rem;
+                    }
+
+            .paper-meta {
+                gap: 0.375rem;
+            font-size: 0.65rem;
+                    }
+
+            .paper-year,
+            .paper-citations,
+            .paper-publication,
+            .paper-source,
+            .paper-type {
+                padding: 0.2rem 0.4rem;
+            font-size: 0.65rem;
+                    }
+
+            .paper-links a {
+                font - size: 0.65rem;
+            padding: 0.2rem 0.4rem;
+                    }
+
+            .tool-call-container {
+                padding: 0.75rem;
+                    }
+
+            .scholar-results-list {
+                max - height: 400px;
+                    }
+                }
+
+            .more-results {
+                color: #60a5fa;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-align: center;
+            padding: 0.5rem;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 6px;
+            border: 1px dashed #3b82f6;
+                }
+
+            .result-error {
+                color: #f87171;
+            font-size: 0.85rem;
+            padding: 0.75rem;
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 3px solid #ef4444;
+            border-radius: 4px;
+                }
+
+            .result-empty {
+                color: #94a3b8;
+            font-size: 0.85rem;
+            text-align: center;
+            padding: 0.75rem;
+            background: rgba(30, 41, 59, 0.4);
+            border-radius: 6px;
+            border: 1px dashed #475569;
+                }
+            `}</style >
 
             <style jsx global>{`
                 /* Enhanced Markdown Styles - Dark Theme - Responsive */
@@ -2220,6 +2204,10 @@ What aspect of your model would you like to explore first?` }],
                     border-radius: 4px;
                 }
 
+                .markdown-pre::-webkit-scrollbar-thumb:hover {
+                    background: #6b7280;
+                }
+
                 .markdown-code-block {
                     background: transparent;
                     color: #e5e7eb;
@@ -2287,8 +2275,8 @@ What aspect of your model would you like to explore first?` }],
                 }
 
                 .table-wrapper::-webkit-scrollbar-track {
-                    background: #1f2937;
-                    border-radius: 0 0 8px 8px;
+                    background: #111827;
+                    border-radius: 4px;
                 }
 
                 .table-wrapper::-webkit-scrollbar-thumb {
@@ -2759,7 +2747,36 @@ What aspect of your model would you like to explore first?` }],
                     }
                 }
 
+                /* Unread badge styling */
+                .unread-badge {
+                    position: absolute;
+                    top: -4px;
+                    right: -4px;
+                    background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+                    color: white;
+                    border-radius: 50%;
+                    width: 20px;
+                    height: 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 0.7rem;
+                    font-weight: bold;
+                    box-shadow: 0 2px 8px rgba(238, 90, 111, 0.4);
+                    animation: pulse 2s infinite;
+                }
+
+                .bot-avatar {
+                    position: relative;
+                }
+
+                @keyframes pulse {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.1); }
+                }
+
             `}</style>
-        </div >
+
+        </>
     );
 }

@@ -860,6 +860,7 @@ export default forwardRef(function AnyModelViewer({ url, type, isDemoMode = fals
                 currentLayer={currentLayer}
                 totalLayers={totalLayers}
                 isAnimating={isAnimating}
+                isOpenAI={isAIOpen}
                 onOpenAI={handleOpenAI}
                 separationDistance={separationDistance}
                 onSeparationDistanceChange={setSeparationDistance}
@@ -872,27 +873,33 @@ export default forwardRef(function AnyModelViewer({ url, type, isDemoMode = fals
                 nodeCount={sceneAnalysis.nodeCount}
                 childrenCount={sceneAnalysis.childrenCount}
                 sceneTree={sceneAnalysis.sceneTree}
+                className="disassembly-ui"
             />
 
-            {isAIOpen && closeAI && (
-                <Three21Bot
-                    isOpen={isAIOpen}
-                    onClose={closeAI}
-                    modelInfo={modelInfo}
-                    demoConfig={activeDemoConfig}
-                    selectedPart={selectedPart}
-                    onScreenshot={handleScreenshot}
-                    sceneAnalysis={screenshotManagerRef.current?.analyzeScene ?
-                        screenshotManagerRef.current.analyzeScene(modelRef.current) : null}
-                    autoScreenshot={screenshotManagerRef.current?.getLastScreenshot()?.dataURL}
-                />
-            )}
+            <Three21Bot
+                isOpen={isAIOpen}
+                onClose={closeAI}
+                modelInfo={modelInfo}
+                demoConfig={activeDemoConfig}
+                selectedPart={selectedPart}
+                onScreenshot={handleScreenshot}
+                sceneAnalysis={screenshotManagerRef.current?.analyzeScene ?
+                    screenshotManagerRef.current.analyzeScene(modelRef.current) : null}
+                autoScreenshot={screenshotManagerRef.current?.getLastScreenshot()?.dataURL}
+                className="absolute ai-bot-container"
+                style={{ zIndex: 10000 }}
+            />
+
+
 
             <Toast
                 message={toast.message}
                 isVisible={toast.isVisible}
                 onHide={hideToast}
             />
+
+
         </div>
+
     );
 });
