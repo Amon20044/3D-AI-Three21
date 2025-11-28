@@ -197,171 +197,136 @@ We employ a suite of automated tools to maintain high code quality and security.
 
 ## 📚 Apify Google Scholar Integration
 
-Three21 features a powerful research integration that allows the AI to fetch and cite real academic papers in real-time.
+Three21Bot features **real-time academic research integration** powered by Apify's Google Scholar Actor and AI SDK 5.0 tool calling.
 
 ### How It Works
 
-When you ask the AI about engineering concepts (e.g., "Find research on quadruped robot locomotion"), the system:
+When you ask about research topics, the AI:
 
-1. **Query Generation**: Gemini 2.5 Flash converts your natural language question into an optimized scholarly search query
-2. **Apify Actor Call**: The server executes the Apify Google Scholar Actor with parameters
-3. **Data Processing**: Results are filtered, structured, and enriched with metadata
-4. **Visual Display**: Papers are rendered as interactive cards with full details
-5. **Persistent Storage**: Results are saved to IndexedDB for offline access
+1. **Understands Intent**: Gemini 2.5 Flash recognizes research requests
+2. **Optimizes Query**: Converts natural language to scholarly keywords
+3. **Calls Tool**: Invokes `searchGoogleScholar` tool via AI SDK 5.0
+4. **Scrapes Scholar**: Apify Actor extracts structured data from Google Scholar
+5. **Streams Results**: Papers appear in real-time as interactive cards
+6. **Persists Data**: Full results saved to IndexedDB (survives reload)
 
 ### Architecture
 
 ```mermaid
 graph LR
-    A["User Query"] --> B["Gemini 2.5 Flash"]
-    B --> C["searchGoogleScholar Tool"]
-    C --> D["Apify Client"]
-    D --> E["Google Scholar Actor"]
-    E --> F["Google Scholar"]
-    F --> E
+    A["👤 User Query"] --> B["🤖 Gemini 2.5"]
+    B --> C["🛠️ Tool: searchGoogleScholar"]
+    C --> D["🐝 Apify Actor"]
+    D --> E["📚 Google Scholar"]
     E --> D
-    D --> C
-    C --> B
-    B --> G["Structured Results"]
-    G --> H["UI Display"]
-    G --> I["IndexedDB Storage"]
+    D --> F["📊 Structured JSON"]
+    F --> G["💬 Stream to UI"]
+    F --> H["💾 IndexedDB"]
 ```
 
-### Implementation Details
+### Implementation Stack
 
-#### Server-Side Tool Definition
-Located in `app/api/chat/route.js`:
-
-```javascript
-searchGoogleScholar: tool({
-  description: 'Search Google Scholar for peer-reviewed research papers',
-  parameters: z.object({
-    query: z.string().describe('Scholarly search query'),
-    minYear: z.number().optional().describe('Minimum publication year (default: 2022)'),
-    maxYear: z.number().optional().describe('Maximum publication year'),
-    maxItems: z.number().optional().describe('Maximum results (default: 10, max: 10)')
-  }),
-  execute: async ({ query, minYear, maxYear }) => {
-    const results = await searchGoogleScholar({
-      query,
-      minYear: minYear || 2022,
-      maxYear,
-      maxItems: 10
-    });
-    
-    return {
-      query,
-      count: results.length,
-      results: results.map(r => ({
-        title: r.title,
-        link: r.link,
-        snippet: r.snippet,
-        year: r.publication_info?.year,
-        citations: r.cited_by_count
-      }))
-    };
-  }
-})
-```
-
-#### Apify Client
-Located in `lib/apifyClient.js`:
-
-```javascript
-import { ApifyClient } from 'apify-client';
-
-export async function searchGoogleScholar({ query, maxItems = 10, minYear = 2022, maxYear }) {
-  const client = new ApifyClient({
-    token: process.env.APIFY_API_KEY,
-  });
-
-  const input = {
-    queries: query,
-    maxItems: Math.min(maxItems, 10), // Enforce limit
-    start_year: minYear,
-    end_year: maxYear,
-    organicResults: true,
-    includeCitations: true
-  };
-
-  console.log('🔍 Apify Actor Input:', input);
-
-  const run = await client.actor("QE5aLx6lA6uGUXesU").call(input);
-  const { items } = await client.dataset(run.defaultDatasetId).listItems();
-
-  console.log(`✅ Retrieved ${items.length} papers from Google Scholar`);
-  
-  return items;
-}
-```
-
-#### Client-Side Rendering
-Located in `components/Three21Bot.js`:
-
-Results are displayed as:
-- **Numbered Cards** (1-10) with gradient badges
-- **Clickable Titles** that open papers in new tabs
-- **Snippet Previews** (truncated to 2 lines)
-- **Metadata Badges**: Year (📅) and Citations (📖)
-- **Hover Effects**: Subtle animations for better UX
-
-```jsx
-<div className="scholar-results-list">
-  {results.map((paper, idx) => (
-    <div key={idx} className="scholar-paper-card">
-      <div className="paper-number">{idx + 1}</div>
-      <div className="paper-content">
-        <a href={paper.link} target="_blank" rel="noopener noreferrer">
-          {paper.title}
-        </a>
-        <p className="paper-snippet">{paper.snippet}</p>
-        <div className="paper-meta">
-          <span>📅 {paper.year}</span>
-          <span>📖 {paper.citations} citations</span>
-        </div>
-      </div>
-    </div>
-  ))}
-</div>
-```
-
-### Configuration
-
-Add your Apify API key to `.env`:
-
-```bash
-APIFY_API_KEY=apify_api_xxxxxxxxxxxxxxxxxxxxx
-GOOGLE_API_KEY=your_gemini_api_key
-```
-
-### Features
-
-✅ **Real-Time Search**: Fetch papers as the conversation flows  
-✅ **Smart Filtering**: AI generates optimized queries from natural language  
-✅ **Recent Research**: Defaults to papers from 2022+ for cutting-edge content  
-✅ **Citation Metrics**: See how influential each paper is  
-✅ **Persistent Storage**: Results stored in IndexedDB, survive page refresh  
-✅ **Direct Links**: Click any paper to read the full text  
-✅ **Tool State Tracking**: Visual feedback ("Searching...", "Complete")
+| Component | Technology | Purpose |
+|-----------|-----------|----------|
+| **AI Framework** | Vercel AI SDK 5.0 | Tool calling & streaming |
+| **LLM** | Google Gemini 2.5 Flash | Query optimization |
+| **Web Scraper** | Apify Actor (`kdjLO0hegCjr5Ejqp`) | Google Scholar extraction |
+| **Storage** | IndexedDB | Persistent results |
+| **UI** | React 19 + Responsive CSS | Cross-device display |
 
 ### Example Usage
 
-**User**: "Find research on quadruped robot locomotion for military applications"
+**User**: `"Find research on quadruped robot locomotion"`
 
 **AI Response**:
 ```
 🔍 Searching Google Scholar...
+✓ Complete
 
-✅ Found 10 papers
+📚 Found 10 papers
 
-[1] Quadruped Locomotion Control Algorithms for Tactical Applications
-    MIT researchers present a novel control system...
-    📅 2023  📖 127 citations
-    
-[2] Autonomous Quadruped Robots in Battlefield Reconnaissance
-    This paper explores the deployment of Boston Dynamics...
-    📅 2024  📖 89 citations
+[1] Wheeled Magnetic Adsorption Climbing Robot...
+    Y Chen, P Wang, Y Li... - IEEE Trans., 2024
+    📅 2024 | 📖 1 citation
+    [View Paper] [Citations] [Related]
+
+[2] Autonomous Quadruped Navigation...
+    📅 2023 | 📖 89 citations
+...
 ```
+
+### Features
+
+✅ **Natural Language Queries** - Ask in plain English  
+✅ **Real-Time Streaming** - Results appear as they arrive  
+✅ **Full Metadata** - Authors, citations, year, publication, links  
+✅ **Persistent Storage** - Survives page reload (IndexedDB)  
+✅ **Responsive Design** - Mobile, tablet, desktop optimized  
+✅ **Direct Links** - Click titles to read papers  
+✅ **Citation Tracking** - View citation counts and networks  
+✅ **Tool State Display** - Visual feedback ("Searching...", "✓ Complete")
+
+### Configuration
+
+Add to `.env`:
+
+```bash
+APIFY_API_KEY=apify_api_xxxxxxxxxxxxxxxxxxxxx
+GOOGLE_API_KEY=AIzaSyxxxxxxxxxxxxxxxxxxxxx
+```
+
+### Code Example
+
+**Tool Definition** (`app/api/chat/route.js`):
+
+```javascript
+import { streamText, tool } from 'ai';
+import { z } from 'zod';
+
+tools: {
+    searchGoogleScholar: tool({
+        description: 'Search Google Scholar for research papers',
+        parameters: z.object({
+            query: z.string().describe('Scholarly search query'),
+            maxItems: z.number().optional().describe('Max results (default 10)'),
+            minYear: z.number().optional().describe('Min year (default 2022)')
+        }),
+        execute: async ({ query, maxItems, minYear }) => {
+            const results = await searchGoogleScholar({
+                query,
+                maxItems: maxItems || 10,
+                minYear: minYear || 2022
+            });
+            
+            return {
+                query,
+                count: results.length,
+                results // Full array with metadata
+            };
+        }
+    })
+}
+```
+
+### Data Structure
+
+Each paper includes:
+
+```javascript
+{
+    "title": "Wheeled Magnetic Adsorption...",
+    "authors": "Y Chen, P Wang, Y Li...",
+    "year": 2024,
+    "citations": 127,
+    "publication": "IEEE/ASME Transactions on Mechatronics",
+    "link": "https://ieeexplore.ieee.org/...",
+    "searchMatch": "...preview snippet...",
+    "citationsLink": "https://scholar.google.com/...",
+    "relatedArticlesLink": "https://scholar.google.com/..."
+}
+```
+
+📖 **Full Documentation**: See [docs/APIFY_INTEGRATION.md](./docs/APIFY_INTEGRATION.md) for detailed architecture, implementation guide, and advanced features.
 
 ---
 
