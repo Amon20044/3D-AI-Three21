@@ -330,19 +330,335 @@ Each paper includes:
 
 ---
 
-## 🔮 Future Scope
+## 🔮 Future Scope - The Vision
 
-### AP5 Worker Actors
-We plan to move heavy geometric calculations (like convex hull generation for collision detection) off the main thread to **AP5 Worker Actors**. This will ensure the UI remains buttery smooth (60 FPS) even when analyzing massive CAD models with millions of polygons.
+### 🔐 Phase 1: Cloud Sync & User Accounts
 
-### Tool Calling & Agentic AI
-We are evolving the AI from a chatbot to an **Agent**.
--   **User:** "Show me the fuel pump."
--   **AI:** Calls `zoomToPart('fuel_pump')` tool.
--   **Viewer:** Automatically zooms and highlights the part.
+**Problem**: Users lose data when switching devices, no collaboration possible
 
-### Research Citations (RAG)
-Integrating **RAG (Retrieval-Augmented Generation)** to allow the AI to cite real engineering manuals, research papers, and datasheets, making it a true engineering companion.
+**Solution**:
+- **OAuth 2.0 Login**: Google, GitHub, Microsoft SSO
+- **End-to-End Encryption**: Model data encrypted before upload
+- **Selective Sync**: Choose which models to back up
+- **Version Control**: Track model iterations over time
+- **Cross-Device**: Start analysis on desktop, finish on tablet
+- **Team Sharing**: Invite colleagues to view/edit models
+
+---
+
+### 🏪 Phase 2: 3D Model Marketplace
+
+**Vision**: GitHub meets Thingiverse for Engineering Analysis
+
+**Features**:
+- 📤 **Upload & Share** analyzed models with annotations
+- 🔍 **Discover** curated engineering models by category
+- 🍴 **Fork & Clone**: Build on community work
+- ⭐ **Ratings & Reviews**: Quality-driven discovery
+- 🏷️ **Tags**: Automotive, Aerospace, Medical Devices, Robotics, Consumer Products
+- 📜 **Licensing**: Creative Commons, Commercial, Educational-only
+- 💰 **Monetization**: Sell premium models (15% platform fee)
+
+**Example Listings**:
+```
+🦾 KUKA KR 16-2 Robotic Arm (Analysis Included)
+   By: @robotics_engineer
+   ⭐ 4.9 (127 reviews) | 📥 2,300 downloads
+   🏷️ Industrial, 6-DOF, Servo Motors
+   💵 $49 (Commercial License)
+   
+🚗 Tesla Model S Rear Motor Assembly
+   By: @ev_teardown_lab
+   ⭐ 4.8 (89 reviews) | 📥 1,800 downloads
+   🏷️ Automotive, Electric Powertrain
+   🆓 Free (Educational Use)
+```
+
+---
+
+### 🎓 Phase 3: Student Workspaces & Education Platform
+
+**Transform Engineering Education**
+
+#### Virtual Laboratory System
+- **Guided Experiments**: Step-by-step teardown tutorials
+- **Progressive Difficulty**: Beginner → Intermediate → Expert levels
+- **Auto-Grading**: AI checks if student identified parts correctly
+- **Certification**: Earn badges for completing lab modules
+- **Custom Curriculum**: Professors design their own lab sequences
+
+#### Classroom Management
+- **Teacher Dashboard**: Monitor 30+ students in real-time
+- **Assignments**: "Analyze this gearbox, submit by Friday 11:59 PM"
+- **Grading Assistant**: AI pre-grades, teacher reviews for accuracy
+- **Plagiarism Detection**: Compare student analyses for originality
+- **Performance Analytics**: Track class comprehension trends
+
+#### Special School Accounts
+- 🏫 **Bulk Licensing**: $500/year for unlimited student seats
+- 👨‍🏫 **Admin Controls**: Teachers manage student access
+- 📋 **FERPA Compliant**: Student data protection built-in
+- 🔗 **LMS Integration**: Canvas, Blackboard, Moodle, Google Classroom
+
+#### Collaborative Study Groups
+- **Group Workspaces**: 4-6 students analyze same model together
+- **Real-Time Cursors**: See what teammates are examining
+- **Voice Chat**: Discuss findings while exploring (like Discord)
+- **Shared Annotations**: Mark interesting features collectively
+- **Session Recording**: Replay the analysis session later
+
+**Target Impact**:
+- 🏫 1,000+ universities by Year 2
+- 👨‍🎓 100,000+ students learning with Three21
+- 📈 85% improvement in 3D comprehension (vs traditional 2D instruction)
+
+---
+
+### 🤖 Phase 4: Multi-Vision AI Model Integration
+
+**Vision**: Best AI for Every Task
+
+**Current**: Gemini 2.5 Flash (jack of all trades)  
+**Future**: Specialized models optimized for specific domains
+
+| Use Case | Model | Why? |
+|----------|-------|------|
+| **General Chat** | Gemini 2.5 Flash | Fast, cheap, multimodal |
+| **CAD Deep Analysis** | GPT-4 Vision Turbo | Best technical accuracy |
+| **Medical Devices** | Claude 3.5 Opus | Safety-critical reasoning |
+| **PCB Analysis** | Custom YOLOv8 CNN | Component detection (fine-tuned) |
+| **Material Science** | Gemini 2.0 Ultra | Long context (100k tokens for datasheets) |
+| **Manufacturing** | Custom Gemma 2 | DFM (Design for Manufacturing) rules |
+| **Research Papers** | Perplexity Pro | Real-time web + citations |
+
+**User Controls**:
+```
+Settings → AI Models
+├─ General Analysis: [Gemini 2.5 Flash ▼]  $0.001/query
+├─ Vision Analysis: [GPT-4 Vision ▼]       $0.05/query
+├─ Research: [Perplexity Pro ▼]            $0.02/query
+├─ Manufacturing: [Custom Gemma 2 ▼]      $0.005/query
+└─ Monthly Budget: [────○──────] $50
+```
+
+**Smart Routing**: AI automatically picks best model based on query type
+
+---
+
+### 🌳 Phase 5: 3D Node Tree UI (Revolutionary UX)
+
+**Problem**: Chat hides which part you're discussing - context gets lost
+
+**Solution**: Visual Node Graph where Every Chat Message = Node on Part
+
+```
+         [Model Root]
+              |
+    ┌─────────┴─────────┐
+    |                   |
+[Chassis]          [Powertrain]
+    |                   |
+  [Frame]      ┌────────┴────────┐
+    |          |                 |
+[Left Rail] [Engine]        [Transmission]
+                |
+          ┌─────┴─────┐
+          |           |
+     [Block]    [Cylinder Head]
+          |              ↓
+      [ 🗨️ "Cast aluminum, likely A380 alloy..." ]
+```
+
+**Features**:
+- **Auto-Generation**: AI builds tree from model hierarchy
+- **Visual Chat**: Responses appear as bubbles on relevant nodes
+- **Zoom & Pan**: Explore tree like a map
+- **Filter**: "Show only discussed parts"
+- **Search**: "Find all bearings" → Highlights nodes in tree
+- **Persistent**: Reload page → tree structure intact
+- **Export**: PNG, SVG, JSON, PDF report
+- **Compare Trees**: Side-by-side for before/after analysis
+
+**Technical Stack**: React Flow + D3.js + WebWorkers
+
+**Use Case**:
+1. User clicks **[Cylinder Head]** node
+2. Tree expands showing children:
+   - Intake Valve (x4)
+   - Exhaust Valve (x4)  
+   - Spark Plug Hole
+   - Coolant Passages
+3. User asks: "What material is this?"
+4. AI response appears as chat bubble **attached to [Cylinder Head]**
+5. **Forever preserved** in tree - never lost in chat scroll!
+
+---
+
+### 🥽 Phase 6: AR/VR Integration
+
+**Vision**: Step Inside Your Model
+
+**Meta Quest 3 Support**:
+- Walk around exploded model in 3D space
+- Grab parts with hand tracking
+- Scale model up to room-size
+- Persistent spatial anchors
+
+**Apple Vision Pro Support**:
+- Spatial computing for analysis
+- Place model on real desk
+- Pinch-to-zoom gestures
+- Eye tracking for UI
+
+**Features**:
+- **Multi-user VR**: 4 engineers in same virtual space
+- **Voice commands**: "Show me the transmission"
+- **Annotations in 3D**: Place notes that float in space
+- **Recording**: Save VR session as video
+
+---
+
+### 🎨 Phase 7: Generative Design AI
+
+**Vision**: AI as Design Partner
+
+**Topology Optimization**:
+- Input: "Reduce weight by 30%, maintain 80% strength"
+- Output: Organic, bio-inspired structure
+- Constraints: Manufacturing method (CNC, 3D print, injection mold)
+
+**Parametric Generation**:
+- "Generate 10 bracket variations with different hole patterns"
+- AI explores design space automatically
+- Rank by: Cost, Weight, Strength, Manufacturability
+
+**Smart Recommendations**:
+- "This fillet radius is too tight for injection molding"
+- "Consider adding ribs here for stiffness"
+- "Wall thickness below minimum for FDM printing"
+
+---
+
+### 👥 Phase 8: Real-Time Collaboration
+
+**Vision**: Google Docs for 3D Models
+
+**Features**:
+- **10+ simultaneous users** on same model
+- **Live cursors**: See where teammates are looking
+- **Voice chat integrated** (like Discord)
+- **Annotations persist**: Leave notes for next shift
+- **Version history**: Rewind to yesterday's analysis
+- **Conflict resolution**: Merge different explorations
+- **Permissions**: Owner, Editor, Viewer roles
+
+**Use Case**: 
+Aerospace team analyzes satellite antenna:
+- **Electrical engineer** checks RF paths
+- **Mechanical engineer** reviews mounting
+- **Thermal engineer** analyzes heat dissipation
+- **All at the same time**, discussing in voice chat
+
+---
+
+### 📄 Phase 9: PDF Technical Report Generator
+
+**Vision**: Auto-Generate Engineering Documentation
+
+**Inputs**: Your Three21 analysis session  
+**Output**: Professional 20-page technical report
+
+**Includes**:
+- Executive summary (AI-generated)
+- Annotated screenshots (auto-captured)
+- Material identification table  
+- Manufacturing analysis
+- Cost estimation
+- Bill of Materials (BOM)
+- Comparison to similar products
+- Research citations (from Google Scholar)
+- Appendices (full chat transcript)
+
+**Export Formats**:
+- PDF (IEEE/ASME style)
+- Microsoft Word (.docx)
+- LaTeX (.tex) for academic papers
+- HTML (web publishing)
+
+**Templates**:
+- Research Paper
+- Product Teardown  
+- Reverse Engineering Report
+- Patent Prior Art Search
+- Manufacturing Feasibility Study
+
+---
+
+### 🏭 Phase 10: IoT & Manufacturing Integration
+
+**Connect Digital to Physical**
+
+**3D Printer Integration**:
+- Upload model → Slice → Send to Prusa, Bambu, etc.
+- Monitor print progress in Three21
+- Failure detection (AI watches webcam)
+
+**CNC Export**:
+- Generate G-code from analyzed models
+- Simulate toolpaths in 3D
+- Export to Fusion 360, SolidCAM
+
+**Sensor Data Import**:
+- Load real-world stress test results
+- Overlay temperature gradients on model
+- Compare simulation vs. reality
+
+**Digital Twin**:
+- Link Three21 model to physical product
+- Track wear over time
+- Predictive maintenance alerts
+
+---
+
+### 🏢 Phase 11: Enterprise Features
+
+**For Defense, Aerospace, Automotive**
+
+**Security & Compliance**:
+- 🔐 **SSO**: SAML, LDAP, Active Directory
+- 🔍 **Audit Logs**: Track who accessed classified models
+- 🛡️ **IP Protection**: Watermarking, DRM, access expiry
+- 🏢 **On-Premise Deploy**: For defense contractors (ITAR compliance)
+- 🔒 **FedRAMP Certification**: Government cloud approval
+
+**Advanced Features**:
+- **API Access**: Integrate with PLM systems (Windchill, Teamcenter)
+- **Custom AI Models**: Train on proprietary data
+- **White-Label**: Rebrand Three21 as your tool
+- **Dedicated Support**: 24/7 phone + Slack channel
+- **SLA Guarantees**: 99.9% uptime commitment
+
+**Pricing**: Custom quotes starting at $50k/year
+
+---
+
+### 📊 Market Opportunity
+
+**Total Addressable Market (TAM)**:
+- Engineering Students: 2.5M (US) → **$125M/year**
+- Professional Engineers: 1.7M (US) → **$510M/year**  
+- Universities: 4,000 (global) → **$200M/year**
+- Manufacturing Companies: 10,000+ → **$1B/year**
+
+**Total TAM**: **$1.8 Billion/year** (US + EU + Asia)
+
+**Competitive Advantage**:
+| Competitor | Weakness | Our Edge |
+|-----------|----------|----------|
+| Autodesk Fusion 360 | No AI, Manual | AI-Powered Auto-Analysis |
+| SolidWorks | $4,000/year | Freemium + $9/mo Pro |
+| Onshape | Privacy Concerns | Local-First Architecture |
+| GrabCAD | Just Hosting | Full Intelligence Layer |
 
 ---
 
