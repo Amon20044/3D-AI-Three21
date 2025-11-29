@@ -79,6 +79,15 @@ export default forwardRef(function AnyModelViewer({ url, type, isDemoMode = fals
     // Toast state for object clicking
     const [toast, setToast] = useState({ message: '', isVisible: false });
 
+    // FPS panel collapse state - auto-collapse on mobile
+    const [isFPSPanelCollapsed, setIsFPSPanelCollapsed] = useState(() => {
+        // Auto-collapse on mobile devices for better UX
+        if (typeof window !== 'undefined') {
+            return window.innerWidth <= 768;
+        }
+        return false;
+    });
+
     // Use optional chaining to prevent context errors
     const modelInfoContext = useModelInfo();
     const {
@@ -550,20 +559,11 @@ export default forwardRef(function AnyModelViewer({ url, type, isDemoMode = fals
                 screenshotManagerRef.current = new ScreenshotManager(canvasRef);
             }
 
-            // captureModelOnly now auto-detects mobile and adjusts settings
             const screenshot = await screenshotManagerRef.current.captureModelOnly();
 
             if (!screenshot) {
                 throw new Error('Screenshot capture failed');
             }
-
-            // Log final screenshot size
-            const sizeKB = (screenshot.length * 0.75) / 1024;
-            console.log('✅ Screenshot ready:', {
-                sizeKB: sizeKB.toFixed(2),
-                renderer: useWebGPU ? 'WebGPU' : 'WebGL',
-                isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-            });
 
             return screenshot;
         } catch (error) {
@@ -575,13 +575,12 @@ export default forwardRef(function AnyModelViewer({ url, type, isDemoMode = fals
             }
 
             // Fallback to html2canvas with mobile-friendly settings
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             const screenshot = await html2canvas(canvasRef.current, {
                 backgroundColor: null,
                 allowTaint: true,
                 useCORS: true,
-                scale: isMobile ? 0.5 : 1,  // Reduce scale on mobile
-                quality: isMobile ? 0.6 : 0.9
+                scale: 1,  // Reduce scale on mobile
+                quality: 0.9
             });
 
             return screenshot.toDataURL('image/png');
@@ -655,95 +654,126 @@ export default forwardRef(function AnyModelViewer({ url, type, isDemoMode = fals
             {/* Performance Panel */}
             <div style={{
                 position: 'absolute',
-                top: '16px',
-                right: '16px',
+                top: typeof window !== 'undefined' && window.innerWidth <= 768 ? '8px' : '16px',
+                right: typeof window !== 'undefined' && window.innerWidth <= 768 ? '8px' : '16px',
                 background: 'rgba(26, 26, 47, 0.95)',
                 color: '#e0e0e0',
-                padding: '12px 16px',
-                borderRadius: '12px',
-                fontSize: '13px',
+                padding: isFPSPanelCollapsed
+                    ? (typeof window !== 'undefined' && window.innerWidth <= 768 ? '4px 8px' : '8px 12px')
+                    : (typeof window !== 'undefined' && window.innerWidth <= 768 ? '8px 10px' : '12px 16px'),
+                borderRadius: typeof window !== 'undefined' && window.innerWidth <= 768 ? '8px' : '12px',
+                fontSize: typeof window !== 'undefined' && window.innerWidth <= 768 ? '11px' : '13px',
                 fontWeight: '500',
                 zIndex: 1000,
                 border: '1px solid rgba(255, 255, 255, 0.1)',
                 backdropFilter: 'blur(10px)',
                 boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
                 fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                minWidth: '180px'
+                minWidth: isFPSPanelCollapsed ? 'auto' : (typeof window !== 'undefined' && window.innerWidth <= 768 ? '140px' : '180px'),
+                transition: 'all 0.3s ease'
             }}>
-                {/* FPS Display */}
+                {/* Header with toggle */}
                 <div style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    marginBottom: '10px',
-                    paddingBottom: '10px',
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+                    gap: '8px',
+                    marginBottom: isFPSPanelCollapsed ? '0' : '10px',
+                    paddingBottom: isFPSPanelCollapsed ? '0' : '10px',
+                    borderBottom: isFPSPanelCollapsed ? 'none' : '1px solid rgba(255, 255, 255, 0.1)'
                 }}>
-                    <span style={{ color: '#888', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>FPS</span>
-                    <span style={{
-                        fontSize: '18px',
-                        fontWeight: '700',
-                        color: fps >= 55 ? '#00ff88' : fps >= 30 ? '#ffaa00' : '#ff4444',
-                        textShadow: `0 0 10px ${fps >= 55 ? '#00ff8844' : fps >= 30 ? '#ffaa0044' : '#ff444444'}`
+                    {!isFPSPanelCollapsed && (
+                        <span style={{ color: '#888', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>FPS</span>
+                    )}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        {!isFPSPanelCollapsed && (
+                            <span style={{
+                                fontSize: '18px',
+                                fontWeight: '700',
+                                color: fps >= 55 ? '#00ff88' : fps >= 30 ? '#ffaa00' : '#ff4444',
+                                textShadow: `0 0 10px ${fps >= 55 ? '#00ff8844' : fps >= 30 ? '#ffaa0044' : '#ff444444'}`
+                            }}>
+                                {fps}
+                            </span>
+                        )}
+                        <button
+                            onClick={() => setIsFPSPanelCollapsed(!isFPSPanelCollapsed)}
+                            style={{
+                                background: 'transparent',
+                                border: 'none',
+                                color: '#888',
+                                cursor: 'pointer',
+                                padding: '4px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'color 0.2s ease',
+                                fontSize: '16px'
+                            }}
+                            onMouseEnter={(e) => e.target.style.color = '#fff'}
+                            onMouseLeave={(e) => e.target.style.color = '#888'}
+                            title={isFPSPanelCollapsed ? 'Expand performance panel' : 'Collapse performance panel'}
+                        >
+                            {isFPSPanelCollapsed ? '◀' : '▶'}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Renderer Switch - Only show when not collapsed */}
+                {!isFPSPanelCollapsed && (
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '10px'
                     }}>
-                        {fps}
-                    </span>
-                </div>
+                        <span style={{ color: '#888', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            Renderer
+                        </span>
+                        <button
+                            title={`${webGPUAvailable ? 'Switch Renderer' : 'WebGPU not available'}. This will restart the application.`}
+                            onClick={handleRendererSwitch}
+                            disabled={!webGPUAvailable}
+                            style={{
+                                background: useWebGPU
+                                    ? '#3374EE'
+                                    : 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                                color: 'white',
+                                border: 'none',
+                                padding: '6px 12px',
+                                borderRadius: '8px',
+                                fontSize: '11px',
+                                fontWeight: '700',
+                                cursor: webGPUAvailable ? 'pointer' : 'not-allowed',
+                                opacity: webGPUAvailable ? 1 : 0.5,
+                                transition: 'all 0.3s ease',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
+                                boxShadow: webGPUAvailable ? '0 4px 12px rgba(0, 0, 0, 0.3)' : 'none',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px'
+                            }}
+                            onMouseEnter={(e) => {
+                                if (webGPUAvailable) {
+                                    e.target.style.transform = 'scale(1.05)';
+                                    e.target.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.4)';
+                                }
+                            }}
+                            onMouseLeave={(e) => {
+                                if (webGPUAvailable) {
+                                    e.target.style.transform = 'scale(1)';
+                                    e.target.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+                                }
+                            }}
+                        >
+                            <span>{useWebGPU ? 'WebGPU' : 'WebGL'}</span>
+                        </button>
+                    </div>
+                )}
 
-                {/* Renderer Switch */}
-                <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: '10px'
-                }}>
-                    <span style={{ color: '#888', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                        Renderer
-                    </span>
-                    <button
-                        title={`${webGPUAvailable ? 'Switch Renderer' : 'WebGPU not available'}. This will restart the application.`}
-                        onClick={handleRendererSwitch}
-                        disabled={!webGPUAvailable}
-                        style={{
-                            background: useWebGPU
-                                ? '#3374EE'
-                                : 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                            color: 'white',
-                            border: 'none',
-                            padding: '6px 12px',
-                            borderRadius: '8px',
-                            fontSize: '11px',
-                            fontWeight: '700',
-                            cursor: webGPUAvailable ? 'pointer' : 'not-allowed',
-                            opacity: webGPUAvailable ? 1 : 0.5,
-                            transition: 'all 0.3s ease',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.5px',
-                            boxShadow: webGPUAvailable ? '0 4px 12px rgba(0, 0, 0, 0.3)' : 'none',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '6px'
-                        }}
-                        onMouseEnter={(e) => {
-                            if (webGPUAvailable) {
-                                e.target.style.transform = 'scale(1.05)';
-                                e.target.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.4)';
-                            }
-                        }}
-                        onMouseLeave={(e) => {
-                            if (webGPUAvailable) {
-                                e.target.style.transform = 'scale(1)';
-                                e.target.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
-                            }
-                        }}
-                    >
-                        <span>{useWebGPU ? 'WebGPU' : 'WebGL'}</span>
-                    </button>
-
-                </div>
-
-                {/* WebGPU availability indicator */}
-                {!webGPUAvailable && (
+                {/* WebGPU availability indicator - Only show when not collapsed */}
+                {!isFPSPanelCollapsed && !webGPUAvailable && (
                     <div style={{
                         marginTop: '8px',
                         padding: '6px 8px',

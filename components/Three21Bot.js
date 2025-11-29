@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -25,7 +25,30 @@ const MarkdownMessage = React.memo(({ content }) => {
                 h4: ({ children }) => <h4 className="markdown-h4">{children}</h4>,
                 h5: ({ children }) => <h5 className="markdown-h5">{children}</h5>,
                 h6: ({ children }) => <h6 className="markdown-h6">{children}</h6>,
-                p: ({ children }) => <p className="markdown-p">{children}</p>,
+                p: ({ children }) => {
+                    // Process text nodes to convert #hashtags into styled spans
+                    const processText = (node) => {
+                        if (typeof node === 'string') {
+                            const parts = node.split(/(#\w+)/g);
+                            return parts.map((part, idx) => {
+                                if (part.match(/^#\w+$/)) {
+                                    return <code key={idx} className="markdown-code-inline">{part}</code>;
+                                }
+                                return part;
+                            });
+                        }
+                        return node;
+                    };
+
+                    const processedChildren = React.Children.map(children, child => {
+                        if (typeof child === 'string') {
+                            return processText(child);
+                        }
+                        return child;
+                    });
+
+                    return <p className="markdown-p">{processedChildren}</p>;
+                },
                 ul: ({ children }) => <ul className="markdown-ul">{children}</ul>,
                 ol: ({ children }) => <ol className="markdown-ol">{children}</ol>,
                 li: ({ children }) => <li className="markdown-li">{children}</li>,
@@ -116,6 +139,9 @@ export default function Three21Bot({
     const isLoadingHistoryRef = useRef(false); // Track if we're loading chat history
     const lastMessageCountRef = useRef(0); // Track message count to detect new messages
     const wasOpenDuringStreamingRef = useRef(true); // Track if chatbot was open during streaming
+    const screenshotRef = useRef(autoScreenshot); // Ref for immediate access to screenshot
+    const currentSelectedPartRef = useRef(selectedPart); // Ref for immediate access to selected part
+
 
     const { messages, sendMessage: sendMsg, setMessages, status, addToolOutput } = useChat({
         transport: new DefaultChatTransport({
@@ -138,8 +164,8 @@ export default function Three21Bot({
                     body: {
                         messages: validMessages,
                         modelInfo: demoConfig || modelInfo,
-                        selectedPart: currentSelectedPart,
-                        screenshot: screenshot,
+                        selectedPart: currentSelectedPartRef.current, // Use ref to get current value
+                        screenshot: screenshotRef.current, // Use ref to get current value
                         sceneAnalysis,
                         analysisContext: {
                             excludeUIElements: true,
@@ -412,7 +438,8 @@ What aspect of your model would you like to explore first?` }],
     }, [isOpen, modelInfo?.filename, demoConfig?.filename]); // Only reload if model actually changes
 
     // Track selectedPart changes for debugging and state updates - CRITICAL FIX
-    useEffect(() => {
+    // Using useLayoutEffect for synchronous update before paint
+    useLayoutEffect(() => {
         console.log('🎯 Selected part prop changed:', {
             newPart: selectedPart,
             currentPart: currentSelectedPart,
@@ -421,8 +448,39 @@ What aspect of your model would you like to explore first?` }],
 
         // Always update the local state when prop changes
         if (JSON.stringify(selectedPart) !== JSON.stringify(currentSelectedPart)) {
-            console.log('✅ Updating currentSelectedPart state');
+            console.log('✅ Updating currentSelectedPart state and ref');
             setCurrentSelectedPart(selectedPart);
+            currentSelectedPartRef.current = selectedPart; // Update ref immediately!
+
+            // 🚨 CLEAR STALE SCREENSHOT IMMEDIATELY
+            // This prevents sending the *previous* screenshot if the user sends immediately
+            console.log('🧹 Clearing stale screenshot');
+            setScreenshot(null);
+            screenshotRef.current = null;
+
+            // Auto-capture screenshot when part is selected (for part context)
+            if (selectedPart && onScreenshot) {
+                const requestedPartName = selectedPart.name;
+                console.log('📸 Auto-capturing screenshot for selected part:', requestedPartName);
+
+                // Small delay to ensure highlight is rendered
+                setTimeout(() => {
+                    onScreenshot().then(capturedScreenshot => {
+                        // Check if we are still on the same part
+                        if (currentSelectedPartRef.current?.name === requestedPartName) {
+                            if (capturedScreenshot) {
+                                console.log('✅ Screenshot captured for:', requestedPartName);
+                                setScreenshot(capturedScreenshot);
+                                screenshotRef.current = capturedScreenshot;
+                            }
+                        } else {
+                            console.log('⚠️ Discarding stale screenshot for:', requestedPartName, 'Current:', currentSelectedPartRef.current?.name);
+                        }
+                    }).catch(error => {
+                        console.error('❌ Failed to capture screenshot for selected part:', error);
+                    });
+                }, 50);
+            }
 
             // Force UI refresh to show updated selected part
             if (messages.length > 0) {
@@ -608,6 +666,7 @@ What aspect of your model would you like to explore first?` }],
                 }
 
                 setScreenshot(screenshotData);
+                screenshotRef.current = screenshotData; // Update ref immediately
                 return screenshotData;
             }
             console.warn('⚠️ No onScreenshot callback provided');
@@ -626,17 +685,54 @@ What aspect of your model would you like to explore first?` }],
             const captured = await captureScreenshot();
             if (captured) {
                 setScreenshot(captured);
+                screenshotRef.current = captured;
             }
         }
 
         // Send message - screenshot will be picked up from state by prepareSendMessagesRequest
-        sendMsg({ text: messageText || 'Please analyze this screenshot of the model' });
+        const messageData = {
+            text: messageText || 'Please analyze this screenshot of the model',
+        };
+
+        // Store screenshot reference to attach after message is created
+        const screenshotData = screenshotRef.current ? {
+            screenshot: screenshotRef.current
+        } : null;
+
+        sendMsg(messageData);
+
+        // IMPORTANT: useChat's sendMessage doesn't preserve custom 'data' field
+        // So we need to manually attach it after the message is added to the array
+        if (screenshotData) {
+            setTimeout(() => {
+                setMessages(prevMessages => {
+                    // Find the last user message (the one we just sent)
+                    const updatedMessages = [...prevMessages];
+                    for (let i = updatedMessages.length - 1; i >= 0; i--) {
+                        if (updatedMessages[i].role === 'user') {
+                            // Attach screenshot data to this message
+                            updatedMessages[i] = {
+                                ...updatedMessages[i],
+                                data: screenshotData
+                            };
+                            console.log('📸 Attached screenshot data to user message:', updatedMessages[i].id);
+                            break;
+                        }
+                    }
+                    return updatedMessages;
+                });
+            }, 50); // Small delay to ensure message is in the array
+        }
 
         // Clear screenshot after sending
         if (screenshot || includeScreenshot) {
-            setTimeout(() => setScreenshot(null), 100);
+            setTimeout(() => {
+                setScreenshot(null);
+                screenshotRef.current = null;
+            }, 100);
         }
     };
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -975,9 +1071,25 @@ What aspect of your model would you like to explore first?` }],
                                             })}
                                         </>
                                     ) : (
-                                        <div className="user-message-text">
-                                            {message.content || (message.parts?.map(p => p.text).join('')) || ''}
-                                        </div>
+                                        <>
+                                            {/* Display screenshot if attached in metadata */}
+                                            {message.data?.screenshot && (
+                                                <div className="message-screenshot">
+                                                    <img
+                                                        src={
+                                                            message.data.screenshot.startsWith('data:')
+                                                                ? message.data.screenshot
+                                                                : `data:image/png;base64,${message.data.screenshot}`
+                                                        }
+                                                        alt="Model screenshot"
+                                                        className="screenshot-image"
+                                                    />
+                                                </div>
+                                            )}
+                                            <div className="user-message-text">
+                                                {message.content || (message.parts?.map(p => p.text).join('')) || ''}
+                                            </div>
+                                        </>
                                     )}
                                 </div>
                             </div>
@@ -1102,8 +1214,8 @@ What aspect of your model would you like to explore first?` }],
 
             .three21-bot-container {
                 width: 100%;
-            max-width: 75dvw;
-            height: 95dvh;
+            max-width: 90vw;
+            height: 90vh;
             background: #1f2937;
             border: 1px solid #374151;
             border-radius: 20px;
@@ -1407,13 +1519,13 @@ What aspect of your model would you like to explore first?` }],
             .message {
                 display: flex;
                 flex-direction: column;
-                max-width: 85%;
                 gap: 0.375rem;
             }
                 
             .message.user {
                 align-self: flex-end;
                 align-items: flex-end;
+                max-width: 80%;
             }
 
             .message.assistant {
@@ -1423,7 +1535,6 @@ What aspect of your model would you like to explore first?` }],
             }
 
             .message-content {
-                width: 100%;
                 padding: 1rem 1.25rem;
                 border-radius: 16px;
                 font-size: 1rem;
@@ -1433,6 +1544,8 @@ What aspect of your model would you like to explore first?` }],
             }
 
             .message.user .message-content {
+                width: 100%;
+                max-width: 100%;
                 background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
                 color: white;
                 border-bottom-right-radius: 4px;
@@ -1440,6 +1553,7 @@ What aspect of your model would you like to explore first?` }],
             }
 
             .message.assistant .message-content {
+                width: 100%;
                 background: #1f2937;
                 color: #f9fafb;
                 border: 1px solid #374151;
@@ -1455,47 +1569,73 @@ What aspect of your model would you like to explore first?` }],
                 }
 
             .screenshot-indicator {
-                margin - top: 0.75rem;
-            padding: 0.5rem 0.875rem;
-            background: #eff6ff;
-            border: 1px solid #dbeafe;
-            border-radius: 10px;
-            font-size: 0.8rem;
-            color: #3b82f6;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
+                margin-top: 0.75rem;
+                padding: 0.5rem 0.875rem;
+                background: #eff6ff;
+                border: 1px solid #dbeafe;
+                border-radius: 10px;
+                font-size: 0.8rem;
+                color: #3b82f6;
+                font-weight: 600;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .message-screenshot {
+                margin-bottom: 0.75rem;
+                border-radius: 12px;
+                overflow: hidden;
+                border: 2px solid rgba(255, 255, 255, 0.1);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            }
+
+            .screenshot-image {
+                width: 100%;
+                max-width: 400px;
+                height: auto;
+                display: block;
+                border-radius: 10px;
+            }
+
+            @media (max-width: 768px) {
+                .screenshot-image {
+                    max-width: 100%;
                 }
+            }
 
             .typing-indicator {
-                display: flex;
-            gap: 0.375rem;
-            align-items: center;
-            padding: 1rem;
-                }
+                display: inline-flex;
+                gap: 0.3rem;
+                align-items: center;
+                padding: 0.625rem 1rem;
+                background: #1f2937;
+                border: 1px solid #374151;
+                border-radius: 16px;
+                border-bottom-left-radius: 4px;
+            }
 
             .typing-indicator span {
-                width: 0.5rem;
-            height: 0.5rem;
-            background: #3b82f6;
-            border-radius: 50%;
-            animation: typingBounce 1.4s infinite ease-in-out;
-                }
+                width: 0.4rem;
+                height: 0.4rem;
+                background: #3b82f6;
+                border-radius: 50%;
+                animation: typingBounce 1.4s infinite ease-in-out;
+            }
 
-            .typing-indicator span:nth-child(1) {animation - delay: -0.32s; }
-            .typing-indicator span:nth-child(2) {animation - delay: -0.16s; }
+            .typing-indicator span:nth-child(1) {animation-delay: -0.32s; }
+            .typing-indicator span:nth-child(2) {animation-delay: -0.16s; }
 
             @keyframes typingBounce {
-                0 %, 80 %, 100 % {
+                0%, 80%, 100% {
                     opacity: 0.4;
                     transform: scale(0.8) translateY(0);
                 }
-                    40% {
-                opacity: 1;
-            transform: scale(1.1) translateY(-4px);
-                    }
+                40% {
+                    opacity: 1;
+                    transform: scale(1.1) translateY(-3px);
                 }
+            }
 
             .three21-bot-input {
                 background: #111827;
