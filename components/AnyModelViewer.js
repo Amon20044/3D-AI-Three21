@@ -913,8 +913,8 @@ export default forwardRef(function AnyModelViewer({ url, type, isDemoMode = fals
                 demoConfig={activeDemoConfig}
                 selectedPart={selectedPart}
                 onScreenshot={handleScreenshot}
-                sceneAnalysis={screenshotManagerRef.current?.analyzeScene ?
-                    screenshotManagerRef.current.analyzeScene(modelRef.current) : null}
+                // sceneAnalysis={screenshotManagerRef.current?.analyzeScene ?
+                //     screenshotManagerRef.current.analyzeScene(modelRef.current) : null}
                 autoScreenshot={screenshotManagerRef.current?.getLastScreenshot()?.dataURL}
                 className="absolute ai-bot-container"
                 style={{ zIndex: 10000 }}

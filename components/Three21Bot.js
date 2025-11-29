@@ -163,10 +163,10 @@ export default function Three21Bot({
                 return {
                     body: {
                         messages: validMessages,
-                        modelInfo: demoConfig || modelInfo,
+                        modelInfo: demoConfig || (modelInfo ? { ...modelInfo, modelStructure: undefined } : null), // Ensure modelStructure is removed
                         selectedPart: currentSelectedPartRef.current, // Use ref to get current value
                         screenshot: screenshotRef.current, // Use ref to get current value
-                        sceneAnalysis,
+                        // sceneAnalysis, // REMOVED: Too large for Vercel payload
                         analysisContext: {
                             excludeUIElements: true,
                             focusOnModel: true,

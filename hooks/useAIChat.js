@@ -14,38 +14,38 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 const calculateRetryDelay = (attemptIndex) => {
   // Exponential backoff: 1s, 2s, 4s, 8s, 16s
   const baseDelay = Math.min(1000 * Math.pow(2, attemptIndex), 16000);
-  
+
   // Add jitter (±25% randomness) to prevent thundering herd
   const jitter = baseDelay * 0.25 * (Math.random() * 2 - 1);
-  
+
   const finalDelay = Math.max(baseDelay + jitter, 500); // Minimum 500ms
-  
+
   console.log(`🔄 Retry attempt ${attemptIndex + 1}, waiting ${(finalDelay / 1000).toFixed(2)}s`);
-  
+
   return finalDelay;
 };
 
 const isRetryableError = (error) => {
   // Retry on network errors, timeouts, and 5xx server errors
   if (!error.response) return true; // Network error
-  
+
   const status = error.response?.status;
-  
+
   // Retry on server errors and rate limits
   if (status >= 500 || status === 429) return true;
-  
+
   // Don't retry on client errors (4xx except 429)
   if (status >= 400 && status < 500) return false;
-  
+
   return true;
 };
 
-const sendChatRequest = async ({ 
-  messages, 
-  modelInfo, 
-  selectedPart, 
-  screenshot, 
-  sceneAnalysis, 
+const sendChatRequest = async ({
+  messages,
+  modelInfo,
+  selectedPart,
+  screenshot,
+  sceneAnalysis,
   analysisContext,
   signal // AbortSignal for cancellation
 }) => {
@@ -65,7 +65,7 @@ const sendChatRequest = async ({
         role: msg.role,
         content: msg.content
       })),
-      modelInfo,
+      modelInfo: modelInfo ? { ...modelInfo, modelStructure: undefined } : null,
       selectedPart,
       screenshot,
       sceneAnalysis,
@@ -116,8 +116,8 @@ const sendChatRequest = async ({
  * 
  * @returns {Object} Mutation object with sendMessage function and state
  */
-export const useAIChat = ({ 
-  onSuccess, 
+export const useAIChat = ({
+  onSuccess,
   onError,
   maxRetries = 3,
   timeout = 60000 // 60 seconds default timeout
@@ -139,14 +139,14 @@ export const useAIChat = ({
         return result;
       } catch (error) {
         clearTimeout(timeoutId);
-        
+
         // Handle abort/timeout
         if (error.name === 'AbortError') {
           const timeoutError = new Error(`Request timeout after ${timeout / 1000}s`);
           timeoutError.isTimeout = true;
           throw timeoutError;
         }
-        
+
         throw error;
       }
     },
@@ -154,7 +154,7 @@ export const useAIChat = ({
     // Retry configuration with exponential backoff and jitter
     retry: (failureCount, error) => {
       console.log(`❌ Request failed (attempt ${failureCount}/${maxRetries}):`, error.message);
-      
+
       // Don't retry if max retries reached
       if (failureCount >= maxRetries) {
         console.log('🛑 Max retries reached, giving up');
@@ -163,7 +163,7 @@ export const useAIChat = ({
 
       // Check if error is retryable
       const shouldRetry = isRetryableError(error);
-      
+
       if (!shouldRetry) {
         console.log('⚠️ Non-retryable error, not retrying');
         return false;
@@ -178,10 +178,10 @@ export const useAIChat = ({
     // Callbacks
     onSuccess: (data, variables) => {
       console.log('🎉 AI chat request successful');
-      
+
       // Invalidate related queries if needed
       queryClient.invalidateQueries({ queryKey: ['ai-chat'] });
-      
+
       if (onSuccess) {
         onSuccess(data, variables);
       }
@@ -203,10 +203,10 @@ export const useAIChat = ({
     // Prevent duplicate requests
     onMutate: async (variables) => {
       console.log('⏳ Starting AI chat request...');
-      
+
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['ai-chat'] });
-      
+
       return { startTime: Date.now() };
     },
 
@@ -221,25 +221,25 @@ export const useAIChat = ({
   return {
     // Main function to send messages
     sendMessage: (payload) => mutation.mutate(payload),
-    
+
     // Async version that returns a promise
     sendMessageAsync: (payload) => mutation.mutateAsync(payload),
-    
+
     // State flags
     isLoading: mutation.isPending,
     isError: mutation.isError,
     isSuccess: mutation.isSuccess,
-    
+
     // Data and error
     data: mutation.data,
     error: mutation.error,
-    
+
     // Retry count
     failureCount: mutation.failureCount,
-    
+
     // Reset mutation state
     reset: mutation.reset,
-    
+
     // Raw mutation object
     mutation
   };

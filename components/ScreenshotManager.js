@@ -365,6 +365,12 @@ export class ScreenshotManager {
             (analysis.components.length * 0.3)
         );
 
+        // Sort components by complexity (vertex count) and keep top 50 to prevent payload issues
+        analysis.components.sort((a, b) => b.vertexCount - a.vertexCount);
+        if (analysis.components.length > 50) {
+            analysis.components = analysis.components.slice(0, 50);
+        }
+
         return analysis;
     }
 
