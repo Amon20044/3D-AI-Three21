@@ -345,6 +345,88 @@ export async function POST(req) {
                 }),
             },
             maxSteps: 7, // Allow up to 5 steps for multi-turn tool usage
+            experimental_repairToolCall: async ({
+                toolCall,
+                tools,
+                parameterSchema,
+                error,
+                messages,
+            }) => {
+                try {
+                    // Only repair searchGoogleScholar
+                    if (toolCall.toolName !== "searchGoogleScholar") return null;
+
+                    const originalArgs = toolCall.args || {};
+
+                    // -------------------------------
+                    // 1. Extract last user message
+                    // -------------------------------
+                    const lastUser = [...messages].reverse().find(m => m.role === "user");
+                    const lastText =
+                        lastUser?.content?.toString() ||
+                        lastUser?.parts?.map(p => p.text || "").join(" ") ||
+                        "";
+
+                    // -------------------------------
+                    // 2. Auto-generate short query
+                    // -------------------------------
+                    const conciseQuery = lastText
+                        .replace(/[^a-zA-Z0-9 ]/g, " ")
+                        .split(/\s+/)
+                        .filter((w) => w.length > 2)
+                        .slice(0, 6)            // Keep query short
+                        .join(" ")
+                        .trim();
+
+                    // -------------------------------
+                    // 3. Rebuild parameters cleanly
+                    // -------------------------------
+                    const repairedArgs = {};
+
+                    // Query fix
+                    repairedArgs.query =
+                        originalArgs.query && originalArgs.query.length >= 3
+                            ? originalArgs.query.trim()
+                            : conciseQuery || "recent research";
+
+                    // maxItems fix
+                    if (typeof originalArgs.maxItems === "number" && originalArgs.maxItems > 0) {
+                        repairedArgs.maxItems = originalArgs.maxItems;
+                    } else {
+                        repairedArgs.maxItems = 10; // default
+                    }
+
+                    // minYear fix
+                    if (typeof originalArgs.minYear === "number" && originalArgs.minYear > 1900) {
+                        repairedArgs.minYear = originalArgs.minYear;
+                    }
+
+                    // -------------------------------
+                    // 4. Validate parameters
+                    // -------------------------------
+                    const schema = parameterSchema({ toolName: "searchGoogleScholar" });
+
+                    const ajv = await import("ajv").then((m) => new m.default());
+                    const validate = ajv.compile(schema);
+
+                    if (!validate(repairedArgs)) {
+                        console.warn("❗Repair failed schema validation", validate.errors);
+                        return null;
+                    }
+
+                    // -------------------------------
+                    // 5. Return repaired tool call
+                    // -------------------------------
+                    return {
+                        ...toolCall,
+                        args: repairedArgs,
+                    };
+                } catch (err) {
+                    console.error("Tool Repair Error:", err);
+                    return null;
+                }
+            },
+
         });
 
         return result.toUIMessageStreamResponse();
