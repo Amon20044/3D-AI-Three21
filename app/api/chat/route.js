@@ -299,8 +299,8 @@ export async function POST(req) {
                     description: 'Search Google Scholar for academic research papers, citations, and patents. CRITICAL: Create a Short concise query for finding research papers on google scholar based on users context',
                     parameters: z.object({
                         query: z.string().min(3).describe('Query Keywords concise minimum for finding research papers on google scholar'),
-                        maxItems: z.number().optional().describe('Maximum number of results to return (default 10).'),
-                        minYear: z.number().optional().describe('Minimum year for results (default 2022 for recent research).'),
+                        maxItems: z.number().optional().describe('Maximum number of results to return (default 10, but if user gives in query then use that only).'),
+                        minYear: z.number().optional().describe('Minimum year for results (default 2022 for recent research, but if user gives in query then use that only).'),
                     }),
                     execute: async ({ query, maxItems, minYear }) => {
                         console.log("🛠️ Tool Call: searchGoogleScholar", { query, minYear });
