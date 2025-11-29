@@ -1,17 +1,11 @@
+import { Buffer } from "node:buffer";
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { streamText, convertToModelMessages, tool } from 'ai';
 import { z } from 'zod';
 import { searchGoogleScholar } from '@/lib/apifyClient';
-
 export const runtime = 'nodejs';
 
 const ENHANCED_SYSTEM_PROMPT = `
-When the user asks anything about research, references, citations, academic explanation, papers, surveys, or "search",
-you MUST ALWAYS call the searchGoogleScholar tool.
-
-Never answer research queries directly. Tool call is mandatory.
-Return short concise query only.
-
 
 You shouldn’t be **locked** to one persona. It should **dynamically shift** based on user level:
 
@@ -143,7 +137,7 @@ Bro, this is your **final, polished, dynamic, adaptive** system prompt — built
 * student learning
 * research support
 * dynamic persona shifts
-* stateless isolation required until user asks for previous context
+* stateless isolation required until user asks for previous context or summarization like chat
 
 `;
 
