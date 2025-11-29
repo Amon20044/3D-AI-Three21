@@ -89,7 +89,8 @@ class ChatStorageManager {
                         role: msg.role,
                         timestamp: msg.timestamp || (msg.createdAt ? new Date(msg.createdAt).getTime() : Date.now()),
                         createdAt: msg.createdAt,
-                        metadata: msg.metadata
+                        metadata: msg.metadata,
+                        data: msg.data  // Preserve data field (screenshots, etc.)
                     };
 
                     // Preserve parts array (contains text, tool calls, tool results, etc.)

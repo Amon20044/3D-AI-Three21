@@ -21,9 +21,9 @@ export class ScreenshotManager {
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
 
         const {
-            width = isMobile ? 800 : 1024,
-            height = isMobile ? 600 : 768,
-            quality = isMobile ? 0.8 : 0.9,
+            width = 1920,
+            height = 1080,
+            quality = 0.9,
             format = 'image/jpeg'
         } = options;
 
@@ -41,7 +41,7 @@ export class ScreenshotManager {
             const capturedCanvas = await html2canvas(canvas, {
                 backgroundColor: null, // Preserve CSS background
                 logging: false,
-                scale: isMobile ? 0.75 : 1, // Optimize scale
+                scale: 1, // Optimize scale
                 useCORS: true,
                 allowTaint: true,
                 ignoreElements: (element) => {
