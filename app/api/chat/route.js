@@ -291,8 +291,11 @@ export async function POST(req) {
         const result = await streamText({
             model: gemini("gemini-2.5-flash"),
             system: contextPrompt,
-            experimental_telemetry: false,
-            messages: convertToModelMessages(messages),
+            messages: convertToModelMessages(messages, {
+                tools: {
+                    searchGoogleScholar,
+                }
+            }),
             temperature: 0.4,
             maxRetries: 3,
             toolChoice: "auto",
@@ -346,7 +349,7 @@ export async function POST(req) {
                     },
                 }),
             },
-            maxSteps: 7, // Allow up to 5 steps for multi-turn tool usage
+            maxSteps: 5, // Allow up to 5 steps for multi-turn tool usage
             experimental_repairToolCall: async ({
                 toolCall,
                 tools,
