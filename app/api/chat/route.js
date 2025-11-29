@@ -6,6 +6,13 @@ import { searchGoogleScholar } from '@/lib/apifyClient';
 export const runtime = 'nodejs';
 
 const ENHANCED_SYSTEM_PROMPT = `
+When the user asks anything about research, references, citations, academic explanation, papers, surveys, or "search",
+you MUST ALWAYS call the searchGoogleScholar tool.
+
+Never answer research queries directly. Tool call is mandatory.
+Return short concise query only.
+
+
 You shouldn’t be **locked** to one persona. It should **dynamically shift** based on user level:
 
 * **A school kid**
@@ -294,6 +301,7 @@ export async function POST(req) {
             messages: convertToModelMessages(messages),
             temperature: 0.4,
             maxRetries: 3,
+            toolChoice: "auto",
             tools: {
                 searchGoogleScholar: tool({
                     description: 'Search Google Scholar for academic research papers, citations, and patents. CRITICAL: Create a Short concise query for finding research papers on google scholar based on users context',
@@ -352,81 +360,71 @@ export async function POST(req) {
                 error,
                 messages,
             }) => {
+                // Only repair Scholar calls
+                if (toolCall.toolName !== "searchGoogleScholar") return null;
+
                 try {
-                    // Only repair searchGoogleScholar
-                    if (toolCall.toolName !== "searchGoogleScholar") return null;
-
-                    const originalArgs = toolCall.args || {};
-
-                    // -------------------------------
-                    // 1. Extract last user message
-                    // -------------------------------
-                    const lastUser = [...messages].reverse().find(m => m.role === "user");
-                    const lastText =
-                        lastUser?.content?.toString() ||
-                        lastUser?.parts?.map(p => p.text || "").join(" ") ||
+                    // Extract user text
+                    const lastUserMsg = [...messages].reverse().find(m => m.role === "user");
+                    const rawUserText =
+                        lastUserMsg?.content?.toString() ||
+                        lastUserMsg?.parts?.map(p => p.text || "").join(" ") ||
                         "";
 
-                    // -------------------------------
-                    // 2. Auto-generate short query
-                    // -------------------------------
-                    const conciseQuery = lastText
+                    // Extract original args safely
+                    const args = toolCall.args || {};
+                    const cleanedArgs = {};
+
+                    // ---- Repair Query ----
+                    let q = args.query || rawUserText;
+
+                    // force concise query
+                    q = q
                         .replace(/[^a-zA-Z0-9 ]/g, " ")
                         .split(/\s+/)
-                        .filter((w) => w.length > 2)
-                        .slice(0, 6)            // Keep query short
+                        .filter(w => w.length > 2)
+                        .slice(0, 6)
                         .join(" ")
                         .trim();
 
-                    // -------------------------------
-                    // 3. Rebuild parameters cleanly
-                    // -------------------------------
-                    const repairedArgs = {};
+                    if (!q || q.length < 3) q = "recent research";
 
-                    // Query fix
-                    repairedArgs.query =
-                        originalArgs.query && originalArgs.query.length >= 3
-                            ? originalArgs.query.trim()
-                            : conciseQuery || "recent research";
+                    cleanedArgs.query = q;
 
-                    // maxItems fix
-                    if (typeof originalArgs.maxItems === "number" && originalArgs.maxItems > 0) {
-                        repairedArgs.maxItems = originalArgs.maxItems;
-                    } else {
-                        repairedArgs.maxItems = 10; // default
-                    }
+                    // ---- maxItems ----
+                    cleanedArgs.maxItems =
+                        typeof args.maxItems === "number" && args.maxItems > 0
+                            ? args.maxItems
+                            : 10;
 
-                    // minYear fix
-                    if (typeof originalArgs.minYear === "number" && originalArgs.minYear > 1900) {
-                        repairedArgs.minYear = originalArgs.minYear;
-                    }
+                    // ---- minYear ----
+                    cleanedArgs.minYear =
+                        typeof args.minYear === "number" && args.minYear > 1900
+                            ? args.minYear
+                            : 2022;
 
-                    // -------------------------------
-                    // 4. Validate parameters
-                    // -------------------------------
+                    // ---- Validate with schema ----
                     const schema = parameterSchema({ toolName: "searchGoogleScholar" });
 
-                    const ajv = await import("ajv").then((m) => new m.default());
+                    const Ajv = (await import("ajv")).default;
+                    const ajv = new Ajv();
                     const validate = ajv.compile(schema);
 
-                    if (!validate(repairedArgs)) {
-                        console.warn("❗Repair failed schema validation", validate.errors);
+                    if (!validate(cleanedArgs)) {
+                        console.warn("Validation failed:", validate.errors);
                         return null;
                     }
 
-                    // -------------------------------
-                    // 5. Return repaired tool call
-                    // -------------------------------
+                    // Return repaired tool call
                     return {
                         ...toolCall,
-                        args: repairedArgs,
+                        args: cleanedArgs,
                     };
-                } catch (err) {
-                    console.error("Tool Repair Error:", err);
+                } catch (e) {
+                    console.error("Repair error:", e);
                     return null;
                 }
             },
-
         });
 
         return result.toUIMessageStreamResponse();
