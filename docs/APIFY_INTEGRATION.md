@@ -164,6 +164,7 @@ export async function searchGoogleScholar({ query, maxItems = 20, minYear = 2022
     const input = {
         keyword: query,
         maxItems: maxItems,
+        minYear: minYear,
         filter: "all",
         sortBy: "relevance",
         articleType: "any",
