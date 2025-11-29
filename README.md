@@ -6,15 +6,44 @@
 
 ---
 
-## 🦈 The Pitch (Shark Tank Style)
+## 📑 Case Study: Intelligent Engineering Analysis
 
-**"Sharks, imagine you're an engineer trying to understand a complex jet engine or a robotic arm."**
+**The Challenge**
+Engineers often struggle to understand complex assemblies using traditional 2D blueprints or static 3D models. Visualizing internal components and their relationships requires manual disassembly, which is time-consuming and inefficient. It's akin to trying to learn surgery from a photograph—you miss the depth and connectivity of the system.
 
-Today, engineers are stuck staring at 2D blueprints or static 3D models. They can't see *inside*. They can't understand *how* it fits together without exploding it manually, which takes hours. It's like trying to learn surgery from a photograph.
+**The Solution**
+**Three21** addresses this by combining **hierarchical spatial decomposition** with **multimodal AI**. It automatically disassembles 3D models layer by layer while preserving their structural hierarchy. More than just a viewer, it's an *intelligent analysis platform* that allows engineers to "converse" with the model, gaining insights into materials, manufacturing processes, and design intent.
 
-**Three21 is the solution.** We use AI and advanced spatial algorithms to *automatically* disassemble any 3D model, layer by layer, preserving the hierarchy. It's not just a viewer; it's an *intelligent analysis platform* that lets you "talk" to the model.
+---
 
-We are here to revolutionize reverse engineering, education, and design review.
+## ✨ New Features (v2.1)
+
+### 🎭 Dynamic Persona System
+The AI now adapts its responses based on your expertise level. Whether you are a **student**, **professional engineer**, or **researcher**, Three21 adjusts its tone and complexity to match your needs.
+
+### 📸 Smart Screenshot Capture
+- **Auto-Capture**: Selecting a part automatically captures a high-res (1920x1080) screenshot of that specific component.
+- **Inline Previews**: Screenshots are displayed directly in the chat stream for immediate visual context.
+- **Context Awareness**: The AI analyzes these screenshots to provide precise, visually-grounded answers.
+
+### 📱 Enhanced Mobile Experience
+- **Collapsible FPS Panel**: Performance metrics now auto-collapse on smaller screens (≤768px) to maximize viewing area.
+- **Responsive Layout**: The UI adapts seamlessly to mobile devices, ensuring a smooth experience on the go.
+
+### 📝 Rich Text Formatting
+- **Hashtag Support**: Technical terms and keywords are automatically highlighted for better readability.
+- **Markdown Tables**: Specifications and data are presented in clean, structured tables.
+
+---
+
+## 🛠️ Recent Technical Updates
+
+| Component | Update Summary |
+|-----------|----------------|
+| **System Prompt** | Replaced static prompt with a dynamic, multi-level persona system. Expanded context to include Model Info, Scene Analysis, and Selected Part details. |
+| **Performance UI** | Implemented a collapsible FPS panel in `AnyModelViewer.js` that respects mobile constraints. Unified screenshot scaling to 1.0 for consistent quality. |
+| **Data Persistence** | Enhanced `ChatStorageManager.js` to preserve the `data` field in messages, ensuring screenshots and metadata are saved in chat history. |
+| **Message Handling** | Migrated to `useLayoutEffect` for synchronous state updates, fixing race conditions in message sending. Added `screenshotRef` for reliable data access. |
 
 ---
 

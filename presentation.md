@@ -1,16 +1,69 @@
 # Three21: The Future of 3D Engineering Analysis 🚀
 
-## Slide 1: The Hook (Shark Tank Pitch) 🦈
+## Slide 1: The Challenge & Solution 🎯
 
-**"Sharks, imagine you're an engineer trying to understand a complex jet engine or a robotic arm."**
+**"The X-Ray Vision for Engineering"**
 
-*   **The Problem:** Today, you're stuck staring at 2D blueprints or static 3D models. You can't see *inside*. You can't understand *how* it fits together without exploding it manually, which takes hours. It's like trying to learn surgery from a photograph.
-*   **The Solution:** Enter **Three21**. We are the "X-Ray Vision" for engineering. We use AI and advanced spatial algorithms to *automatically* disassemble any 3D model, layer by layer, preserving the hierarchy. It's not just a viewer; it's an *intelligent analysis platform*.
-*   **The Ask:** We're here to revolutionize how engineers learn, analyze, and reverse-engineer complex systems.
+*   **The Problem:** Engineers struggle to visualize internal components of complex assemblies using static 2D/3D media. Manual disassembly is slow and disconnects parts from their context.
+*   **The Solution:** **Three21** combines hierarchical spatial decomposition with multimodal AI. It automatically disassembles models while preserving structure, creating an intelligent dialogue with the design.
+*   **The Impact:** Accelerating reverse engineering, design review, and technical education by bridging the gap between visual models and technical data.
 
 ---
 
-## Slide 2: The "MLS Track" & Gemini 2.5 Flash 🧠
+## Slide 2: New Features (v2.1) ✨
+
+**"Adaptive Intelligence & Enhanced UX"**
+
+*   **Dynamic Persona System:** AI adapts to your level (Student vs. Researcher).
+*   **Smart Auto-Capture:** Selecting a part instantly captures a focused screenshot for the AI.
+*   **Mobile-First Design:** Collapsible performance UI and responsive layouts.
+
+```mermaid
+graph LR
+  A["User Input"] -->|Analyzes expertise| B["Dynamic Persona System"]
+  B -->|Adapts tone| C["Three21Bot Response"]
+  D["Screenshot Capture"] -->|Stores in ref| E["Message Data"]
+  E -->|Persists| F["Chat History"]
+  G["Mobile Device"] -->|Auto-collapse| H["FPS Panel"]
+  H -->|Improves UX| I["Better Layout"]
+```
+
+---
+
+## Slide 3: Technical Workflow (Sequence) 🔄
+
+**"How We Handle Real-Time Context"**
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Three21Bot
+    participant ScreenshotManager
+    participant API
+    participant ChatStorage
+
+    User->>Three21Bot: Select 3D part
+    Three21Bot->>Three21Bot: useLayoutEffect: Update selectedPartRef
+    Three21Bot->>Three21Bot: Clear stale screenshot
+    
+    alt onScreenshot provided
+        Three21Bot->>ScreenshotManager: captureModelOnly()
+        ScreenshotManager-->>Three21Bot: Screenshot data
+        Three21Bot->>Three21Bot: Store in screenshotRef
+    end
+    
+    User->>Three21Bot: Send message
+    Three21Bot->>Three21Bot: Attach screenshot to message.data
+    Three21Bot->>API: Send message with screenshot
+    API-->>Three21Bot: Response
+    
+    Three21Bot->>ChatStorage: saveChatForModel (preserve data)
+    Three21Bot->>User: Display message + inline screenshot
+```
+
+---
+
+## Slide 4: The "MLS Track" & Gemini 2.5 Flash 🧠
 
 **"Powered by the Next Generation of AI"**
 
@@ -22,7 +75,7 @@
 
 ---
 
-## Slide 3: High-Level System Design (Layer 1) 🏗️
+## Slide 5: High-Level System Design (Layer 1) 🏗️
 
 **"How We Build the Future"**
 
@@ -66,7 +119,7 @@ graph TD
 
 ---
 
-## Slide 4: The Rendering Engine (The Core) 🎨
+## Slide 6: The Rendering Engine (The Core) 🎨
 
 **"BFS-Based Hierarchical Rendering"**
 
@@ -92,7 +145,7 @@ graph TD
 
 ---
 
-## Slide 5: DevOps & Intelligence Architecture 🤖
+## Slide 7: DevOps & Intelligence Architecture 🤖
 
 **"Automating Quality & Accessibility"**
 
@@ -126,7 +179,7 @@ graph TD
 
 ---
 
-## Slide 6: Lingo.dev Integration 🌍
+## Slide 8: Lingo.dev Integration 🌍
 
 **"Breaking Language Barriers with AI"**
 
@@ -139,7 +192,7 @@ graph TD
 
 ---
 
-## Slide 7: Tech Stack Deep Dive 🛠️
+## Slide 9: Tech Stack Deep Dive 🛠️
 
 *   **Frontend:** Next.js 15 (App Router), React 19, TailwindCSS
 *   **3D Engine:** Three.js, React Three Fiber
@@ -152,7 +205,7 @@ graph TD
 
 ---
 
-## Slide 8: Future Scope (The Roadmap) 🔮
+## Slide 10: Future Scope (The Roadmap) 🔮
 
 **"Where We Go Next"**
 
