@@ -1,7 +1,11 @@
 import lingoCompiler from "lingo.dev/compiler";
 
 /** @type {import('next').NextConfig} */
-const config = {};
+const config = {
+    experimental: {
+        nodeMiddleware: true,
+    },
+};
 
 const withLingo = lingoCompiler.next({
     sourceRoot: "app",
