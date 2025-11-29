@@ -23,8 +23,8 @@ export class ScreenshotManager {
         const {
             width = 1920,
             height = 1080,
-            quality = 0.9,
-            format = 'image/jpeg'
+            quality = 0.65, // WebP sweet spot for compression vs quality
+            format = 'image/webp' // WebP provides ~30% better compression than JPEG
         } = options;
 
         try {
@@ -117,8 +117,8 @@ export class ScreenshotManager {
             // Render the scene
             offScreenRenderer.render(scene, camera);
 
-            // Get the canvas and convert to data URL
-            const dataURL = offScreenRenderer.domElement.toDataURL('image/png', 0.9);
+            // Get the canvas and convert to data URL (WebP for better compression)
+            const dataURL = offScreenRenderer.domElement.toDataURL('image/webp', 0.75);
 
             // Clean up
             offScreenRenderer.dispose();
@@ -171,11 +171,13 @@ export class ScreenshotManager {
             camera.lookAt(center);
             camera.updateMatrixWorld();
 
-            // Capture screenshot
+            // Capture screenshot with WebP compression
             const screenshot = await this.captureModelOnly({
                 ...options,
                 width: 1024,
-                height: 768
+                height: 768,
+                format: 'image/webp',
+                quality: 0.75
             });
 
             // Restore camera position
@@ -232,7 +234,9 @@ export class ScreenshotManager {
                 const screenshot = await this.captureModelOnly({
                     ...options,
                     width: 512,
-                    height: 512
+                    height: 512,
+                    format: 'image/webp',
+                    quality: 0.75
                 });
 
                 if (screenshot) {
