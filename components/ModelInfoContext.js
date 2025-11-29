@@ -70,7 +70,7 @@ export function ModelInfoProvider({ children, demoConfig = null }) {
 
         const traverseObject = (object, path = '') => {
             const currentPath = path ? `${path}/${object.name}` : object.name;
-            
+
             if (object.name) {
                 structure.meshComponents.push({
                     name: object.name,
@@ -121,14 +121,14 @@ export function ModelInfoProvider({ children, demoConfig = null }) {
             ] : null,
             boundingBox: object?.geometry?.boundingBox || null
         };
-        
+
         setSelectedPart(partInfo);
-        
+
         // Auto-open AI chat when part is selected in demo mode
         if (demoConfig) {
             setIsAIOpen(true);
         }
-        
+
         return partInfo;
     }, [demoConfig]);
 
@@ -139,7 +139,7 @@ export function ModelInfoProvider({ children, demoConfig = null }) {
             uploadTime: new Date().toISOString(),
             id: Date.now().toString()
         };
-        
+
         await idbSet('currentModelInfo', modelData);
         setModelInfo(modelData);
         return modelData;
@@ -167,7 +167,7 @@ export function ModelInfoProvider({ children, demoConfig = null }) {
                 ...modelData,
                 isDemoMode: !!demoConfig,
                 demoInfo: demoConfig,
-                modelStructure: modelStructure,
+                // modelStructure: modelStructure, // REMOVED: Too large
                 selectedPart: selectedPart
             };
 
@@ -177,12 +177,13 @@ export function ModelInfoProvider({ children, demoConfig = null }) {
                 body: JSON.stringify({
                     messages: [{
                         role: 'user',
-                        content: demoConfig 
+                        content: demoConfig
                             ? `Analyze this ${demoConfig.name}. Here's the description: ${demoConfig.description}. Focus on the technical components and their functions.`
                             : 'Provide a comprehensive analysis of this 3D model. Include component identification, likely purpose, engineering insights, and reverse engineering observations.'
                     }],
                     modelInfo: contextData,
-                    screenshot: screenshot
+                    screenshot: screenshot,
+                    // sceneAnalysis: null // REMOVED
                 })
             });
 
