@@ -1,5 +1,5 @@
 'use client';
-
+import './EmbeddedDemoViewer.css';
 import { Suspense, useRef, useCallback, useEffect, useState, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment } from '@react-three/drei';
@@ -157,14 +157,14 @@ function useOptimizedLayerManager(modelRef, disassembleDistance = 500) {
         setIsInitialized(true);
         console.log(`✅ Initialized ${layerData.layers.length} layers with ${layerData.disassemblyTargets.size} disassembly targets`);
     }, [layerData, disassembleDistance, isInitialized]);    // Layer-wise disassemble function - disassembles next layer
-    
+
     const disassembleNextLayer = useCallback(() => {
         if (isAnimating || !layerData.initialized || currentLayer >= layerData.layers.length) {
-            console.log('Cannot disassemble next layer:', { 
-                isAnimating, 
-                initialized: layerData.initialized, 
-                currentLayer, 
-                totalLayers: layerData.layers.length 
+            console.log('Cannot disassemble next layer:', {
+                isAnimating,
+                initialized: layerData.initialized,
+                currentLayer,
+                totalLayers: layerData.layers.length
             });
             return;
         }
@@ -179,7 +179,7 @@ function useOptimizedLayerManager(modelRef, disassembleDistance = 500) {
         setIsAnimating(true);
 
         const animationTargets = [];
-        
+
         // Only animate objects in the current layer
         layer.forEach(obj => {
             const targetPosition = layerData.disassemblyTargets.get(obj.uuid);
@@ -204,7 +204,7 @@ function useOptimizedLayerManager(modelRef, disassembleDistance = 500) {
         };
 
         setCurrentLayer(prev => prev + 1);
-        
+
         // Update assembled state
         if (currentLayer + 1 >= layerData.layers.length) {
             setIsAssembled(false);
@@ -214,10 +214,10 @@ function useOptimizedLayerManager(modelRef, disassembleDistance = 500) {
     // Layer-wise reassemble function - reassembles previous layer
     const reassemblePreviousLayer = useCallback(() => {
         if (isAnimating || !layerData.initialized || currentLayer <= 0) {
-            console.log('Cannot reassemble previous layer:', { 
-                isAnimating, 
-                initialized: layerData.initialized, 
-                currentLayer 
+            console.log('Cannot reassemble previous layer:', {
+                isAnimating,
+                initialized: layerData.initialized,
+                currentLayer
             });
             return;
         }
@@ -258,7 +258,7 @@ function useOptimizedLayerManager(modelRef, disassembleDistance = 500) {
         };
 
         setCurrentLayer(prev => prev - 1);
-        
+
         // Update assembled state
         if (currentLayer - 1 <= 0) {
             setIsAssembled(true);
@@ -270,7 +270,7 @@ function useOptimizedLayerManager(modelRef, disassembleDistance = 500) {
         if (isAnimating || !layerData.initialized || currentLayer >= layerData.layers.length) {
             return;
         }
-        
+
         // Start disassembling from current layer
         disassembleNextLayer();
     }, [isAnimating, layerData.initialized, layerData.layers.length, currentLayer, disassembleNextLayer]);
@@ -280,7 +280,7 @@ function useOptimizedLayerManager(modelRef, disassembleDistance = 500) {
         if (isAnimating || !layerData.initialized || currentLayer <= 0) {
             return;
         }
-        
+
         // Start reassembling from current layer back to 0
         reassemblePreviousLayer();
     }, [isAnimating, layerData.initialized, currentLayer, reassemblePreviousLayer]);
@@ -308,7 +308,7 @@ function useOptimizedLayerManager(modelRef, disassembleDistance = 500) {
             animationRef.current.isActive = false;
             setIsAnimating(false);
             console.log(`✅ ${animationRef.current.type} animation completed`);
-            
+
             // Auto-continue layer animations for smoother experience
             if (animationRef.current.type === 'disassemble' && currentLayer < layerData.layers.length) {
                 // Continue to next layer after a short delay
@@ -563,335 +563,6 @@ export default function EmbeddedDemoViewer({
                 onHide={hideToast}
             />
 
-            <style jsx>{`
-                .embedded-demo-viewer {
-                    position: relative;
-                    width: 100%;
-                    height: 100%;
-                    background: transparent;
-                    border-radius: var(--radius);
-                    overflow: hidden;
-                }
-
-                .model-canvas-container {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: transparent;
-                    border-radius: var(--radius);
-                    border: 1px solid var(--border);
-                }
-
-                .animation-indicator {
-                    position: absolute;
-                    top: 1rem;
-                    right: 1rem;
-                    z-index: 100;
-                    background: var(--card);
-                    border: 1px solid var(--border);
-                    border-radius: 50%;
-                    padding: 0.5rem;
-                    backdrop-filter: var(--backdrop-blur);
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-                }
-
-                .animation-spinner {
-                    color: var(--primary-accent);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-
-                /* Demo Control Buttons - Absolute Positioned with Glass Blur */
-                .demo-controls {
-                    position: absolute;
-                    bottom: 1rem;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: 1rem;
-                    padding: 1rem;
-                    background: rgba(255, 255, 255, 0.1);
-                    backdrop-filter: blur(20px);
-                    -webkit-backdrop-filter: blur(20px);
-                    border: 1px solid rgba(255, 255, 255, 0.2);
-                    border-radius: 16px;
-                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-                    z-index: 100;
-                    min-width: 280px;
-                }
-
-                .btn-demo {
-                    position: relative;
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 0.5rem;
-                    height: 2.75rem;
-                    padding: 0 1rem;
-                    border: 1px solid var(--border);
-                    background: var(--card);
-                    color: var(--foreground);
-                    border-radius: var(--radius);
-                    font-size: 0.875rem;
-                    font-weight: 500;
-                    font-family: inherit;
-                    text-decoration: none;
-                    outline: none;
-                    cursor: pointer;
-                    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-                    overflow: hidden;
-                    user-select: none;
-                    white-space: nowrap;
-                    width: 100%;
-                }
-
-                .btn-demo:focus-visible {
-                    outline: 2px solid var(--ring);
-                    outline-offset: 2px;
-                }
-
-                .btn-demo::before {
-                    content: '';
-                    position: absolute;
-                    top: 0;
-                    left: -100%;
-                    width: 100%;
-                    height: 100%;
-                    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-                    transition: left 0.5s ease;
-                    z-index: 1;
-                }
-
-                .btn-demo:hover:not(:disabled) {
-                    background: var(--accent);
-                    color: var(--accent-foreground);
-                    border-color: var(--primary-accent);
-                    transform: translateY(-1px);
-                    box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.15);
-                }
-
-                .btn-demo:hover:not(:disabled)::before {
-                    left: 100%;
-                }
-
-                .btn-demo-active {
-                    background: var(--gradient-primary);
-                    color: var(--primary-foreground);
-                    border-color: var(--primary-accent);
-                    box-shadow: 0 4px 14px var(--primary-shadow);
-                    transform: translateY(-1px);
-                }
-
-                .btn-demo-active:hover:not(:disabled) {
-                    background: linear-gradient(135deg, var(--primary-hover) 0%, #1d4ed8 100%);
-                    box-shadow: 0 6px 20px var(--primary-shadow);
-                    transform: translateY(-2px);
-                }
-
-                .btn-demo-secondary {
-                    background: var(--secondary);
-                    color: var(--secondary-foreground);
-                    border-color: var(--border);
-                }
-
-                .btn-demo-secondary:hover:not(:disabled) {
-                    background: var(--primary-accent);
-                    color: var(--primary-foreground);
-                    border-color: var(--primary-accent);
-                    box-shadow: 0 4px 14px var(--primary-shadow);
-                }
-
-                .btn-demo:disabled {
-                    opacity: 0.6;
-                    cursor: not-allowed;
-                    background: var(--muted);
-                    color: var(--muted-foreground);
-                    border-color: var(--border);
-                    transform: none;
-                    box-shadow: none;
-                    pointer-events: none;
-                }
-
-                .btn-demo:disabled::before {
-                    display: none;
-                }
-
-                .btn-icon {
-                    width: 1rem;
-                    height: 1rem;
-                    stroke-width: 2;
-                    flex-shrink: 0;
-                    position: relative;
-                    z-index: 2;
-                }
-
-                .btn-text {
-                    font-weight: 600;
-                    letter-spacing: 0.025em;
-                    position: relative;
-                    z-index: 2;
-                }
-
-                /* Layer Progress Indicator - Absolute Positioned with Glass Blur */
-                .layer-progress {
-                    position: absolute;
-                    top: 1rem;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    padding: 0.75rem 1rem;
-                    background: rgba(255, 255, 255, 0.1);
-                    backdrop-filter: blur(20px);
-                    -webkit-backdrop-filter: blur(20px);
-                    border: 1px solid rgba(255, 255, 255, 0.2);
-                    border-radius: 12px;
-                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-                    z-index: 100;
-                    min-width: 200px;
-                }
-
-                .progress-info {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 0.5rem;
-                }
-
-                .progress-text {
-                    font-size: 0.75rem;
-                    font-weight: 500;
-                    color: var(--muted-foreground);
-                    text-align: center;
-                }
-
-                .progress-bar {
-                    height: 4px;
-                    background: var(--muted);
-                    border-radius: 2px;
-                    overflow: hidden;
-                }
-
-                .progress-fill {
-                    height: 100%;
-                    background: var(--gradient-primary);
-                    border-radius: 2px;
-                    transition: width 0.3s ease;
-                }
-
-                /* Tablet Responsive Design */
-                @media (max-width: 1024px) {
-                    .demo-controls {
-                        min-width: 260px;
-                        padding: 0.875rem;
-                        gap: 0.875rem;
-                        bottom: 1rem;
-                    }
-
-                    .btn-demo {
-                        height: 2.5rem;
-                        font-size: 0.875rem;
-                        gap: 0.5rem;
-                    }
-
-                    .btn-icon {
-                        width: 1rem;
-                        height: 1rem;
-                    }
-
-                    .layer-progress {
-                        top: 1rem;
-                        min-width: 180px;
-                        padding: 0.625rem 0.875rem;
-                    }
-                }
-
-                /* Mobile Responsive Design */
-                @media (max-width: 768px) {
-                    .demo-controls {
-                        bottom: 1rem;
-                        left: 1rem;
-                        right: 1rem;
-                        transform: none;
-                        min-width: auto;
-                        max-width: none;
-                    }
-
-                    .btn-demo {
-                        height: 2.75rem;
-                        font-size: 0.9rem;
-                        gap: 0.6rem;
-                    }
-
-                    .btn-icon {
-                        width: 1.1rem;
-                        height: 1.1rem;
-                    }
-
-                    .btn-text {
-                        font-size: 0.9rem;
-                        font-weight: 600;
-                    }
-
-                    .layer-progress {
-                        top: 1rem;
-                        left: 1rem;
-                        right: 1rem;
-                        transform: none;
-                        min-width: auto;
-                    }
-
-                    .progress-text {
-                        font-size: 0.8rem;
-                    }
-                }
-
-                /* Small Mobile Responsive Design */
-                @media (max-width: 480px) {
-                    .demo-controls {
-                        gap: 0.75rem;
-                        padding: 0.875rem;
-                        bottom: 0.75rem;
-                        left: 0.75rem;
-                        right: 0.75rem;
-                    }
-
-                    .btn-demo {
-                        height: 2.5rem;
-                        font-size: 0.8rem;
-                        gap: 0.5rem;
-                    }
-
-                    .btn-icon {
-                        width: 1rem;
-                        height: 1rem;
-                    }
-
-                    .btn-text {
-                        font-size: 0.8rem;
-                        font-weight: 700;
-                    }
-
-                    .layer-progress {
-                        top: 0.75rem;
-                        left: 0.75rem;
-                        right: 0.75rem;
-                        padding: 0.625rem;
-                    }
-
-                    .progress-text {
-                        font-size: 0.75rem;
-                    }
-                }
-
-                /* Ensure canvas takes full size with transparency */
-                .embedded-demo-viewer canvas {
-                    width: 100% !important;
-                    height: 100% !important;
-                    background: transparent !important;
-                }
-            `}</style>
         </div>
     );
 }

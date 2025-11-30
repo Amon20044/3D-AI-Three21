@@ -16,7 +16,7 @@
 | 🌍 **[Lingo.dev](#-lingodev-integration--global-engineering-made-accessible)** | Internationalization | Compiler-based i18n, 14 languages, Gemini AI translation | ✅ Complete (done for Static Build Time (Lingo Compiler) only due to Gemeni API Free tier Rate Limit Issues with Lingo SDK) |
 | 🤖 **[CodeRabbit](#-coderabbit--ai-powered-code-quality-assurance)** | Code Quality | 10-feature config, auto-review, learning AI, security scanning | ✅ Complete |
 | 🐙 **[GitHub](#-github-best-practices--code-collaboration-excellence)** | Best Practices | Detailed README, commit conventions, PR workflow, collaboration | ✅ Complete |
-| 🐝 **[Apify](#-apify-google-scholar-integration)** | Research Tool | Google Scholar actor, AI tool calling, real-time streaming | ✅ Complete |
+| 🐝 **[Apify](#-apify-integrations)** | Dual Integration (2 Actors (1 Self made, 1 Marketplace)) | **Custom Sketchfab Actor** (built from scratch) + Google Scholar, AI search, premium UI | ✅ Complete |
 | 🧠 **[Gemini](#-mlh-general-track--gemini-25-flash-integration)** | AI Integration | Multimodal analysis, vision capabilities, streaming SSE | ✅ Complete |
 
 ### Track Quick Summaries
@@ -51,14 +51,19 @@
 - 📄 **See detailed docs in**: [GitHub Best Practices section](#-github-best-practices--code-collaboration-excellence)
 
 #### 🐝 Apify Track Summary
-**Actor Integration**: Google Scholar (kdjLO0hegCjr5Ejqp)
+**Dual Actor Integration**: Google Scholar + **Custom-Built Sketchfab Actor**
+- ✅ **Google Scholar Actor** (`kdjLO0hegCjr5Ejqp`): Academic research integration
+- ✅ **Sketchfab Actor** (`tCErBTV7dcifSOlkU`): **CUSTOM ACTOR BUILT FROM SCRATCH** 🎯
+  - 🔗 **Published on Apify Store**: [amonsharma/sketchfab-3d-models-search](https://apify.com/amonsharma/sketchfab-3d-models-search)
+  - 🛠️ Developed specifically for Three21's 3D model discovery needs
+  - 💎 Premium UI with AI-powered natural language search
 - ✅ AI SDK 5.0 tool calling integration
 - ✅ Real-time streaming results
-- ✅ IndexedDB persistence
-- ✅ Structured data extraction (title, authors, citations, links)
-- ✅ Research-grade output with metadata
-- 📄 **See detailed docs in**: [Apify Integration section](#-apify-google-scholar-integration)
-- 📄 **Code**: `app/api/chat/route.js` (lines 303-350)
+- ✅ Natural language search powered by Gemini AI
+- ✅ Structured data extraction with metadata
+- ✅ IndexedDB persistence + Premium UI
+- 📄 **See detailed docs in**: [Apify Integration sections](#-apify-integrations)
+- 📄 **Code**: `app/api/chat/route.js` (Google Scholar), `app/api/search-models/route.js` (Sketchfab)
 
 #### 🧠 Gemini 2.5 Flash Track Summary
 **Multimodal AI**: Vision + Text analysis
@@ -228,6 +233,7 @@ graph TD
         Internationalization["Lingo.dev Compiler"]
         ClientStorage["IndexedDB"]
         UI["React UI Components"]
+        FindModels["Find Models UI (Premium Dark Theme)"]
         Viewer["AnyModelViewer (WebGPU/WebGL)"]
         State["React Context"]
     end
@@ -239,11 +245,14 @@ graph TD
         Tools["AI Tools"]
     end
 
-    subgraph "Research Tool Layer"
+    subgraph "Apify Integration Layer"
         ScholarTool["searchGoogleScholar Tool"]
+        SearchAPI["Search Models API Route"]
         ApifyClient["Apify Client SDK"]
-        Actor["Google Scholar Actor"]
+        ScholarActor["Google Scholar Actor"]
+        SketchfabActor["🎯 CUSTOM Sketchfab Actor (amonsharma)"]
         ScholarAPI["Google Scholar (Web)"]
+        SketchfabAPI["Sketchfab API"]
     end
 
     subgraph "DevOps & Quality"
@@ -256,15 +265,21 @@ graph TD
 
     User --> Browser
     Browser --> UI
+    Browser --> FindModels
     UI --> Viewer
     Viewer --> State
     State <--> AI_SDK
     AI_SDK <--> Gemini
     AI_SDK --> Tools
     Tools --> ScholarTool
+    FindModels --> SearchAPI
+    SearchAPI --> Gemini
+    SearchAPI --> ApifyClient
     ScholarTool --> ApifyClient
-    ApifyClient --> Actor
-    Actor --> ScholarAPI
+    ApifyClient --> ScholarActor
+    ApifyClient --> SketchfabActor
+    ScholarActor --> ScholarAPI
+    SketchfabActor --> SketchfabAPI
     UI --> Lingo
     GitHub --> Dependabot
     GitHub --> CodeRabbitDev
@@ -1087,7 +1102,320 @@ updates:
 -   **Context**: For efficient state management across components.
 
 ### Research & Citations
--   **Apify Google Scholar Actor**: Integrated web scraping for academic research papers, bringing scholarly context directly into the AI conversation.
+-   **Apify Actor Integrations**: Dual integration with **Google Scholar** for academic research and **Sketchfab** for 3D model discovery, revolutionizing both knowledge acquisition and asset sourcing.
+
+---
+
+## 🐝 Apify Integrations
+
+Three21 leverages **two powerful Apify actors** to enhance both research and design workflows:
+
+1. **Google Scholar Actor** - Academic research integration
+2. **Sketchfab Actor** - 3D model discovery platform
+
+---
+
+## 🔍 Apify Sketchfab Integration — Find 3D Models
+
+> **🎯 CUSTOM ACTOR BUILT FROM SCRATCH**  
+> This integration uses a **custom Apify actor** specifically developed for Three21's 3D model discovery needs.  
+> 📦 **Published on Apify Store**: [`amonsharma/sketchfab-3d-models-search`](https://apify.com/amonsharma/sketchfab-3d-models-search)  
+> 🆔 **Actor ID**: `tCErBTV7dcifSOlkU`
+
+Three21 features a **premium 3D model discovery platform** powered by this custom Sketchfab Actor, combining AI-powered natural language search with manual filtering capabilities.
+
+### Overview
+
+The Find Models feature allows engineers and designers to search through thousands of high-quality 3D models from Sketchfab with:
+- **AI-Powered Search**: Natural language queries converted to structured search parameters via Gemini 2.5 Flash
+- **Manual Filters**: Granular control over categories, tags, file formats, and licenses
+- **Premium UI**: Dark theme with glass-morphism, beautiful model cards, and optimized thumbnails
+- **Direct Integration**: Click model cards to view on Sketchfab
+
+### Architecture Flow
+
+```mermaid
+graph LR
+    A["👤 User Query"] --> B{"Search Mode"}
+    B -->|Natural Language| C["🤖 Gemini 2.5 Flash"]
+    B -->|Manual| D["📝 Filter Form"]
+    C --> E["🛠️ Parameter Conversion"]
+    D --> E
+    E --> F["🐝 Apify Sketchfab Actor"]
+    F --> G["📊 Structured Results"]
+    G --> H["🎨 Premium UI Cards"]
+```
+
+### Key Features
+
+#### 🧠 AI-Powered Natural Language Search
+
+Users can search using plain English, and Gemini 2.5 Flash converts queries into optimal Sketchfab search parameters:
+
+**Example Queries**:
+```
+User: "robotic arms with downloadable GLB files"
+→ AI: { q: "robotic arms", file_format: "glb", sort_by: "relevance" }
+
+User: "low poly sci-fi vehicles from 2023"
+→ AI: { q: "sci-fi vehicles", tags: ["low-poly"], sort_by: "publishedAt" }
+
+User: "mechanical gears, CC0 license"
+→ AI: { q: "mechanical gears", license: "CC0", categories: ["mechanical"] }
+```
+
+#### 🎛️ Manual Filter Mode
+
+For advanced users who prefer granular control:
+
+- **Keywords**: Direct search terms
+- **Tags**: Comma-separated tags (e.g., "low-poly, sci-fi, mechanical")
+- **Categories**: Sketchfab categories (e.g., "vehicles-transports")
+- **File Format**: GLB, GLTF, FBX, OBJ filtering
+- **License**: CC0, CC-BY, CC-BY-SA, CC-BY-NC
+- **Sort By**: Relevance, likes, views, published date
+
+#### 🎨 Premium Dark Theme UI
+
+- **Glass-morphism**: Backdrop blur effects for depth
+- **Optimized Thumbnails**: Fast-loading images (no iframes on cards)
+- **Clickable Cards**: Direct links to Sketchfab model pages
+- **Beautiful Animations**: Smooth hover effects and transitions
+- **Responsive Design**: Perfect on desktop, tablet, and mobile
+- **Vanta.js Background**: Animated fog effect for visual appeal
+
+### Implementation Stack
+
+| Component | Technology | Purpose |
+|-----------|-----------|----------|
+| **AI Engine** | Google Gemini 2.5 Flash | Natural language → search params |
+| **Web Scraper** | Apify Sketchfab Actor (`tCErBTV7dcifSOlkU`) | Model data extraction |
+| **API Route** | Next.js 15 API Routes | `/api/search-models` endpoint |
+| **UI Framework** | React 19 + Native CSS | Premium dark theme interface |
+| **Icons** | react-feather | Consistent iconography |
+| **Styling** | CSS Modules + Glass-morphism | Segregated native CSS files |
+
+### API Endpoint: `/api/search-models`
+
+**Request Payload**:
+```javascript
+{
+  "mode": "natural" | "manual",
+  "query": "robotic arms GLB",  // For natural mode
+  "manualFilters": {             // For manual mode
+    "q": "robot",
+    "tags": ["mechanical", "low-poly"],
+    "categories": ["vehicles-transports"],
+    "file_format": "glb",
+    "license": "CC0",
+    "sort_by": "relevance"
+  }
+}
+```
+
+**Response Format**:
+```javascript
+{
+  "models": [
+    {
+      "uid": "abc123...",
+      "name": "Robotic Arm Model",
+      "uri": "https://sketchfab.com/3d-models/...",
+      "viewerUrl": "https://sketchfab.com/models/abc123",
+      "embedUrl": "https://sketchfab.com/models/abc123/embed",
+      "thumbnails": {
+        "images": [
+          { "url": "https://...", "width": 200, "height": 200 },
+          { "url": "https://...", "width": 800, "height": 800 }
+        ]
+      },
+      "user": {
+        "displayName": "Creator Name",
+        "profileUrl": "https://sketchfab.com/...",
+        "avatar": { "images": [...] }
+      },
+      "viewCount": 12500,
+      "likeCount": 350,
+      "faceCount": 45000,
+      "vertexCount": 23000,
+      "isDownloadable": true,
+      "license": { "label": "CC Attribution" },
+      "tags": [
+        { "name": "mechanical" },
+        { "name": "robot" }
+      ]
+    }
+  ],
+  "searchParams": { /* Used parameters */ },
+  "attribution": {
+    "source": "Sketchfab",
+    "sourceUrl": "https://sketchfab.com",
+    "actor": "Apify Sketchfab Search"
+  }
+}
+```
+
+### Code Implementation
+
+#### Backend: Search API (`app/api/search-models/route.js`)
+
+```javascript
+import { ApifyClient } from 'apify-client';
+import { google } from '@ai-sdk/google';
+import { generateObject } from 'ai';
+import { z } from 'zod';
+
+export async function POST(req) {
+    const { query, mode, manualFilters } = await req.json();
+    const apifyClient = new ApifyClient({ token: process.env.APIFY_API_KEY });
+    
+    let searchParams = { count: 15 };
+    
+    if (mode === 'natural' && query) {
+        // AI-powered query conversion
+        const { object: result } = await generateObject({
+            model: google('gemini-2.0-flash-exp'),
+            schema: z.object({
+                q: z.string(),
+                tags: z.array(z.string()).optional(),
+                categories: z.array(z.string()).optional(),
+                file_format: z.string().optional(),
+                license: z.string().optional(),
+                sort_by: z.string().optional()
+            }),
+            system: `Convert natural language queries to Sketchfab search parameters...`,
+            prompt: query
+        });
+        searchParams = { ...searchParams, ...result };
+    } else if (mode === 'manual' && manualFilters) {
+        searchParams = { ...searchParams, ...manualFilters };
+    }
+    
+    // Call Apify Actor
+    const run = await apifyClient.actor("tCErBTV7dcifSOlkU").call(searchParams);
+    const { items } = await apifyClient.dataset(run.defaultDatasetId).listItems();
+    
+    return Response.json({ models: items, searchParams });
+}
+```
+
+#### Frontend: Find Models Page (`app/find-models/page.jsx`)
+
+```javascript
+'use client';
+import { useState } from 'react';
+import { Search, Download, Eye, Heart, User } from 'react-feather';
+import './styles.css';
+
+export default function FindModelsPage() {
+    const [searchMode, setSearchMode] = useState('natural');
+    const [naturalQuery, setNaturalQuery] = useState('');
+    const [results, setResults] = useState([]);
+    
+    const handleSearch = async () => {
+        const payload = {
+            mode: searchMode,
+            query: naturalQuery
+        };
+        
+        const response = await fetch('/api/search-models', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        
+        const data = await response.json();
+        setResults(data.models || []);
+    };
+    
+    return (
+        <div className="find-models-page">
+            {/* Vanta Fog Background */}
+            <div id="vanta-bg" className="vanta-bg"></div>
+            
+            {/* Search UI */}
+            <input 
+                type="text"
+                value={naturalQuery}
+                onChange={(e) => setNaturalQuery(e.target.value)}
+                placeholder="E.g., 'mechanical gears', 'robotic arm GLB'..."
+            />
+            <button onClick={handleSearch}>Search</button>
+            
+            {/* Results Grid */}
+            <div className="results-grid">
+                {results.map(model => (
+                    <ModelCard key={model.uid} model={model} />
+                ))}
+            </div>
+        </div>
+    );
+}
+
+function ModelCard({ model }) {
+    const thumbnail = model.thumbnails?.images?.[1]?.url || model.thumbnails?.images?.[0]?.url;
+    
+    return (
+        <a href={model.uri} target="_blank" className="model-card">
+            <div className="model-thumbnail">
+                <img src={thumbnail} alt={model.name} loading="lazy" />
+                {model.isDownloadable && (
+                    <div className="download-badge">
+                        <Download size={14} /> Downloadable
+                    </div>
+                )}
+            </div>
+            <div className="model-info">
+                <h3>{model.name}</h3>
+                <div className="model-stats">
+                    <span><Eye size={14} /> {model.viewCount?.toLocaleString()}</span>
+                    <span><Heart size={14} /> {model.likeCount?.toLocaleString()}</span>
+                </div>
+            </div>
+        </a>
+    );
+}
+```
+
+### UI Preview
+
+**Search Modes**:
+- 🔍 **Natural Language**: Simple text input with AI processing
+- 🎛️ **Manual Filters**: Advanced filter form for power users
+
+**Model Cards Display**:
+- Thumbnail preview (high resolution)
+- Model name and creator
+- View/like counts with icons
+- Tags (up to 3 displayed)
+- Download badge (if available)
+- Click to open on Sketchfab
+
+### Performance Optimizations
+
+- **Lazy Loading**: Images load as user scrolls
+- **Thumbnail Strategy**: Use medium resolution for cards (not full size)
+- **No Iframe Overhead**: Cards use static images (iframes only in modals)
+- **CSS Segregation**: All styles in native CSS files (no styled-jsx)
+- **Responsive Grid**: Adapts to screen size (1-4 columns)
+
+### Configuration
+
+Add to `.env`:
+```bash
+APIFY_API_KEY=apify_api_xxxxxxxxxxxxxxxxxxxxx
+GOOGLE_API_KEY=AIzaSyxxxxxxxxxxxxxxxxxxxxx  # For AI search
+```
+
+### Use Cases
+
+1. **Engineering Students**: Find reference models for CAD practice
+2. **Game Developers**: Discover assets for prototyping
+3. **3D Artists**: Browse inspiration and downloadable content
+4. **Researchers**: Source models for simulations
+5. **Educators**: Curate model collections for teaching
+
+📖 **Full Documentation**: See [docs/AI_SEARCH_TESTING.md](./docs/AI_SEARCH_TESTING.md) for detailed testing and examples.
 
 ---
 
