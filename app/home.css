@@ -366,9 +366,9 @@
      display: inline-flex;
      align-items: center;
      justify-content: center;
-     width: 1.1em;
-     height: 1.1em;
-     margin-right: 0.2em;
+     width: 0.8em;
+     height: 0.8em;
+     margin-right: 0.07em;
      vertical-align: middle;
      color: white;
  }

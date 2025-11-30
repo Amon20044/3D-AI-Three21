@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, Sliders, Download, User, Eye, Heart } from 'react-feather';
+import { Search, Sliders, Download, User, Eye, Heart, X, ExternalLink, MessageCircle, Calendar } from 'react-feather';
 import Header from '../../components/Header';
 import './styles.css';
+import './modal.css';
 
 export default function FindModelsPage() {
     const [searchMode, setSearchMode] = useState('natural');
@@ -20,6 +21,7 @@ export default function FindModelsPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [searchParams, setSearchParams] = useState(null);
+    const [selectedModel, setSelectedModel] = useState(null);
 
     // Load Vanta.js fog background
     useEffect(() => {
@@ -274,6 +276,7 @@ export default function FindModelsPage() {
                                     <ModelCard
                                         key={model.uid}
                                         model={model}
+                                        onClick={() => setSelectedModel(model)}
                                     />
                                 ))}
                             </div>
@@ -302,20 +305,23 @@ export default function FindModelsPage() {
                     </footer>
                 </main>
             </div>
+
+            {/* PREMIUM Modal */}
+            {selectedModel && (
+                <ModelDetailsModal
+                    model={selectedModel}
+                    onClose={() => setSelectedModel(null)}
+                />
+            )}
         </div>
     );
 }
 
-function ModelCard({ model }) {
+function ModelCard({ model, onClick }) {
     const thumbnail = model.thumbnails?.images?.[1]?.url || model.thumbnails?.images?.[0]?.url;
 
     return (
-        <a
-            href={model.uri}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="model-card"
-        >
+        <div className="model-card" onClick={onClick}>
             {/* Thumbnail Image */}
             <div className="model-thumbnail">
                 {thumbnail ? (
@@ -342,7 +348,7 @@ function ModelCard({ model }) {
             <div className="model-info">
                 <h3 className="model-title">{model.name}</h3>
 
-                {/* Creator */}
+                {/*  Creator */}
                 <div className="model-creator">
                     {model.user.avatar?.images?.[0]?.url ? (
                         <img
@@ -379,6 +385,209 @@ function ModelCard({ model }) {
                     </div>
                 )}
             </div>
-        </a>
+        </div>
+    );
+}
+
+// 🔥🔥🔥 THE MOST PREMIUM MODAL EVER! 🔥🔥🔥
+function ModelDetailsModal({ model, onClose }) {
+    const allThumbnails = model.thumbnails?.images || [];
+    const [selectedThumb, setSelectedThumb] = useState(allThumbnails[allThumbnails.length - 1] || allThumbnails[0]);
+
+    return (
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal-container" onClick={(e) => e.stopPropagation()}>
+                {/* Close Button */}
+                <button className="modal-close" onClick={onClose}>
+                    <X size={28} />
+                </button>
+
+                {/* Modal Content */}
+                <div className="modal-content">
+                    {/* Left Side: 3D Viewer */}
+                    <div className="modal-left">
+                        <div className="iframe-viewer">
+                            <iframe
+                                src={`${model.embedUrl}?autostart=1&ui_theme=dark`}
+                                allow="autoplay; fullscreen; xr-spatial-tracking"
+                                allowFullScreen
+                                title={model.name}
+                            />
+                        </div>
+
+                        {/* Thumbnail Gallery */}
+                        {allThumbnails.length > 0 && (
+                            <div className="thumbnail-gallery">
+                                {allThumbnails.map((thumb, idx) => (
+                                    <img
+                                        key={idx}
+                                        src={thumb.url}
+                                        alt={`Preview ${idx + 1}`}
+                                        className={`gallery-thumb ${selectedThumb?.url === thumb.url ? 'active' : ''}`}
+                                        onClick={() => setSelectedThumb(thumb)}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Right Side: All Data */}
+                    <div className="modal-right">
+                        {/* Title */}
+                        <h1 className="modal-title">{model.name}</h1>
+
+                        {/* Creator Info */}
+                        <div className="creator-section">
+                            <div className="creator-info">
+                                {model.user.avatar?.images?.[0]?.url ? (
+                                    <img
+                                        src={model.user.avatar.images[0].url}
+                                        alt={model.user.displayName}
+                                        className="creator-avatar-large"
+                                    />
+                                ) : (
+                                    <div className="creator-avatar-placeholder">
+                                        <User size={32} />
+                                    </div>
+                                )}
+                                <div>
+                                    <p className="creator-name">{model.user.displayName}</p>
+                                    <p className="creator-username">@{model.user.username}</p>
+                                </div>
+                            </div>
+                            <a
+                                href={model.user.profileUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="view-profile-btn"
+                            >
+                                View Profile
+                            </a>
+                        </div>
+
+                        {/* Stats Grid */}
+                        <div className="stats-grid">
+                            <div className="stat-box">
+                                <Eye size={20} />
+                                <span className="stat-value">{model.viewCount?.toLocaleString() || 0}</span>
+                                <span className="stat-label">Views</span>
+                            </div>
+                            <div className="stat-box">
+                                <Heart size={20} />
+                                <span className="stat-value">{model.likeCount?.toLocaleString() || 0}</span>
+                                <span className="stat-label">Likes</span>
+                            </div>
+                            <div className="stat-box">
+                                <MessageCircle size={20} />
+                                <span className="stat-value">{model.commentCount?.toLocaleString() || 0}</span>
+                                <span className="stat-label">Comments</span>
+                            </div>
+                            {model.animationCount > 0 && (
+                                <div className="stat-box">
+                                    <span className="stat-value">{model.animationCount}</span>
+                                    <span className="stat-label">Animations</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Metadata */}
+                        <div className="metadata-section">
+                            <div className="metadata-item">
+                                <Calendar size={16} />
+                                <span>Published: {new Date(model.publishedAt).toLocaleDateString()}</span>
+                            </div>
+                            <div className="metadata-item">
+                                <Download size={16} />
+                                <span>{model.isDownloadable ? 'Downloadable ✓' : 'View Only'}</span>
+                            </div>
+                            {model.license && (
+                                <div className="metadata-item">
+                                    <span>📜 License: {model.license.label || model.license}</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* File Formats */}
+                        {model.archives && (
+                            <div className="formats-section">
+                                <h3>Available Formats</h3>
+                                <div className="formats-grid">
+                                    {model.archives.glb && (
+                                        <div className="format-card">
+                                            <h4>GLB</h4>
+                                            <p>Faces: {model.archives.glb.faceCount?.toLocaleString()}</p>
+                                            <p>Vertices: {model.archives.glb.vertexCount?.toLocaleString()}</p>
+                                            <p>Size: {(model.archives.glb.size / 1024 / 1024).toFixed(2)} MB</p>
+                                            <p>Textures: {model.archives.glb.textureCount}</p>
+                                        </div>
+                                    )}
+                                    {model.archives.gltf && (
+                                        <div className="format-card">
+                                            <h4>GLTF</h4>
+                                            <p>Faces: {model.archives.gltf.faceCount?.toLocaleString()}</p>
+                                            <p>Vertices: {model.archives.gltf.vertexCount?.toLocaleString()}</p>
+                                            <p>Size: {(model.archives.gltf.size / 1024 / 1024).toFixed(2)} MB</p>
+                                        </div>
+                                    )}
+                                    {model.archives.usdz && (
+                                        <div className="format-card">
+                                            <h4>USDZ</h4>
+                                            <p>Faces: {model.archives.usdz.faceCount?.toLocaleString()}</p>
+                                            <p>Size: {(model.archives.usdz.size / 1024 / 1024).toFixed(2)} MB</p>
+                                        </div>
+                                    )}
+                                    {model.archives.source && (
+                                        <div className="format-card">
+                                            <h4>Source</h4>
+                                            <p>Faces: {model.archives.source.faceCount?.toLocaleString()}</p>
+                                            <p>Vertices: {model.archives.source.vertexCount?.toLocaleString()}</p>
+                                            <p>Size: {(model.archives.source.size / 1024 / 1024).toFixed(2)} MB</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Tags */}
+                        {model.tags?.length > 0 && (
+                            <div className="tags-section">
+                                <h3>Tags</h3>
+                                <div className="tags-list">
+                                    {model.tags.map((tag, idx) => (
+                                        <span key={idx} className="tag-badge">
+                                            {tag.name}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Action Buttons */}
+                        <div className="action-buttons">
+                            <a
+                                href={model.viewerUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="action-btn primary"
+                            >
+                                <ExternalLink size={18} />
+                                View on Sketchfab
+                            </a>
+                            {model.isDownloadable && (
+                                <a
+                                    href={model.viewerUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="action-btn secondary"
+                                >
+                                    <Download size={18} />
+                                    Download Model
+                                </a>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 }

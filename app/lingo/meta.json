@@ -1145,6 +1145,22 @@
           "skip": false,
           "overrides": {},
           "content": "Disassemble"
+        },
+        "9/declaration/body/8/argument/7/1/3": {
+          "type": "element",
+          "hash": "42d32e323a04caaf02e864f030a7cf04",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Assemble"
+        },
+        "9/declaration/body/8/argument/7/3/3": {
+          "type": "element",
+          "hash": "2bbba69fec2dc4c14658e63015e6f3f1",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Disassemble"
         }
       }
     },
@@ -3686,6 +3702,14 @@
           "overrides": {},
           "content": "<element:div></element:div> Searching..."
         },
+        "4/declaration/body/10/argument/11/1/19/expression/right": {
+          "type": "element",
+          "hash": "0a8185bc87cf080ddaad9cb4ba2acf0a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "❌ {error}"
+        },
         "4/declaration/body/10/argument/11/1/19/expression/right/1": {
           "type": "element",
           "hash": "66f207a07e3d99a083f93abe74ec08c0",
@@ -3718,6 +3742,14 @@
           "overrides": {},
           "content": "❌ {error}"
         },
+        "4/declaration/body/10/argument/11/1/23/expression/right/1/1": {
+          "type": "element",
+          "hash": "ade10fc9da858e0f000176a2b5aaa504",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Found {results.length} models"
+        },
         "4/declaration/body/10/argument/11/1/27/expression/right/1/1": {
           "type": "element",
           "hash": "ade10fc9da858e0f000176a2b5aaa504",
@@ -3725,6 +3757,14 @@
           "skip": false,
           "overrides": {},
           "content": "Found {results.length} models"
+        },
+        "4/declaration/body/10/argument/11/1/27/expression/right/3": {
+          "type": "element",
+          "hash": "8cd7977b6be5c1d2e35681e43c0756a7",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "No models found. Try adjusting your search."
         },
         "4/declaration/body/10/argument/11/1/3/1": {
           "type": "element",
@@ -3741,6 +3781,30 @@
           "skip": false,
           "overrides": {},
           "content": "Discover thousands of models from Sketchfab, powered by AI"
+        },
+        "4/declaration/body/10/argument/11/1/31/1": {
+          "type": "element",
+          "hash": "04f1767b1101e1e8c1761f007f4b9cad",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Models by <element:a>Sketchfab</element:a>"
+        },
+        "4/declaration/body/10/argument/11/1/31/3": {
+          "type": "element",
+          "hash": "3ccef3862e803f9e84dc276e349266c0",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Search by <element:a>Apify</element:a>"
+        },
+        "4/declaration/body/10/argument/11/1/31/5": {
+          "type": "element",
+          "hash": "4f1b12560e2c55fc9a9d0e9d9d95d3f8",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "All models are property of their respective creators. Please respect licenses."
         },
         "4/declaration/body/10/argument/11/1/31/expression/right/3": {
           "type": "element",
@@ -4669,6 +4733,230 @@
           "skip": false,
           "overrides": {},
           "content": "<element:Download></element:Download> Downloadable"
+        },
+        "6/body/2/argument/1/7/7/11/1/5": {
+          "type": "element",
+          "hash": "fcd6944cc5203e0c6f7e81d98fbb67d5",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Views"
+        },
+        "6/body/2/argument/1/7/7/11/3/5": {
+          "type": "element",
+          "hash": "51becff85e286d7a852e1d63d94011bb",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Likes"
+        },
+        "6/body/2/argument/1/7/7/11/5/5": {
+          "type": "element",
+          "hash": "502237cd1044491c48494aa60967a985",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Comments"
+        },
+        "6/body/2/argument/1/7/7/11/7/expression/right/3": {
+          "type": "element",
+          "hash": "d2b12468cc840da8ae0ea961fcb5706c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Animations"
+        },
+        "6/body/2/argument/1/7/7/15/1/3": {
+          "type": "element",
+          "hash": "ad8ffbc9410f7999a9479782708318da",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Published: <function:Date.toLocaleDateString/>"
+        },
+        "6/body/2/argument/1/7/7/15/5/expression/right/1": {
+          "type": "element",
+          "hash": "361f90ff23dd104d2fc0c76da8c6cf8b",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "📜 License: <expression/>"
+        },
+        "6/body/2/argument/1/7/7/19/expression/right/1": {
+          "type": "element",
+          "hash": "50167b1f18317020b6983b192f10dec5",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Available Formats"
+        },
+        "6/body/2/argument/1/7/7/19/expression/right/3/1/expression/right/1": {
+          "type": "element",
+          "hash": "beebcae18908bcdbc7ae115865724bf7",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "GLB"
+        },
+        "6/body/2/argument/1/7/7/19/expression/right/3/1/expression/right/3": {
+          "type": "element",
+          "hash": "4e369860f0ddc28d5504f33739f7f92c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Faces: <expression/>"
+        },
+        "6/body/2/argument/1/7/7/19/expression/right/3/1/expression/right/5": {
+          "type": "element",
+          "hash": "80ee45a3278d8810a4ec93158c812683",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Vertices: <expression/>"
+        },
+        "6/body/2/argument/1/7/7/19/expression/right/3/1/expression/right/7": {
+          "type": "element",
+          "hash": "3dddf6917521b1d555d16f3eb21b476a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Size: <function:toFixed/> MB"
+        },
+        "6/body/2/argument/1/7/7/19/expression/right/3/1/expression/right/9": {
+          "type": "element",
+          "hash": "8963969ad5d60017ec980f900e689b56",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Textures: {model.archives.glb.textureCount}"
+        },
+        "6/body/2/argument/1/7/7/19/expression/right/3/3/expression/right/1": {
+          "type": "element",
+          "hash": "006babfae25828317cdac4504f8c760f",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "GLTF"
+        },
+        "6/body/2/argument/1/7/7/19/expression/right/3/3/expression/right/3": {
+          "type": "element",
+          "hash": "4e369860f0ddc28d5504f33739f7f92c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Faces: <expression/>"
+        },
+        "6/body/2/argument/1/7/7/19/expression/right/3/3/expression/right/5": {
+          "type": "element",
+          "hash": "80ee45a3278d8810a4ec93158c812683",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Vertices: <expression/>"
+        },
+        "6/body/2/argument/1/7/7/19/expression/right/3/3/expression/right/7": {
+          "type": "element",
+          "hash": "3dddf6917521b1d555d16f3eb21b476a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Size: <function:toFixed/> MB"
+        },
+        "6/body/2/argument/1/7/7/19/expression/right/3/5/expression/right/1": {
+          "type": "element",
+          "hash": "8dee8163007635c43e251f548f287fc5",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "USDZ"
+        },
+        "6/body/2/argument/1/7/7/19/expression/right/3/5/expression/right/3": {
+          "type": "element",
+          "hash": "4e369860f0ddc28d5504f33739f7f92c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Faces: <expression/>"
+        },
+        "6/body/2/argument/1/7/7/19/expression/right/3/5/expression/right/5": {
+          "type": "element",
+          "hash": "3dddf6917521b1d555d16f3eb21b476a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Size: <function:toFixed/> MB"
+        },
+        "6/body/2/argument/1/7/7/19/expression/right/3/7/expression/right/1": {
+          "type": "element",
+          "hash": "6e87903ef260da661b2bf6d858ba68ca",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Source"
+        },
+        "6/body/2/argument/1/7/7/19/expression/right/3/7/expression/right/3": {
+          "type": "element",
+          "hash": "4e369860f0ddc28d5504f33739f7f92c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Faces: <expression/>"
+        },
+        "6/body/2/argument/1/7/7/19/expression/right/3/7/expression/right/5": {
+          "type": "element",
+          "hash": "80ee45a3278d8810a4ec93158c812683",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Vertices: <expression/>"
+        },
+        "6/body/2/argument/1/7/7/19/expression/right/3/7/expression/right/7": {
+          "type": "element",
+          "hash": "3dddf6917521b1d555d16f3eb21b476a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Size: <function:toFixed/> MB"
+        },
+        "6/body/2/argument/1/7/7/23/expression/right/1": {
+          "type": "element",
+          "hash": "97813c8ae67d69575fd04e35a88aed0c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Tags"
+        },
+        "6/body/2/argument/1/7/7/27/1": {
+          "type": "element",
+          "hash": "bbd822834e195395070b1f7ccb4baecb",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:ExternalLink></element:ExternalLink> View on Sketchfab"
+        },
+        "6/body/2/argument/1/7/7/27/3/expression/right": {
+          "type": "element",
+          "hash": "b291a80f463757b0212f14fdab308af6",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:Download></element:Download> Download Model"
+        },
+        "6/body/2/argument/1/7/7/7/1/3/3": {
+          "type": "element",
+          "hash": "a991abee8b0717edf6a59cfdd7244ffd",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "@{model.user.username}"
+        },
+        "6/body/2/argument/1/7/7/7/3": {
+          "type": "element",
+          "hash": "bca4181903f251fa51d2bcbd8c34cd8d",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "View Profile"
         },
         "7/body/0/argument/1/3/3": {
           "type": "element",
