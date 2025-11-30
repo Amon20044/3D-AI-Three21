@@ -838,6 +838,14 @@
           "overrides": {},
           "content": "हिन्दी"
         },
+        "2/declaration/body/1/argument/1/5": {
+          "type": "element",
+          "hash": "3efab59bc279d8c6ec4d1dc890203280",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:svg><element:path></element:path><element:path></element:path><element:path></element:path></element:svg> Design Three21"
+        },
         "2/declaration/body/1/argument/1/5/1/1": {
           "type": "element",
           "hash": "e1eeeb379f86a015d6e581fcbc4af7f3",
@@ -869,6 +877,126 @@
           "skip": false,
           "overrides": {},
           "content": "French"
+        },
+        "2/declaration/body/1/argument/1/7/1": {
+          "type": "element",
+          "hash": "e1eeeb379f86a015d6e581fcbc4af7f3",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "English"
+        },
+        "2/declaration/body/1/argument/1/7/11": {
+          "type": "element",
+          "hash": "6fd76188b5a616964f2b9310ad17821b",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "日本語"
+        },
+        "2/declaration/body/1/argument/1/7/13": {
+          "type": "element",
+          "hash": "89708d4d23d3082f2859ca04d74b7293",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "한국어"
+        },
+        "2/declaration/body/1/argument/1/7/15": {
+          "type": "element",
+          "hash": "204e56bbaca3e50027810e786569e3f3",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Português"
+        },
+        "2/declaration/body/1/argument/1/7/17": {
+          "type": "element",
+          "hash": "0f8097292914d69c25f3dcdacca1b9e7",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Русский"
+        },
+        "2/declaration/body/1/argument/1/7/19": {
+          "type": "element",
+          "hash": "50f718bf150ae7e23e4d5e91def35efe",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "中文"
+        },
+        "2/declaration/body/1/argument/1/7/21": {
+          "type": "element",
+          "hash": "11e7d9b96ea01bfe2f7d401c5ebe9fe1",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "العربية"
+        },
+        "2/declaration/body/1/argument/1/7/23": {
+          "type": "element",
+          "hash": "a84d44041dd3e712bb199e0081c45aff",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Bahasa Indonesia"
+        },
+        "2/declaration/body/1/argument/1/7/25": {
+          "type": "element",
+          "hash": "4352a28870762adb208d03d7997dd203",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Italiano"
+        },
+        "2/declaration/body/1/argument/1/7/27": {
+          "type": "element",
+          "hash": "16292d476fb6d1530f43fb43488984e9",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "ไทย"
+        },
+        "2/declaration/body/1/argument/1/7/29": {
+          "type": "element",
+          "hash": "0d4d2a0b1b6a975ddd9d7585227b34cc",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Tiếng Việt"
+        },
+        "2/declaration/body/1/argument/1/7/3": {
+          "type": "element",
+          "hash": "e1cd9645ddb854071941a3a23af9eaaf",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Español"
+        },
+        "2/declaration/body/1/argument/1/7/5": {
+          "type": "element",
+          "hash": "f13cde514c5daa2cb08f5f22be97a066",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Deutsch"
+        },
+        "2/declaration/body/1/argument/1/7/7": {
+          "type": "element",
+          "hash": "965fbe07b0c6293182f71b3d09b84fda",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Français"
+        },
+        "2/declaration/body/1/argument/1/7/9": {
+          "type": "element",
+          "hash": "124eb095c206059bdd40135112649ba1",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "हिन्दी"
         }
       }
     },

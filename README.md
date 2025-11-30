@@ -449,15 +449,22 @@ export default function DisassemblyUI() {
 }
 ```
 
-**Get 14 Languages**:
-- Compiler handles extraction
-- AI translates w context
-- Builds optimized bundles
-- Deploys to CDN
-- Zero manual work!
+**Get 14 Languages at Build Time**:
+- Compiler scans code during `npm run build`
+- Extracts translatable strings automatically
+- Sends to Lingo.dev API (uses Gemini internally)
+- Generates optimized static bundles per language
+- Deploys to CDN with zero runtime overhead
+- **No manual translation work required!**
 
-**Configuration Removed**:
-- ✅ `next.config.mjs` (modern compiler integration)
+**Why Build-Time (Compiler) vs Runtime (SDK)?**
+- ✅ **No rate limiting** - translations happen once during build
+- ✅ **Zero runtime cost** - pre-translated static files
+- ✅ **Better performance** - no API calls from frontend
+- ✅ **Works with free tier** - avoids Gemini's 60 req/min limit
+
+**Configuration**:
+- ❌ `lingo.config.json` (deprecated static approach)
 
 This approach makes Three21 accessible to engineering students and professionals worldwide, from Tokyo to São Paulo to Mumbai, without sacrificing technical precision.
 

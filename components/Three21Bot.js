@@ -1584,10 +1584,7 @@ What aspect of your model would you like to explore first?` }],
 
             .message-screenshot {
                 margin-bottom: 0.75rem;
-                border-radius: 12px;
                 overflow: hidden;
-                border: 2px solid rgba(255, 255, 255, 0.1);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             }
 
             .screenshot-image {
