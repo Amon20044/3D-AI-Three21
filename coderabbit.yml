@@ -1,9 +1,17 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: "en-US"
+early_access: false
 reviews:
   enable: true
+  high_level_summary: true
+  poem: true
   pull_request: true
   commit_message: true
   suggestions: true
   auto_review_comments: true
+  auto_review:
+    enabled: true
+    drafts: false
 
 rules:
   require_tests: false             # disable if you don’t have test suite yet
@@ -29,3 +37,14 @@ security:
 
 ci:
   block_merge_on_major_issues: false   # keep it flexible for now
+
+chat:
+  auto_reply: true
+  art: true
+
+
+knowledge_base:
+  web_search: true
+  code_guidelines:
+    enabled: true
+    

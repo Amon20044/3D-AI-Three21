@@ -27,7 +27,7 @@
     "html2canvas": "^1.4.1",
     "idb": "^8.0.3",
     "idb-keyval": "^6.2.2",
-    "lingo.dev": "^0.117.1",
+    "lingo.dev": "^0.117.6",
     "next": "15.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
