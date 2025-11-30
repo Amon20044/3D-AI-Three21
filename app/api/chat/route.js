@@ -99,6 +99,49 @@ Regardless of persona, Three21Bot always maintains:
 
 ---
 
+# 📊 MARKDOWN TABLE RULES (STRICT)
+
+When generating Markdown tables:
+
+1. ALWAYS follow this structure:
+
+| Column A | Column B | Column C |
+|---------|----------|----------|
+| value 1 | value 2  | value 3  |
+| value 4 | value 5  | value 6  |
+
+2. ALWAYS include:
+   - A header row
+   - A separator row with dashes for EACH column
+       Example: "| ----| ----| ----| "
+   - At least one data row (if relevant)
+
+3. NEVER:
+   - Add extra spaces before or after pipes ("| ")
+   - Break rows across multiple lines
+   - Insert Markdown formatting inside cells unless explicitly required
+   - Add bullet points, lists, or newlines inside cells
+
+4. WIDTH RULE:
+   - Each column must have the SAME number of cells in all rows.
+   - No missing or extra cells.
+
+5. ALIGNMENT RULE:
+   - Default alignment is left ("| ---| ").
+   - Use ": ---: " only when explicitly asked for center alignment.
+
+6. CONSISTENCY RULE:
+   - If the user asks for a table, ALWAYS return a Markdown table.
+   - If the content isn’t structured, reorganize it into a table logically.
+
+7. SAFETY RULE:
+   - If a table cannot be generated cleanly (uneven data), reorganize it BEFORE output.
+
+8. TABLE FIRST RULE:
+   - When the user asks for a table, output the **table first**, then the explanation. 
+
+---
+
 # 📘 **Adaptive Explanation Rules**
 
 Three21Bot always adjusts explanation complexity based on:
@@ -349,79 +392,79 @@ export async function POST(req) {
                     },
                 }),
             },
-            maxSteps: 5, // Allow up to 5 steps for multi-turn tool usage
-            experimental_repairToolCall: async ({
-                toolCall,
-                tools,
-                parameterSchema,
-                error,
-                messages,
-            }) => {
-                // Only repair Scholar calls
-                if (toolCall.toolName !== "searchGoogleScholar") return null;
+            maxSteps: 2, // Allow up to 5 steps for multi-turn tool usage
+            // experimental_repairToolCall: async ({
+            //     toolCall,
+            //     tools,
+            //     parameterSchema,
+            //     error,
+            //     messages,
+            // }) => {
+            //     // Only repair Scholar calls
+            //     if (toolCall.toolName !== "searchGoogleScholar") return null;
 
-                try {
-                    // Extract user text
-                    const lastUserMsg = [...messages].reverse().find(m => m.role === "user");
-                    const rawUserText =
-                        lastUserMsg?.content?.toString() ||
-                        lastUserMsg?.parts?.map(p => p.text || "").join(" ") ||
-                        "";
+            //     try {
+            //         // Extract user text
+            //         const lastUserMsg = [...messages].reverse().find(m => m.role === "user");
+            //         const rawUserText =
+            //             lastUserMsg?.content?.toString() ||
+            //             lastUserMsg?.parts?.map(p => p.text || "").join(" ") ||
+            //             "";
 
-                    // Extract original args safely
-                    const args = toolCall.args || {};
-                    const cleanedArgs = {};
+            //         // Extract original args safely
+            //         const args = toolCall.args || {};
+            //         const cleanedArgs = {};
 
-                    // ---- Repair Query ----
-                    let q = args.query || rawUserText;
+            //         // ---- Repair Query ----
+            //         let q = args.query || rawUserText;
 
-                    // force concise query
-                    q = q
-                        .replace(/[^a-zA-Z0-9 ]/g, " ")
-                        .split(/\s+/)
-                        .filter(w => w.length > 2)
-                        .slice(0, 6)
-                        .join(" ")
-                        .trim();
+            //         // force concise query
+            //         q = q
+            //             .replace(/[^a-zA-Z0-9 ]/g, " ")
+            //             .split(/\s+/)
+            //             .filter(w => w.length > 2)
+            //             .slice(0, 6)
+            //             .join(" ")
+            //             .trim();
 
-                    if (!q || q.length < 3) q = "recent research";
+            //         if (!q || q.length < 3) q = "recent research";
 
-                    cleanedArgs.query = q;
+            //         cleanedArgs.query = q;
 
-                    // ---- maxItems ----
-                    cleanedArgs.maxItems =
-                        typeof args.maxItems === "number" && args.maxItems > 0
-                            ? args.maxItems
-                            : 10;
+            //         // ---- maxItems ----
+            //         cleanedArgs.maxItems =
+            //             typeof args.maxItems === "number" && args.maxItems > 0
+            //                 ? args.maxItems
+            //                 : 10;
 
-                    // ---- minYear ----
-                    cleanedArgs.minYear =
-                        typeof args.minYear === "number" && args.minYear > 1900
-                            ? args.minYear
-                            : 2022;
+            //         // ---- minYear ----
+            //         cleanedArgs.minYear =
+            //             typeof args.minYear === "number" && args.minYear > 1900
+            //                 ? args.minYear
+            //                 : 2022;
 
-                    // ---- Validate with schema ----
-                    const schema = parameterSchema({ toolName: "searchGoogleScholar" });
+            //         // ---- Validate with schema ----
+            //         const schema = parameterSchema({ toolName: "searchGoogleScholar" });
 
-                    const Ajv = (await import("ajv")).default;
-                    const ajv = new Ajv();
-                    const validate = ajv.compile(schema);
+            //         const Ajv = (await import("ajv")).default;
+            //         const ajv = new Ajv();
+            //         const validate = ajv.compile(schema);
 
-                    if (!validate(cleanedArgs)) {
-                        console.warn("Validation failed:", validate.errors);
-                        return null;
-                    }
+            //         if (!validate(cleanedArgs)) {
+            //             console.warn("Validation failed:", validate.errors);
+            //             return null;
+            //         }
 
-                    // Return repaired tool call
-                    return {
-                        ...toolCall,
-                        args: cleanedArgs,
-                    };
-                } catch (e) {
-                    console.error("Repair error:", e);
-                    return null;
-                }
-            },
+            //         // Return repaired tool call
+            //         return {
+            //             ...toolCall,
+            //             args: cleanedArgs,
+            //         };
+            //     } catch (e) {
+            //         console.error("Repair error:", e);
+            //         return null;
+            //     }
+            // },
         });
 
         return result.toUIMessageStreamResponse();
