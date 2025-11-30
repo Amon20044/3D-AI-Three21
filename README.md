@@ -6,6 +6,71 @@
 
 ---
 
+## 📋 Hackathon Track Index
+
+**For Judges & Organizers**: Quick navigation to each track's implementation details.
+
+| Track | Section | Key Features | Status |
+|-------|---------|--------------|--------|
+| 🚀 **[Installation](#-quick-start-installation)** | Project Setup | Prerequisites, env setup, API keys, deployment | ✅ Complete |
+| 🌍 **[Lingo.dev](#-lingodev-integration--global-engineering-made-accessible)** | Internationalization | Compiler-based i18n, 14 languages, Gemini AI translation | ✅ Complete (done for Static Build Time (Lingo Compiler) only due to Gemeni API Free tier Rate Limit Issues with Lingo SDK) |
+| 🤖 **[CodeRabbit](#-coderabbit--ai-powered-code-quality-assurance)** | Code Quality | 10-feature config, auto-review, learning AI, security scanning | ✅ Complete |
+| 🐙 **[GitHub](#-github-best-practices--code-collaboration-excellence)** | Best Practices | Detailed README, commit conventions, PR workflow, collaboration | ✅ Complete |
+| 🐝 **[Apify](#-apify-google-scholar-integration)** | Research Tool | Google Scholar actor, AI tool calling, real-time streaming | ✅ Complete |
+| 🧠 **[Gemini](#-mlh-general-track--gemini-25-flash-integration)** | AI Integration | Multimodal analysis, vision capabilities, streaming SSE | ✅ Complete |
+
+### Track Quick Summaries
+
+#### 🌍 Lingo.dev Track Summary
+**Integration Level**: Deep (Compiler-based, not last-minute plugin)
+- ✅ Uses `lingoCompiler.next()` in `next.config.mjs`
+- ✅ 14 target languages (es, fr, de, hi, ja, ko, pt, ru, zh, ar, id, it, th, vi)
+- ✅ Domain-aware translation with Gemini 2.5 Flash
+- ✅ Technical term preservation (mesh, CAD, BFS, etc.)
+- ✅ Build-time optimization (no runtime overhead)
+- 📄 **See detailed docs in**: [Lingo.dev Integration section](#-lingodev-integration--global-engineering-made-accessible)
+
+#### 🤖 CodeRabbit Track Summary
+**Configuration Depth**: Extensive (10 major features configured)
+- ✅ `.coderabbit.yml` with schema validation
+- ✅ Auto-review, high-level summaries, code poems
+- ✅ Style enforcement with learning AI
+- ✅ Security scanning (secrets + vulnerabilities)
+- ✅ Interactive chat with web search
+- ✅ Knowledge base with accepted/rejected tracking
+- 📄 **See detailed docs in**: [CodeRabbit Configuration section](#-coderabbit--ai-powered-code-quality-assurance)
+
+#### 🐙 GitHub Track Summary
+**Repository Quality**: Professional-grade
+- ✅ Comprehensive README (1000+ lines)
+- ✅ Conventional Commits standard
+- ✅ PR templates and workflows
+- ✅ Branch protection rules
+- ✅ GitHub Actions (CodeQL, Vercel deploy)
+- ✅ Dependabot with grouped updates
+- 📄 **See detailed docs in**: [GitHub Best Practices section](#-github-best-practices--code-collaboration-excellence)
+
+#### 🐝 Apify Track Summary
+**Actor Integration**: Google Scholar (kdjLO0hegCjr5Ejqp)
+- ✅ AI SDK 5.0 tool calling integration
+- ✅ Real-time streaming results
+- ✅ IndexedDB persistence
+- ✅ Structured data extraction (title, authors, citations, links)
+- ✅ Research-grade output with metadata
+- 📄 **See detailed docs in**: [Apify Integration section](#-apify-google-scholar-integration)
+- 📄 **Code**: `app/api/chat/route.js` (lines 303-350)
+
+#### 🧠 Gemini 2.5 Flash Track Summary
+**Multimodal AI**: Vision + Text analysis
+- ✅ Real-time screenshot analysis (1920x1080)
+- ✅ Dynamic persona system (student/engineer/researcher)
+- ✅ Streaming responses via Vercel AI SDK
+- ✅ Context-aware with model metadata
+- ✅ Tool calling for research integration
+- 📄 **See detailed docs in**: [MLH General Track section](#-mlh-general-track--gemini-25-flash-integration)
+
+---
+
 ## 📑 Case Study: Intelligent Engineering Analysis
 
 **The Challenge**
@@ -101,69 +166,6 @@ One-click deploy to Vercel:
 
 ---
 
-## 📋 Hackathon Track Index
-
-**For Judges & Organizers**: Quick navigation to each track's implementation details.
-
-| Track | Section | Key Features | Status |
-|-------|---------|--------------|--------|
-| 🌍 **[Lingo.dev](#-lingodev-integration--global-engineering-made-accessible)** | Internationalization | Compiler-based i18n, 14 languages, Gemini AI translation | ✅ Complete |
-| 🤖 **[CodeRabbit](#-coderabbit--ai-powered-code-quality-assurance)** | Code Quality | 10-feature config, auto-review, learning AI, security scanning | ✅ Complete |
-| 🐙 **[GitHub](#-github-best-practices--code-collaboration-excellence)** | Best Practices | Detailed README, commit conventions, PR workflow, collaboration | ✅ Complete |
-| 🐝 **[Apify](#-apify-google-scholar-integration)** | Research Tool | Google Scholar actor, AI tool calling, real-time streaming | ✅ Complete |
-| 🧠 **[Gemini](#-mlh-general-track--gemini-25-flash-integration)** | AI Integration | Multimodal analysis, vision capabilities, streaming SSE | ✅ Complete |
-
-### Track Quick Summaries
-
-#### 🌍 Lingo.dev Track Summary
-**Integration Level**: Deep (Compiler-based, not last-minute plugin)
-- ✅ Uses `lingoCompiler.next()` in `next.config.mjs`
-- ✅ 14 target languages (es, fr, de, hi, ja, ko, pt, ru, zh, ar, id, it, th, vi)
-- ✅ Domain-aware translation with Gemini 2.5 Flash
-- ✅ Technical term preservation (mesh, CAD, BFS, etc.)
-- ✅ Build-time optimization (no runtime overhead)
-- 📄 **See detailed docs in**: [Lingo.dev Integration section](#-lingodev-integration--global-engineering-made-accessible)
-
-#### 🤖 CodeRabbit Track Summary
-**Configuration Depth**: Extensive (10 major features configured)
-- ✅ `.coderabbit.yml` with schema validation
-- ✅ Auto-review, high-level summaries, code poems
-- ✅ Style enforcement with learning AI
-- ✅ Security scanning (secrets + vulnerabilities)
-- ✅ Interactive chat with web search
-- ✅ Knowledge base with accepted/rejected tracking
-- 📄 **See detailed docs in**: [CodeRabbit Configuration section](#-coderabbit--ai-powered-code-quality-assurance)
-
-#### 🐙 GitHub Track Summary
-**Repository Quality**: Professional-grade
-- ✅ Comprehensive README (1000+ lines)
-- ✅ Conventional Commits standard
-- ✅ PR templates and workflows
-- ✅ Branch protection rules
-- ✅ GitHub Actions (CodeQL, Vercel deploy)
-- ✅ Dependabot with grouped updates
-- 📄 **See detailed docs in**: [GitHub Best Practices section](#-github-best-practices--code-collaboration-excellence)
-
-#### 🐝 Apify Track Summary
-**Actor Integration**: Google Scholar (kdjLO0hegCjr5Ejqp)
-- ✅ AI SDK 5.0 tool calling integration
-- ✅ Real-time streaming results
-- ✅ IndexedDB persistence
-- ✅ Structured data extraction (title, authors, citations, links)
-- ✅ Research-grade output with metadata
-- 📄 **See detailed docs in**: [Apify Integration section](#-apify-google-scholar-integration)
-- 📄 **Code**: `app/api/chat/route.js` (lines 303-350)
-
-#### 🧠 Gemini 2.5 Flash Track Summary
-**Multimodal AI**: Vision + Text analysis
-- ✅ Real-time screenshot analysis (1920x1080)
-- ✅ Dynamic persona system (student/engineer/researcher)
-- ✅ Streaming responses via Vercel AI SDK
-- ✅ Context-aware with model metadata
-- ✅ Tool calling for research integration
-- 📄 **See detailed docs in**: [MLH General Track section](#-mlh-general-track--gemini-25-flash-integration)
-
----
 
 ## ✨ New Features (v2.1)
 
