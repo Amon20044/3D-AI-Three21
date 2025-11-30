@@ -16,6 +16,155 @@ Engineers often struggle to understand complex assemblies using traditional 2D b
 
 ---
 
+## 🚀 Quick Start Installation
+
+### Prerequisites
+- **Node.js** 18+ ([Download](https://nodejs.org/))
+- **npm** or **yarn** package manager
+- Modern browser with WebGPU support (Chrome 113+, Edge 113+)
+
+### Installation Steps
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/Amon20044/three21.git
+cd three21
+
+# 2. Install dependencies
+npm install
+# or
+yarn install
+
+# 3. Set up environment variables
+cp .env.example .env
+# Edit .env with your API keys (see below)
+
+# 4. Run development server
+npm run dev
+# or
+yarn dev
+
+# 5. Open browser
+# Navigate to http://localhost:3000
+```
+
+### Environment Variables
+
+Create a `.env` file in the project root with the following:
+
+```bash
+# Required: Google Gemini API (for AI analysis)
+GOOGLE_API_KEY=AIzaSy...
+
+# Optional: Lingo.dev API (for internationalization)
+LINGODOTDEV_API_KEY=lingo_...
+
+# Optional: Apify API (for research tool)
+APIPY_API_KEY=apify_api_...
+
+# Optional: Analytics
+NEXT_PUBLIC_VERCEL_ANALYTICS_ID=...
+```
+
+**How to Get API Keys**:
+
+1. **Google Gemini** (Required):
+   - Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+   - Create new API key
+   - Free tier: 60 requests/minute
+
+2. **Lingo.dev** (For i18n features):
+   - Visit [Lingo.dev](https://lingo.dev)
+   - Sign up for account
+   - Generate API key from dashboard
+
+3. **Apify** (For research tool):
+   - Visit [Apify](https://apify.com)
+   - Create free account
+   - Get API token from [Account → Integrations](https://console.apify.com/account/integrations)
+
+### Production Build
+
+```bash
+# Build for production
+npm run build
+
+# Start production server
+npm start
+```
+
+### Deployment
+
+One-click deploy to Vercel:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Amon20044/three21)
+
+---
+
+## 📋 Hackathon Track Index
+
+**For Judges & Organizers**: Quick navigation to each track's implementation details.
+
+| Track | Section | Key Features | Status |
+|-------|---------|--------------|--------|
+| 🌍 **[Lingo.dev](#-lingodev-integration--global-engineering-made-accessible)** | Internationalization | Compiler-based i18n, 14 languages, Gemini AI translation | ✅ Complete |
+| 🤖 **[CodeRabbit](#-coderabbit--ai-powered-code-quality-assurance)** | Code Quality | 10-feature config, auto-review, learning AI, security scanning | ✅ Complete |
+| 🐙 **[GitHub](#-github-best-practices--code-collaboration-excellence)** | Best Practices | Detailed README, commit conventions, PR workflow, collaboration | ✅ Complete |
+| 🐝 **[Apify](#-apify-google-scholar-integration)** | Research Tool | Google Scholar actor, AI tool calling, real-time streaming | ✅ Complete |
+| 🧠 **[Gemini](#-mlh-general-track--gemini-25-flash-integration)** | AI Integration | Multimodal analysis, vision capabilities, streaming SSE | ✅ Complete |
+
+### Track Quick Summaries
+
+#### 🌍 Lingo.dev Track Summary
+**Integration Level**: Deep (Compiler-based, not last-minute plugin)
+- ✅ Uses `lingoCompiler.next()` in `next.config.mjs`
+- ✅ 14 target languages (es, fr, de, hi, ja, ko, pt, ru, zh, ar, id, it, th, vi)
+- ✅ Domain-aware translation with Gemini 2.5 Flash
+- ✅ Technical term preservation (mesh, CAD, BFS, etc.)
+- ✅ Build-time optimization (no runtime overhead)
+- 📄 **See detailed docs in**: [Lingo.dev Integration section](#-lingodev-integration--global-engineering-made-accessible)
+
+#### 🤖 CodeRabbit Track Summary
+**Configuration Depth**: Extensive (10 major features configured)
+- ✅ `.coderabbit.yml` with schema validation
+- ✅ Auto-review, high-level summaries, code poems
+- ✅ Style enforcement with learning AI
+- ✅ Security scanning (secrets + vulnerabilities)
+- ✅ Interactive chat with web search
+- ✅ Knowledge base with accepted/rejected tracking
+- 📄 **See detailed docs in**: [CodeRabbit Configuration section](#-coderabbit--ai-powered-code-quality-assurance)
+
+#### 🐙 GitHub Track Summary
+**Repository Quality**: Professional-grade
+- ✅ Comprehensive README (1000+ lines)
+- ✅ Conventional Commits standard
+- ✅ PR templates and workflows
+- ✅ Branch protection rules
+- ✅ GitHub Actions (CodeQL, Vercel deploy)
+- ✅ Dependabot with grouped updates
+- 📄 **See detailed docs in**: [GitHub Best Practices section](#-github-best-practices--code-collaboration-excellence)
+
+#### 🐝 Apify Track Summary
+**Actor Integration**: Google Scholar (kdjLO0hegCjr5Ejqp)
+- ✅ AI SDK 5.0 tool calling integration
+- ✅ Real-time streaming results
+- ✅ IndexedDB persistence
+- ✅ Structured data extraction (title, authors, citations, links)
+- ✅ Research-grade output with metadata
+- 📄 **See detailed docs in**: [Apify Integration section](#-apify-google-scholar-integration)
+- 📄 **Code**: `app/api/chat/route.js` (lines 303-350)
+
+#### 🧠 Gemini 2.5 Flash Track Summary
+**Multimodal AI**: Vision + Text analysis
+- ✅ Real-time screenshot analysis (1920x1080)
+- ✅ Dynamic persona system (student/engineer/researcher)
+- ✅ Streaming responses via Vercel AI SDK
+- ✅ Context-aware with model metadata
+- ✅ Tool calling for research integration
+- 📄 **See detailed docs in**: [MLH General Track section](#-mlh-general-track--gemini-25-flash-integration)
+
+---
+
 ## ✨ New Features (v2.1)
 
 ### 🎭 Dynamic Persona System
