@@ -19,7 +19,7 @@
     "@splinetool/react-spline": "^4.0.0",
     "@tanstack/react-query": "^5.90.5",
     "@vercel/analytics": "^1.5.0",
-    "ai": "^5.0.76",
+    "ai": "^5.0.103",
     "apify-client": "^2.20.0",
     "bytez.js": "^1.1.16",
     "eslint-config-next": "^16.0.5",
