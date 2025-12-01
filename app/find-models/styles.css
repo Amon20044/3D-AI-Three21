@@ -3,8 +3,6 @@
 /* Page Container */
 .find-models-page {
     min-height: 100vh;
-    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
-    color: white;
     position: relative;
     overflow-x: hidden;
 }
@@ -44,7 +42,7 @@
     font-weight: 900;
     letter-spacing: -0.05em;
     margin-bottom: 1rem;
-    background: linear-gradient(135deg, #ffffff 0%, #60a5fa 50%, #a78bfa 100%);
+    background: #fff;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
