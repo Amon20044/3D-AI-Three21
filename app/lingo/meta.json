@@ -5330,6 +5330,14 @@
     },
     "page.jsx": {
       "scopes": {
+        "10/declaration/body/2/argument/11/11/1": {
+          "type": "element",
+          "hash": "16a7ba61492ee7fb35aa4dfb904c6279",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Built with love by Avni & Amon with Three.js, Next.js, WebGPU and WebGL"
+        },
         "10/declaration/body/2/argument/11/11/1/1": {
           "type": "element",
           "hash": "4b39c4e3fca0b87e739131b2b180d972",
@@ -5505,6 +5513,54 @@
           "skip": false,
           "overrides": {},
           "content": "Try Demo"
+        },
+        "10/declaration/body/2/argument/11/7/31/1/1": {
+          "type": "element",
+          "hash": "4b39c4e3fca0b87e739131b2b180d972",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "2+"
+        },
+        "10/declaration/body/2/argument/11/7/31/1/3": {
+          "type": "element",
+          "hash": "d7d513bf9fd2ae98757cecdee7f38264",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Formats"
+        },
+        "10/declaration/body/2/argument/11/7/31/5/1": {
+          "type": "element",
+          "hash": "a98a0ce512942bdb11f923c28fbe5bb2",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Real-time"
+        },
+        "10/declaration/body/2/argument/11/7/31/5/3": {
+          "type": "element",
+          "hash": "6d66d350f6278d4070242bc6ff4207a7",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Rendering"
+        },
+        "10/declaration/body/2/argument/11/7/31/9/1": {
+          "type": "element",
+          "hash": "b764382ca31f0c1570802ead170ad235",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "AI"
+        },
+        "10/declaration/body/2/argument/11/7/31/9/3": {
+          "type": "element",
+          "hash": "409bac6215382c47e59f5039cc4cdcdd",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Analysis"
         },
         "10/declaration/body/2/argument/11/7/7/1/1/3": {
           "type": "element",

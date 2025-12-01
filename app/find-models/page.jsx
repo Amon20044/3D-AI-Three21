@@ -132,7 +132,7 @@ export default function FindModelsPage() {
                             className={`mode-btn ${searchMode === 'manual' ? 'active' : ''}`}
                         >
                             <Sliders size={20} />
-                            Manual Filters
+                            Manual Search
                         </button>
                     </div>
 
