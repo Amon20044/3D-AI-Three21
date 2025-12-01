@@ -360,7 +360,7 @@ export function DisassemblyUI({
                                     }}
                                 />
                             </div>
-                            <span className="progress-text" aria-hidden="true">{Math.round((currentLayer / totalLayers) * 100)}%</span>
+                            {/* <span className="progress-text" aria-hidden="true">{Math.round((currentLayer / totalLayers) * 100)}%</span> */}
                         </div>
                     )}
 

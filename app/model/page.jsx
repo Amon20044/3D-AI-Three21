@@ -68,10 +68,39 @@ export default function ModelPage() {
     // Handle model loading errors
     const handleModelError = (error) => {
         console.error('❌ Model loading failed:', error);
+
+        // Extract error information more robustly
+        let errorMessage = 'Unknown error';
+        let errorStack = 'No stack trace available';
+
+        if (typeof error === 'string') {
+            errorMessage = error;
+        } else if (error) {
+            errorMessage = error.message || error.originalError?.message || error.toString() || 'Unknown error during model loading';
+            errorStack = error.stack || error.originalError?.stack || error.componentStack || 'No stack trace available';
+        }
+
+        console.error('Error details:', {
+            message: errorMessage,
+            stack: errorStack,
+            url: fileUrl,
+            type: type,
+            fullError: error
+        });
+
         setIsModelLoading(false);
-        setLoadError(error?.message || 'Failed to load model');
+
+        // Create detailed error message
+        let displayMessage = 'Failed to load model';
+        if (errorMessage && errorMessage !== 'Unknown error') {
+            displayMessage += `: ${errorMessage}`;
+        } else {
+            displayMessage += '. The model file may be corrupted or in an unsupported format.';
+        }
+
+        setLoadError(displayMessage);
         setToast({
-            message: '❌ Failed to load model',
+            message: `❌ ${displayMessage}`,
             isVisible: true
         });
     };
@@ -241,12 +270,17 @@ export default function ModelPage() {
             setIsModelLoadedOnce(false);
             setLoadError(null);
 
+            console.log('🔄 Starting model load...');
+
             // Get query parameters from searchParams
             const queryType = searchParams.get('type');
             const queryFile = searchParams.get('file');
 
+            console.log('Query params:', { queryType, queryFile });
+
             // Check if demo mode is requested
             if (queryType === 'demo') {
+                console.log('✅ Loading demo mode');
                 setIsDemoMode(true);
                 setDemoConfig(DEMO_CONFIG);
                 setFileUrl(DEMO_CONFIG.url);
@@ -256,37 +290,47 @@ export default function ModelPage() {
             }
 
             // Regular model loading logic
-            const file = await idbGet('lastModelFile');
-            const t = await idbGet('lastModelType');
-            if (file && t) {
-                setType(t);
-                setFileUrl(URL.createObjectURL(file));
-            } else if (queryFile) {
-                setFileUrl(queryFile);
-                // Determine type from URL extension or query parameter
-                const detectedType = queryType || (queryFile.toLowerCase().includes('.fbx') ? 'fbx' : 'gltf');
-                setType(detectedType);
-                localStorage.setItem('lastModelUrl', queryFile);
-                localStorage.setItem('lastModelType', detectedType);
-            } else {
-                const lastUrl = localStorage.getItem('lastModelUrl');
-                const lastType = localStorage.getItem('lastModelType');
-                if (lastUrl && lastType) {
-                    setFileUrl(lastUrl);
-                    setType(lastType);
+            try {
+                const file = await idbGet('lastModelFile');
+                const t = await idbGet('lastModelType');
+
+                console.log('IDB data:', { hasFile: !!file, type: t });
+
+                if (file && t) {
+                    console.log('✅ Loading from IndexedDB');
+                    setType(t);
+                    const blobUrl = URL.createObjectURL(file);
+                    console.log('Created blob URL:', blobUrl);
+                    setFileUrl(blobUrl);
+                } else if (queryFile) {
+                    console.log('✅ Loading from query parameter');
+                    setFileUrl(queryFile);
+                    // Determine type from URL extension or query parameter
+                    const detectedType = queryType || (queryFile.toLowerCase().includes('.fbx') ? 'fbx' : 'gltf');
+                    console.log('Detected type:', detectedType);
+                    setType(detectedType);
+                    localStorage.setItem('lastModelUrl', queryFile);
+                    localStorage.setItem('lastModelType', detectedType);
+                } else {
+                    console.log('📦 Checking localStorage...');
+                    const lastUrl = localStorage.getItem('lastModelUrl');
+                    const lastType = localStorage.getItem('lastModelType');
+                    console.log('LocalStorage data:', { lastUrl, lastType });
+
+                    if (lastUrl && lastType) {
+                        console.log('✅ Loading from localStorage');
+                        setFileUrl(lastUrl);
+                        setType(lastType);
+                    } else {
+                        console.warn('⚠️ No model data found');
+                    }
                 }
+            } catch (error) {
+                console.error('❌ Error in loadModel:', error);
+                handleModelError(error);
             }
         }
         loadModel();
-
-        // Safety timeout - if model doesn't load in 30 seconds, show error
-        const timeout = setTimeout(() => {
-            if (isModelLoading) {
-                handleModelError(new Error('Model loading timeout - please try again'));
-            }
-        }, 30000);
-
-        return () => clearTimeout(timeout);
     }, [searchParams]);
 
     if (!fileUrl || !type) {
@@ -349,7 +393,7 @@ export default function ModelPage() {
                 background: 'radial-gradient(ellipse at center, #2a2a2e 0%, #1a1a1c 50%, #0a0a0c 100%)',
             }} />
 
-            <ModelErrorBoundary>
+            <ModelErrorBoundary onError={handleModelError}>
                 <ModelInfoProvider demoConfig={isDemoMode ? DEMO_CONFIG : null}>
                     <AnyModelViewer
                         ref={modelViewerRef}

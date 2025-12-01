@@ -4,18 +4,37 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import * as THREE from 'three';
 
-export const InteractiveModelPrimitive = forwardRef(({ url, type, onModelLoad, onObjectClick, userScale = 1, enableAutoScale = false }, ref) => {
-    // Load the model
-    const object = useLoader(type === 'fbx' ? FBXLoader : GLTFLoader, url);
+export const InteractiveModelPrimitive = forwardRef(({ url, type, onModelLoad, onObjectClick, onError, userScale = 1, enableAutoScale = false }, ref) => {
+    // Load the model with enhanced error handling
+    const object = useLoader(type === 'fbx' ? FBXLoader : GLTFLoader, url,
+        undefined,
+        (error) => {
+            console.error('🔴 InteractiveModelPrimitive: Model loading error caught:', error);
+
+            // Create a properly formatted error object
+            const formattedError = {
+                message: error?.message || error?.toString() || 'Unknown error during model loading',
+                stack: error?.stack || 'No stack trace available',
+                name: error?.name || 'ModelLoadingError',
+                originalError: error
+            };
+
+            console.error('🔴 Formatted error details:', formattedError);
+
+            if (onError) {
+                onError(formattedError);
+            }
+        }
+    );
     const scene = type === 'fbx' ? object : object.scene;
     const [modelInfo, setModelInfo] = useState({ originalSize: null, scale: 1, boundingBox: null });
-    
+
     // Calculate model information without normalization
     const calculateModelScale = (scene) => {
         const box = new THREE.Box3().setFromObject(scene);
         const size = box.getSize(new THREE.Vector3());
         const maxDimension = Math.max(size.x, size.y, size.z);
-        
+
         const modelInfo = {
             originalSize: {
                 width: size.x,
@@ -31,17 +50,17 @@ export const InteractiveModelPrimitive = forwardRef(({ url, type, onModelLoad, o
             },
             scale: 1  // Keep original scale, let user control it
         };
-        
+
         console.log('Model Info (Original Scale):', {
             originalSize: `${size.x.toFixed(2)} x ${size.y.toFixed(2)} x ${size.z.toFixed(2)}`,
             maxDimension: maxDimension.toFixed(2),
             userScale: userScale,
             autoScaleDisabled: !enableAutoScale
         });
-        
+
         return modelInfo;
     };
-    
+
     // Simple lighting setup to make model visible
     useEffect(() => {
         if (scene) {
@@ -49,15 +68,15 @@ export const InteractiveModelPrimitive = forwardRef(({ url, type, onModelLoad, o
                 // Calculate scale first
                 const scaleInfo = calculateModelScale(scene);
                 setModelInfo(scaleInfo);
-                
+
                 // Apply user-controlled scale (no auto-normalization)
                 scene.scale.set(userScale, userScale, userScale);
-                
+
                 // Center the model
                 const box = new THREE.Box3().setFromObject(scene);
                 const center = box.getCenter(new THREE.Vector3());
                 scene.position.copy(center).multiplyScalar(-1);
-                
+
                 scene.traverse((child) => {
                     if (child.isMesh) {
                         // Handle material (could be single material or array of materials)
@@ -66,14 +85,14 @@ export const InteractiveModelPrimitive = forwardRef(({ url, type, onModelLoad, o
                                 console.warn('Found mesh with null/undefined material, creating default');
                                 return new THREE.MeshBasicMaterial({ color: 0x808080 });
                             }
-                            
+
                             // Check if it's a proper Three.js material
                             if (material.isMaterial && typeof material.clone === 'function') {
                                 try {
                                     return material.clone();
                                 } catch (cloneError) {
                                     console.warn('Material clone failed, creating fallback:', cloneError);
-                                    return new THREE.MeshBasicMaterial({ 
+                                    return new THREE.MeshBasicMaterial({
                                         color: material.color || 0x808080,
                                         transparent: material.transparent || false,
                                         opacity: material.opacity !== undefined ? material.opacity : 1
@@ -82,7 +101,7 @@ export const InteractiveModelPrimitive = forwardRef(({ url, type, onModelLoad, o
                             } else {
                                 // If material doesn't have clone method or isn't a proper Material, create a basic copy
                                 console.warn('Material lacks clone method, creating fallback material');
-                                return new THREE.MeshBasicMaterial({ 
+                                return new THREE.MeshBasicMaterial({
                                     color: (material && material.color) || 0x808080,
                                     transparent: (material && material.transparent) || false,
                                     opacity: (material && material.opacity !== undefined) ? material.opacity : 1
@@ -100,7 +119,7 @@ export const InteractiveModelPrimitive = forwardRef(({ url, type, onModelLoad, o
                                         child.userData.originalMaterial = handleMaterial(child.material);
                                     }
                                 }
-                                
+
                                 // Keep the original material completely unchanged
                                 if (Array.isArray(child.userData.originalMaterial)) {
                                     child.material = child.userData.originalMaterial.map(mat => {
@@ -136,7 +155,7 @@ export const InteractiveModelPrimitive = forwardRef(({ url, type, onModelLoad, o
                             child.material = fallbackMaterial;
                             child.userData.originalMaterial = fallbackMaterial;
                         }
-                        
+
                         // No additional effects - just preserve original material
                     }
                 });
@@ -145,10 +164,10 @@ export const InteractiveModelPrimitive = forwardRef(({ url, type, onModelLoad, o
             }
         }
     }, [scene]);
-    
+
     // No dynamic lighting effects needed - using global scene lighting only
     // Model will be visible through the global lighting setup in AnyModelViewer
-    
+
     // Notify parent when model is loaded with scale information
     useEffect(() => {
         if (scene && onModelLoad) {
@@ -175,7 +194,7 @@ export const InteractiveModelPrimitive = forwardRef(({ url, type, onModelLoad, o
                             if (child.geometry) {
                                 child.geometry.dispose();
                             }
-                            
+
                             // Dispose materials
                             if (child.material) {
                                 if (Array.isArray(child.material)) {
@@ -188,7 +207,7 @@ export const InteractiveModelPrimitive = forwardRef(({ url, type, onModelLoad, o
                                     child.material.dispose();
                                 }
                             }
-                            
+
                             // Dispose userData materials too
                             if (child.userData.originalMaterial) {
                                 if (Array.isArray(child.userData.originalMaterial)) {
@@ -209,32 +228,32 @@ export const InteractiveModelPrimitive = forwardRef(({ url, type, onModelLoad, o
             }
         };
     }, [scene]);
-    
+
     // Handle double-click events for part selection
     const handleDoubleClick = (event) => {
         console.log('InteractiveModelPrimitive: Double-click event triggered', event);
         event.stopPropagation();
         const clickedObject = event.object;
-        
+
         console.log('Double-clicked object:', clickedObject);
         console.log('Object name:', clickedObject?.name);
         console.log('Object type:', clickedObject?.type);
         console.log('Object userData:', clickedObject?.userData);
-        
+
         if (clickedObject && onObjectClick) {
             // Get the name of the clicked object or generate one
-            const objectName = clickedObject.name || 
-                              clickedObject.userData.name || 
-                              clickedObject.type || 
-                              `${clickedObject.type}_${clickedObject.id}`;
-            
+            const objectName = clickedObject.name ||
+                clickedObject.userData.name ||
+                clickedObject.type ||
+                `${clickedObject.type}_${clickedObject.id}`;
+
             console.log('Calling onObjectClick with:', objectName, clickedObject);
             onObjectClick(objectName, clickedObject);
         } else {
             console.log('No clickedObject or onObjectClick callback');
         }
     };
-    
+
     return <primitive ref={ref} object={scene} onDoubleClick={handleDoubleClick} />;
 });
 
