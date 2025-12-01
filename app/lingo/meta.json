@@ -5485,6 +5485,630 @@
           "skip": false,
           "overrides": {},
           "content": "View Profile"
+        },
+        "7/declaration/body/24/argument/11/1/11/expression/right/1": {
+          "type": "element",
+          "hash": "e41f9bd4ca958f24d873f7413fa8cea1",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "What are you looking for?"
+        },
+        "7/declaration/body/24/argument/11/1/11/expression/right/3/1-placeholder": {
+          "type": "attribute",
+          "hash": "bb0f261472af71e0081de8e13d435b41",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "E.g., 'mechanical gears', 'downloadable robot GLB', 'sci-fi vehicles'..."
+        },
+        "7/declaration/body/24/argument/11/1/11/expression/right/3/3/1/expression/alternate": {
+          "type": "element",
+          "hash": "306466efe240b9500da4f2ebda942f68",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:Search></element:Search> Search"
+        },
+        "7/declaration/body/24/argument/11/1/11/expression/right/3/3/1/expression/consequent": {
+          "type": "element",
+          "hash": "1600ed18cb07a34483c431176c8d9bc4",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:div></element:div> Searching..."
+        },
+        "7/declaration/body/24/argument/11/1/11/expression/right/5": {
+          "type": "element",
+          "hash": "168aa1701037b12b15ed30a990b051a6",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "💡 <element:strong>AI-Powered:</element:strong> Describe what you want in plain English"
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/1/1/1": {
+          "type": "element",
+          "hash": "a81560adee26cf70aeeb3f3563518aaf",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Keywords"
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/1/1/3-placeholder": {
+          "type": "attribute",
+          "hash": "8e10671f3575df2fffccd8ebdef66f8c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "gear, robot, car..."
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/1/11/1": {
+          "type": "element",
+          "hash": "f1035fcc660691aa9c6e1043e81d1d88",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Sort By"
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/1/11/3/1": {
+          "type": "element",
+          "hash": "9a5655d1d14efdd35052a8ed09bed127",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Relevance"
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/1/11/3/3": {
+          "type": "element",
+          "hash": "44764bb082bfc69ac9b21546fcb8a074",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Most Liked"
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/1/11/3/5": {
+          "type": "element",
+          "hash": "3d951e5a47c9a0151b15f19821590857",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Most Viewed"
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/1/11/3/7": {
+          "type": "element",
+          "hash": "2cef23d0cf0a6cabe9b8cf749549d6c7",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Recent"
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/1/3/1": {
+          "type": "element",
+          "hash": "16f2cc0b09e6dc1c3fe6ea977aed19d1",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Tags (comma-separated)"
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/1/3/3-placeholder": {
+          "type": "attribute",
+          "hash": "c806911a02f0cc3058462c56a769234c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "mechanical, low-poly..."
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/1/5/1": {
+          "type": "element",
+          "hash": "fd4e44f3b1b2bba9ca45f3aef963d042",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Categories"
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/1/5/3-placeholder": {
+          "type": "attribute",
+          "hash": "4e0daa09a5fde2e6b0321d2bbd844f16",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "vehicles-transports..."
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/1/7/1": {
+          "type": "element",
+          "hash": "6f1c7690c94fe60046b4be6fa785bb3f",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "File Format"
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/1/7/3/1": {
+          "type": "element",
+          "hash": "f4a3b0cdb2feb013c8c313d291504a8e",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Any"
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/1/7/3/3": {
+          "type": "element",
+          "hash": "beebcae18908bcdbc7ae115865724bf7",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "GLB"
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/1/7/3/5": {
+          "type": "element",
+          "hash": "006babfae25828317cdac4504f8c760f",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "GLTF"
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/1/7/3/7": {
+          "type": "element",
+          "hash": "7cd8c288d3fbc2ff41bc95c083117534",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "FBX"
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/1/7/3/9": {
+          "type": "element",
+          "hash": "f260c7000461a7d1fc8d8634850d2ec9",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "OBJ"
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/1/9/1": {
+          "type": "element",
+          "hash": "ac2bcac75151e2fcd9eb768cea275a77",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "License"
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/1/9/3/1": {
+          "type": "element",
+          "hash": "f4a3b0cdb2feb013c8c313d291504a8e",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Any"
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/1/9/3/3": {
+          "type": "element",
+          "hash": "28efe6b5c52336f8e7a05c94061291f9",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "CC0 Public Domain"
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/1/9/3/5": {
+          "type": "element",
+          "hash": "9e51a430f76b21262760b073349bf999",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "CC Attribution"
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/1/9/3/7": {
+          "type": "element",
+          "hash": "eaeea209d7c1a0c54eddb29396effb9d",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "CC Attribution-ShareAlike"
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/1/9/3/9": {
+          "type": "element",
+          "hash": "d9143d1841a6a8207ac4537f153af3fb",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "CC Attribution-NonCommercial"
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/3/1/expression/alternate": {
+          "type": "element",
+          "hash": "b45bdb4038f9028145b6a4f459962389",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:Search></element:Search> Search Models"
+        },
+        "7/declaration/body/24/argument/11/1/15/expression/right/3/1/expression/consequent": {
+          "type": "element",
+          "hash": "f9e88219fc261d186135cb15faf6fdd7",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:div></element:div> Searching..."
+        },
+        "7/declaration/body/24/argument/11/1/19/expression/right": {
+          "type": "element",
+          "hash": "0a8185bc87cf080ddaad9cb4ba2acf0a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "❌ {error}"
+        },
+        "7/declaration/body/24/argument/11/1/23/expression/right/1/1": {
+          "type": "element",
+          "hash": "799eb239ac6ec7abc15757fd9f43d269",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Found {totalLoaded}+ models"
+        },
+        "7/declaration/body/24/argument/11/1/23/expression/right/1/3/expression/right": {
+          "type": "element",
+          "hash": "93104b2d5fd00ecf9ae4243ad1f36868",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Page {currentPage} • Scroll for more"
+        },
+        "7/declaration/body/24/argument/11/1/23/expression/right/11/expression/right/1/expression/alternate": {
+          "type": "element",
+          "hash": "e169fd01b4e37c78b1721a109d0bbd9d",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:ChevronDown></element:ChevronDown> Load More Models"
+        },
+        "7/declaration/body/24/argument/11/1/23/expression/right/11/expression/right/1/expression/consequent/3": {
+          "type": "element",
+          "hash": "bd5b8841c5a51a55096cc7a5d8134515",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Loading more models..."
+        },
+        "7/declaration/body/24/argument/11/1/23/expression/right/15/expression/right/1": {
+          "type": "element",
+          "hash": "0699696a88cbe0dfc7e6ae53aff9cc1d",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "🎉 You've seen all {totalLoaded} models!"
+        },
+        "7/declaration/body/24/argument/11/1/23/expression/right/5/expression/right/1": {
+          "type": "element",
+          "hash": "64b87c2057407ce059508faf84a2d193",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "🤖 AI-Powered Search"
+        },
+        "7/declaration/body/24/argument/11/1/23/expression/right/5/expression/right/3/1": {
+          "type": "element",
+          "hash": "03348d1a2b3eb50e376cb755bf4dcb2a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:strong>Your query:</element:strong> \"{aiInfo.originalQuery}\""
+        },
+        "7/declaration/body/24/argument/11/1/23/expression/right/5/expression/right/3/3": {
+          "type": "element",
+          "hash": "03348d1a2b3eb50e376cb755bf4dcb2a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:strong>Optimized to:</element:strong> \"{aiInfo.generatedQuery}\""
+        },
+        "7/declaration/body/24/argument/11/1/23/expression/right/5/expression/right/3/5/expression/right/0": {
+          "type": "element",
+          "hash": "d36ed5d6fa6c06539e650c0966e26a2c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Tags:"
+        },
+        "7/declaration/body/24/argument/11/1/27/expression/right/3": {
+          "type": "element",
+          "hash": "8cd7977b6be5c1d2e35681e43c0756a7",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "No models found. Try adjusting your search."
+        },
+        "7/declaration/body/24/argument/11/1/3/1": {
+          "type": "element",
+          "hash": "452ae7586821c51a98811e83bca21e48",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Find 3D Models"
+        },
+        "7/declaration/body/24/argument/11/1/3/3": {
+          "type": "element",
+          "hash": "fdf8476ed388dac50bccbb5775a86e93",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Discover thousands of models from Sketchfab, powered by AI"
+        },
+        "7/declaration/body/24/argument/11/1/31/1": {
+          "type": "element",
+          "hash": "04f1767b1101e1e8c1761f007f4b9cad",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Models by <element:a>Sketchfab</element:a>"
+        },
+        "7/declaration/body/24/argument/11/1/31/3": {
+          "type": "element",
+          "hash": "3ccef3862e803f9e84dc276e349266c0",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Search by <element:a>Apify</element:a>"
+        },
+        "7/declaration/body/24/argument/11/1/31/5": {
+          "type": "element",
+          "hash": "4f1b12560e2c55fc9a9d0e9d9d95d3f8",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "All models are property of their respective creators. Please respect licenses."
+        },
+        "7/declaration/body/24/argument/11/1/7/1": {
+          "type": "element",
+          "hash": "144bba737445feea400517b9ffe11c32",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:Search></element:Search> Natural Language"
+        },
+        "7/declaration/body/24/argument/11/1/7/3": {
+          "type": "element",
+          "hash": "38d04d45e36e145c986ab5fc028189ac",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:Sliders></element:Sliders> Manual Search"
+        },
+        "8/body/4/argument/3/1/expression/alternate": {
+          "type": "element",
+          "hash": "ac5ded05a0c59c3c32636d433e1d9fa3",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "No preview available"
+        },
+        "8/body/4/argument/3/3/expression/right": {
+          "type": "element",
+          "hash": "06bb998aa1d8f28f2ad5bb6877509d99",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:Download></element:Download> Downloadable"
+        },
+        "9/body/2/argument/1/7/7/11/1/5": {
+          "type": "element",
+          "hash": "fcd6944cc5203e0c6f7e81d98fbb67d5",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Views"
+        },
+        "9/body/2/argument/1/7/7/11/3/5": {
+          "type": "element",
+          "hash": "51becff85e286d7a852e1d63d94011bb",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Likes"
+        },
+        "9/body/2/argument/1/7/7/11/5/5": {
+          "type": "element",
+          "hash": "502237cd1044491c48494aa60967a985",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Comments"
+        },
+        "9/body/2/argument/1/7/7/11/7/expression/right/3": {
+          "type": "element",
+          "hash": "d2b12468cc840da8ae0ea961fcb5706c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Animations"
+        },
+        "9/body/2/argument/1/7/7/15/1/3": {
+          "type": "element",
+          "hash": "ad8ffbc9410f7999a9479782708318da",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Published: <function:Date.toLocaleDateString/>"
+        },
+        "9/body/2/argument/1/7/7/15/5/expression/right/1": {
+          "type": "element",
+          "hash": "361f90ff23dd104d2fc0c76da8c6cf8b",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "📜 License: <expression/>"
+        },
+        "9/body/2/argument/1/7/7/19/expression/right/1": {
+          "type": "element",
+          "hash": "50167b1f18317020b6983b192f10dec5",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Available Formats"
+        },
+        "9/body/2/argument/1/7/7/19/expression/right/3/1/expression/right/1": {
+          "type": "element",
+          "hash": "beebcae18908bcdbc7ae115865724bf7",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "GLB"
+        },
+        "9/body/2/argument/1/7/7/19/expression/right/3/1/expression/right/3": {
+          "type": "element",
+          "hash": "4e369860f0ddc28d5504f33739f7f92c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Faces: <expression/>"
+        },
+        "9/body/2/argument/1/7/7/19/expression/right/3/1/expression/right/5": {
+          "type": "element",
+          "hash": "80ee45a3278d8810a4ec93158c812683",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Vertices: <expression/>"
+        },
+        "9/body/2/argument/1/7/7/19/expression/right/3/1/expression/right/7": {
+          "type": "element",
+          "hash": "3dddf6917521b1d555d16f3eb21b476a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Size: <function:toFixed/> MB"
+        },
+        "9/body/2/argument/1/7/7/19/expression/right/3/1/expression/right/9": {
+          "type": "element",
+          "hash": "8963969ad5d60017ec980f900e689b56",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Textures: {model.archives.glb.textureCount}"
+        },
+        "9/body/2/argument/1/7/7/19/expression/right/3/3/expression/right/1": {
+          "type": "element",
+          "hash": "006babfae25828317cdac4504f8c760f",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "GLTF"
+        },
+        "9/body/2/argument/1/7/7/19/expression/right/3/3/expression/right/3": {
+          "type": "element",
+          "hash": "4e369860f0ddc28d5504f33739f7f92c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Faces: <expression/>"
+        },
+        "9/body/2/argument/1/7/7/19/expression/right/3/3/expression/right/5": {
+          "type": "element",
+          "hash": "80ee45a3278d8810a4ec93158c812683",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Vertices: <expression/>"
+        },
+        "9/body/2/argument/1/7/7/19/expression/right/3/3/expression/right/7": {
+          "type": "element",
+          "hash": "3dddf6917521b1d555d16f3eb21b476a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Size: <function:toFixed/> MB"
+        },
+        "9/body/2/argument/1/7/7/19/expression/right/3/5/expression/right/1": {
+          "type": "element",
+          "hash": "8dee8163007635c43e251f548f287fc5",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "USDZ"
+        },
+        "9/body/2/argument/1/7/7/19/expression/right/3/5/expression/right/3": {
+          "type": "element",
+          "hash": "4e369860f0ddc28d5504f33739f7f92c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Faces: <expression/>"
+        },
+        "9/body/2/argument/1/7/7/19/expression/right/3/5/expression/right/5": {
+          "type": "element",
+          "hash": "3dddf6917521b1d555d16f3eb21b476a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Size: <function:toFixed/> MB"
+        },
+        "9/body/2/argument/1/7/7/19/expression/right/3/7/expression/right/1": {
+          "type": "element",
+          "hash": "6e87903ef260da661b2bf6d858ba68ca",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Source"
+        },
+        "9/body/2/argument/1/7/7/19/expression/right/3/7/expression/right/3": {
+          "type": "element",
+          "hash": "4e369860f0ddc28d5504f33739f7f92c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Faces: <expression/>"
+        },
+        "9/body/2/argument/1/7/7/19/expression/right/3/7/expression/right/5": {
+          "type": "element",
+          "hash": "80ee45a3278d8810a4ec93158c812683",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Vertices: <expression/>"
+        },
+        "9/body/2/argument/1/7/7/19/expression/right/3/7/expression/right/7": {
+          "type": "element",
+          "hash": "3dddf6917521b1d555d16f3eb21b476a",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Size: <function:toFixed/> MB"
+        },
+        "9/body/2/argument/1/7/7/23/expression/right/1": {
+          "type": "element",
+          "hash": "97813c8ae67d69575fd04e35a88aed0c",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Tags"
+        },
+        "9/body/2/argument/1/7/7/27/1": {
+          "type": "element",
+          "hash": "bbd822834e195395070b1f7ccb4baecb",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:ExternalLink></element:ExternalLink> View on Sketchfab"
+        },
+        "9/body/2/argument/1/7/7/27/3/expression/right": {
+          "type": "element",
+          "hash": "b291a80f463757b0212f14fdab308af6",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:Download></element:Download> Download Model"
+        },
+        "9/body/2/argument/1/7/7/7/1/3/3": {
+          "type": "element",
+          "hash": "a991abee8b0717edf6a59cfdd7244ffd",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "@{model.user.username}"
+        },
+        "9/body/2/argument/1/7/7/7/3": {
+          "type": "element",
+          "hash": "bca4181903f251fa51d2bcbd8c34cd8d",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "View Profile"
         }
       }
     },
