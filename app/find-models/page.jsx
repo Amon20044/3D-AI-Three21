@@ -418,7 +418,7 @@ export default function FindModelsPage() {
                             {/* AI Info Banner */}
                             {aiInfo && (
                                 <div className="ai-info-banner">
-                                    <div className="ai-badge">🤖 AI-Powered Search</div>
+                                    <div className="ai-badge">AI-Powered Search</div>
                                     <div className="ai-details">
                                         <span><strong>Your query:</strong> "{aiInfo.originalQuery}"</span>
                                         <span><strong>Optimized to:</strong> "{aiInfo.generatedQuery}"</span>
