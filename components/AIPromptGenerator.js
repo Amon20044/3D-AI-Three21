@@ -2,7 +2,7 @@
  * Enhanced AI prompt generator for comprehensive 3D model analysis
  * Focuses on research-grade insights with citations and references
  */
-export class AIPromptGenerator {
+class AIPromptGenerator {
     constructor() {
         this.systemPrompt = this.generateSystemPrompt();
     }

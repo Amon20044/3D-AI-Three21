@@ -393,4 +393,3 @@ export class ScreenshotManager {
     }
 }
 
-export default ScreenshotManager;
