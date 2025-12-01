@@ -447,50 +447,147 @@
 
 @media (max-width: 768px) {
     .modal-overlay {
-        padding: 1rem;
+        padding: 0.5rem;
     }
 
     .modal-container {
-        border-radius: 1.5rem;
+        border-radius: 1rem;
+        max-height: 96vh;
     }
 
     .modal-content {
-        padding: 1.5rem;
-        gap: 1.5rem;
+        padding: 1rem;
+        gap: 1rem;
     }
 
     .modal-title {
         font-size: 1.5rem;
+        line-height: 1.3;
     }
 
     .modal-close {
-        top: 1rem;
-        right: 1rem;
+        top: 0.75rem;
+        right: 0.75rem;
         width: 2.5rem;
         height: 2.5rem;
     }
 
+    .iframe-viewer {
+        aspect-ratio: 4/3;
+        border-width: 1px;
+    }
+
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+
+    .stat-box {
+        padding: 1rem;
+    }
+
+    .stat-value {
+        font-size: 1.25rem;
     }
 
     .action-buttons {
         flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .action-btn {
+        padding: 0.875rem 1.25rem;
+        font-size: 0.95rem;
     }
 
     .formats-grid {
         grid-template-columns: 1fr;
     }
+
+    .format-card {
+        padding: 0.875rem;
+    }
+
+    .formats-section,
+    .tags-section {
+        padding: 1.25rem;
+    }
+
+    .creator-section {
+        padding: 1rem;
+    }
 }
 
 @media (max-width: 480px) {
+    .modal-overlay {
+        padding: 0.25rem;
+    }
+
+    .modal-container {
+        border-radius: 0.75rem;
+    }
+
+    .modal-content {
+        padding: 0.875rem;
+    }
+
+    .modal-title {
+        font-size: 1.25rem;
+    }
+
+    .modal-close {
+        top: 0.5rem;
+        right: 0.5rem;
+        width: 2.25rem;
+        height: 2.25rem;
+    }
+
     .creator-section {
         flex-direction: column;
         align-items: flex-start;
         gap: 1rem;
+        padding: 0.875rem;
+    }
+
+    .creator-avatar-large,
+    .creator-avatar-placeholder {
+        width: 3rem;
+        height: 3rem;
+    }
+
+    .creator-name {
+        font-size: 1rem;
+    }
+
+    .view-profile-btn {
+        width: 100%;
+        text-align: center;
+        padding: 0.75rem 1rem;
     }
 
     .thumbnail-gallery {
-        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 0.5rem;
+    }
+
+    .stats-grid {
+        gap: 0.5rem;
+    }
+
+    .stat-box {
+        padding: 0.875rem;
+    }
+
+    .stat-value {
+        font-size: 1.125rem;
+    }
+
+    .formats-section h3,
+    .tags-section h3 {
+        font-size: 1.125rem;
+    }
+
+    .action-btn {
+        padding: 0.75rem 1rem;
     }
 }

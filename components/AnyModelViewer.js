@@ -879,6 +879,7 @@ export default forwardRef(function AnyModelViewer({ url, type, isDemoMode = fals
                         enableAutoScale={false}
                         onModelLoad={handleModelLoad}
                         onObjectClick={handleObjectClick}
+                        onError={onError}
                     />
                 </Suspense>
                 <OrbitControls ref={orbitControlsRef} enableDamping dampingFactor={0.1} />

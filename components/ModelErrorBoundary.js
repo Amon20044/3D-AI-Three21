@@ -13,31 +13,43 @@ class ModelErrorBoundary extends React.Component {
 
     componentDidCatch(error, errorInfo) {
         // Log the error details
-        console.error('Model Error Boundary caught an error:', error, errorInfo);
+        console.error('🔴 Model Error Boundary caught an error:', error, errorInfo);
         this.setState({
             error: error,
             errorInfo: errorInfo
         });
+
+        // Call the onError callback if provided
+        if (this.props.onError) {
+            const formattedError = {
+                message: error?.message || error?.toString() || 'Unknown error',
+                stack: error?.stack || errorInfo?.componentStack || 'No stack trace available',
+                name: error?.name || 'ModelError',
+                originalError: error,
+                componentStack: errorInfo?.componentStack
+            };
+            this.props.onError(formattedError);
+        }
     }
 
     render() {
         if (this.state.hasError) {
             // Fallback UI
             return (
-                <div style={{ 
-                    width: '100vw', 
-                    height: '100vh', 
-                    display: 'flex', 
+                <div style={{
+                    width: '100vw',
+                    height: '100vh',
+                    display: 'flex',
                     flexDirection: 'column',
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     background: 'radial-gradient(ellipse at center, #1a1a1a 0%, #000000 70%, #000000 100%)',
                     color: '#ffffff',
                     padding: '2rem'
                 }}>
-                    <div style={{ 
-                        background: 'rgba(255, 255, 255, 0.1)', 
-                        padding: '2rem', 
+                    <div style={{
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        padding: '2rem',
                         borderRadius: '12px',
                         maxWidth: '600px',
                         textAlign: 'center'
@@ -48,9 +60,9 @@ class ModelErrorBoundary extends React.Component {
                         <p style={{ marginBottom: '1rem', color: '#cccccc' }}>
                             There was an error loading or displaying the 3D model. This could be due to:
                         </p>
-                        <ul style={{ 
-                            textAlign: 'left', 
-                            color: '#aaaaaa', 
+                        <ul style={{
+                            textAlign: 'left',
+                            color: '#aaaaaa',
                             marginBottom: '2rem',
                             listStyle: 'disc',
                             paddingLeft: '2rem'
@@ -60,8 +72,8 @@ class ModelErrorBoundary extends React.Component {
                             <li>WebGL context issues</li>
                             <li>Browser compatibility problems</li>
                         </ul>
-                        <button 
-                            onClick={() => window.location.reload()} 
+                        <button
+                            onClick={() => window.location.reload()}
                             style={{
                                 background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
                                 color: 'white',
@@ -75,8 +87,8 @@ class ModelErrorBoundary extends React.Component {
                         >
                             Reload Page
                         </button>
-                        <button 
-                            onClick={() => window.history.back()} 
+                        <button
+                            onClick={() => window.history.back()}
                             style={{
                                 background: 'transparent',
                                 color: '#ffffff',
@@ -94,9 +106,9 @@ class ModelErrorBoundary extends React.Component {
                                 <summary style={{ cursor: 'pointer', color: '#ffab91' }}>
                                     Technical Details
                                 </summary>
-                                <pre style={{ 
-                                    background: 'rgba(0, 0, 0, 0.3)', 
-                                    padding: '1rem', 
+                                <pre style={{
+                                    background: 'rgba(0, 0, 0, 0.3)',
+                                    padding: '1rem',
                                     borderRadius: '4px',
                                     marginTop: '0.5rem',
                                     fontSize: '12px',

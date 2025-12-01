@@ -252,9 +252,9 @@
      display: flex;
      align-items: center;
      gap: 0.5rem;
-     background: transparent;
+     background: var(--gradient-primary);
      border: 2px solid var(--border);
-     color: var(--muted-foreground);
+     color: white;
      padding: 0.625rem 0.875rem;
      border-radius: 6px;
      margin-bottom: 2rem;
@@ -1343,7 +1343,7 @@
      padding: 0.75rem 1rem;
      background: rgba(var(--primary-rgb), 0.05);
      border-bottom: 1px solid var(--border);
-     font-size: 0.7rem;
+     font-size: 0.8rem;
      color: var(--muted-foreground);
      flex-shrink: 0;
  }
@@ -1393,7 +1393,7 @@
      border-radius: 6px;
      cursor: pointer;
      transition: all 0.15s ease;
-     font-size: 0.5rem;
+     font-size: 0.8rem;
      color: var(--foreground);
  }
 
@@ -1433,7 +1433,7 @@
  }
 
  .tree-node-name {
-     font-size: 0.35rem;
+     font-size: 0.75rem;
      text-overflow: ellipsis;
      white-space: nowrap;
      font-weight: 500;
