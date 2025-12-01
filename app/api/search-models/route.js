@@ -14,6 +14,7 @@ const apifyClient = new ApifyClient({
  * This route interfaces with the updated Apify Sketchfab Actor that supports:
  * - AI-powered natural language search (LangGraph + Google Gemini)
  * - Manual filter-based search
+ * - Cursor-based pagination (24 items per page max)
  * 
  * The AI processing is now handled by the Apify actor itself,
  * so we just pass useAI flag and naturalQuery to the actor.
@@ -21,16 +22,25 @@ const apifyClient = new ApifyClient({
 
 export async function POST(req) {
     try {
-        const { query, mode, manualFilters } = await req.json();
+        const { query, mode, manualFilters, cursor, count = 24 } = await req.json();
 
         // Build input for Apify actor based on the new schema
-        let actorInput = {};
+        let actorInput = {
+            count: Math.min(count, 24), // Cap at 24 per Sketchfab API limit
+        };
+
+        // Add cursor for pagination if provided
+        if (cursor) {
+            actorInput.cursor = cursor;
+            console.log('📄 Pagination cursor:', cursor);
+        }
 
         // Natural language mode - use AI on Apify side
         if (mode === 'natural' && query) {
             console.log('🤖 Natural language search (AI mode):', query);
             
             actorInput = {
+                ...actorInput,
                 useAI: true,
                 naturalQuery: query,
                 googleApiKey: process.env.GOOGLE_API_KEY // Pass Google API key for Gemini
@@ -44,6 +54,7 @@ export async function POST(req) {
             
             // Build manual filter params matching the Apify actor schema
             actorInput = {
+                ...actorInput,
                 useAI: false,
                 // Core search params
                 q: manualFilters.q || '',
@@ -123,18 +134,38 @@ export async function POST(req) {
             console.log('📊 Raw actor output (first item):', JSON.stringify(items[0], null, 2));
         }
 
-        // The actor may return metadata as the first item, filter it out
-        // Metadata typically has fields like 'searchParams', 'aiEnabled', 'resultCount'
-        const metadata = items.find(item => item.searchParams || item.aiEnabled !== undefined);
+        // The actor returns metadata as the first item with _metadata: true
+        const metadata = items.find(item => item._metadata === true);
         const models = items.filter(item => item.uid && item.name); // Models have uid and name
 
         console.log(`📦 Processed: ${models.length} models, metadata: ${metadata ? 'found' : 'none'}`);
 
+        // Extract pagination info from metadata
+        const pagination = metadata?.pagination || {
+            has_next: false,
+            has_previous: false,
+            next_cursor: null,
+            previous_cursor: null
+        };
+
+        console.log('📄 Pagination info:', JSON.stringify(pagination, null, 2));
+
         return new Response(JSON.stringify({
             success: true,
             count: models.length,
-            searchParams: metadata?.searchParams || cleanedInput,
-            aiEnabled: metadata?.aiEnabled || cleanedInput.useAI,
+            searchParams: metadata?.search_params || cleanedInput,
+            aiEnabled: metadata?.ai_powered || cleanedInput.useAI,
+            // AI-generated params (if AI mode was used)
+            generatedQuery: metadata?.generated_q || null,
+            generatedTags: metadata?.generated_tags || null,
+            originalQuery: metadata?.original_query || null,
+            // Pagination
+            pagination: {
+                hasNext: pagination.has_next,
+                hasPrevious: pagination.has_previous,
+                nextCursor: pagination.next_cursor,
+                previousCursor: pagination.previous_cursor
+            },
             models: models,
             attribution: {
                 sketchfab: 'Models provided by Sketchfab',

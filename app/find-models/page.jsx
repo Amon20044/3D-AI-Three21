@@ -1,10 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Search, Sliders, Download, User, Eye, Heart, X, ExternalLink, MessageCircle, Calendar } from 'react-feather';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Search, Sliders, Download, User, Eye, Heart, X, ExternalLink, MessageCircle, Calendar, Loader, ChevronDown } from 'react-feather';
 import Header from '../../components/Header';
 import './styles.css';
 import './modal.css';
+
+const ITEMS_PER_PAGE = 24;
+const PREFETCH_THRESHOLD = 18; // Start prefetching when 6 items before end (24 - 6 = 18)
 
 export default function FindModelsPage() {
     const [searchMode, setSearchMode] = useState('natural');
@@ -19,9 +22,29 @@ export default function FindModelsPage() {
     });
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [loadingMore, setLoadingMore] = useState(false);
     const [error, setError] = useState(null);
     const [searchParams, setSearchParams] = useState(null);
     const [selectedModel, setSelectedModel] = useState(null);
+    
+    // Pagination state
+    const [pagination, setPagination] = useState({
+        hasNext: false,
+        hasPrevious: false,
+        nextCursor: null,
+        previousCursor: null
+    });
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalLoaded, setTotalLoaded] = useState(0);
+    
+    // Refs for pagination control
+    const lastSearchPayloadRef = useRef(null);
+    const isPrefetchingRef = useRef(false);
+    const observerRef = useRef(null);
+    const loadMoreTriggerRef = useRef(null);
+    
+    // AI-generated info display
+    const [aiInfo, setAiInfo] = useState(null);
 
     // Load Vanta.js fog background
     useEffect(() => {
@@ -60,25 +83,32 @@ export default function FindModelsPage() {
         document.head.appendChild(threeScript);
     }, []);
 
-    const handleSearch = async () => {
-        setLoading(true);
+    // Fetch models (supports both initial search and pagination)
+    const fetchModels = useCallback(async (cursor = null, append = false) => {
+        if (!lastSearchPayloadRef.current && !cursor) return;
+        
+        const isInitialSearch = !cursor;
+        
+        if (isInitialSearch) {
+            setLoading(true);
+            setResults([]);
+            setCurrentPage(1);
+            setTotalLoaded(0);
+            setAiInfo(null);
+        } else {
+            setLoadingMore(true);
+        }
+        
         setError(null);
-        setResults([]);
 
         try {
             const payload = {
-                mode: searchMode,
-                ...(searchMode === 'natural'
-                    ? { query: naturalQuery }
-                    : {
-                        manualFilters: {
-                            ...manualFilters,
-                            tags: manualFilters.tags.split(',').map(t => t.trim()).filter(Boolean),
-                            categories: manualFilters.categories.split(',').map(c => c.trim()).filter(Boolean)
-                        }
-                    }
-                )
+                ...lastSearchPayloadRef.current,
+                cursor: cursor,
+                count: ITEMS_PER_PAGE
             };
+
+            console.log('🔍 Fetching models:', { cursor, append, page: currentPage });
 
             const response = await fetch('/api/search-models', {
                 method: 'POST',
@@ -92,14 +122,123 @@ export default function FindModelsPage() {
                 throw new Error(data.error || 'Search failed');
             }
 
-            setResults(data.models || []);
+            const newModels = data.models || [];
+            
+            if (append) {
+                // Append to existing results, avoiding duplicates
+                setResults(prev => {
+                    const existingUids = new Set(prev.map(m => m.uid));
+                    const uniqueNewModels = newModels.filter(m => !existingUids.has(m.uid));
+                    return [...prev, ...uniqueNewModels];
+                });
+                setCurrentPage(prev => prev + 1);
+                setTotalLoaded(prev => prev + newModels.length);
+            } else {
+                setResults(newModels);
+                setTotalLoaded(newModels.length);
+            }
+            
             setSearchParams(data.searchParams);
+            setPagination(data.pagination || {
+                hasNext: false,
+                hasPrevious: false,
+                nextCursor: null,
+                previousCursor: null
+            });
+            
+            // Store AI info if available
+            if (data.aiEnabled && data.generatedQuery) {
+                setAiInfo({
+                    originalQuery: data.originalQuery,
+                    generatedQuery: data.generatedQuery,
+                    generatedTags: data.generatedTags
+                });
+            }
+
+            console.log('✅ Fetched:', newModels.length, 'models. Pagination:', data.pagination);
+
         } catch (err) {
             setError(err.message);
         } finally {
             setLoading(false);
+            setLoadingMore(false);
+            isPrefetchingRef.current = false;
         }
+    }, [currentPage]);
+
+    // Initial search handler
+    const handleSearch = async () => {
+        const payload = {
+            mode: searchMode,
+            ...(searchMode === 'natural'
+                ? { query: naturalQuery }
+                : {
+                    manualFilters: {
+                        ...manualFilters,
+                        tags: manualFilters.tags.split(',').map(t => t.trim()).filter(Boolean),
+                        categories: manualFilters.categories.split(',').map(c => c.trim()).filter(Boolean)
+                    }
+                }
+            )
+        };
+
+        lastSearchPayloadRef.current = payload;
+        await fetchModels(null, false);
     };
+
+    // Load more handler
+    const loadMore = useCallback(async () => {
+        if (!pagination.hasNext || !pagination.nextCursor || loadingMore || isPrefetchingRef.current) {
+            return;
+        }
+        
+        isPrefetchingRef.current = true;
+        await fetchModels(pagination.nextCursor, true);
+    }, [pagination, loadingMore, fetchModels]);
+
+    // Smart prefetch: trigger when scrolling to 18th item (6 before end)
+    const checkPrefetchTrigger = useCallback((visibleIndex) => {
+        const currentPageStart = (currentPage - 1) * ITEMS_PER_PAGE;
+        const prefetchPoint = currentPageStart + PREFETCH_THRESHOLD;
+        
+        // If we've scrolled past the prefetch threshold and have more pages
+        if (visibleIndex >= prefetchPoint && pagination.hasNext && !isPrefetchingRef.current && !loadingMore) {
+            console.log(`📄 Prefetch triggered at index ${visibleIndex} (threshold: ${prefetchPoint})`);
+            loadMore();
+        }
+    }, [currentPage, pagination.hasNext, loadMore, loadingMore]);
+
+    // Intersection Observer for infinite scroll
+    useEffect(() => {
+        if (observerRef.current) {
+            observerRef.current.disconnect();
+        }
+
+        observerRef.current = new IntersectionObserver(
+            (entries) => {
+                const [entry] = entries;
+                if (entry.isIntersecting && pagination.hasNext && !loadingMore) {
+                    loadMore();
+                }
+            },
+            { threshold: 0.1, rootMargin: '100px' }
+        );
+
+        if (loadMoreTriggerRef.current) {
+            observerRef.current.observe(loadMoreTriggerRef.current);
+        }
+
+        return () => {
+            if (observerRef.current) {
+                observerRef.current.disconnect();
+            }
+        };
+    }, [pagination.hasNext, loadMore, loadingMore]);
+
+    // Track scroll position to trigger prefetch at 18th item
+    const handleModelVisible = useCallback((index) => {
+        checkPrefetchTrigger(index);
+    }, [checkPrefetchTrigger]);
 
     return (
         <div className="find-models-page">
@@ -268,18 +407,70 @@ export default function FindModelsPage() {
                     {results.length > 0 && (
                         <>
                             <div className="results-header">
-                                <h2>Found {results.length} models</h2>
+                                <h2>Found {totalLoaded}+ models</h2>
+                                {pagination.hasNext && (
+                                    <span className="pagination-info">
+                                        Page {currentPage} • Scroll for more
+                                    </span>
+                                )}
                             </div>
 
+                            {/* AI Info Banner */}
+                            {aiInfo && (
+                                <div className="ai-info-banner">
+                                    <div className="ai-badge">🤖 AI-Powered Search</div>
+                                    <div className="ai-details">
+                                        <span><strong>Your query:</strong> "{aiInfo.originalQuery}"</span>
+                                        <span><strong>Optimized to:</strong> "{aiInfo.generatedQuery}"</span>
+                                        {aiInfo.generatedTags?.length > 0 && (
+                                            <span><strong>Tags:</strong> {aiInfo.generatedTags.join(', ')}</span>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="results-grid">
-                                {results.map((model) => (
+                                {results.map((model, index) => (
                                     <ModelCard
                                         key={model.uid}
                                         model={model}
+                                        index={index}
                                         onClick={() => setSelectedModel(model)}
+                                        onVisible={handleModelVisible}
                                     />
                                 ))}
                             </div>
+
+                            {/* Load More Trigger / Infinite Scroll Sentinel */}
+                            {pagination.hasNext && (
+                                <div 
+                                    ref={loadMoreTriggerRef} 
+                                    className="load-more-section"
+                                >
+                                    {loadingMore ? (
+                                        <div className="loading-more">
+                                            <Loader className="spin" size={24} />
+                                            <span>Loading more models...</span>
+                                        </div>
+                                    ) : (
+                                        <button 
+                                            onClick={loadMore}
+                                            className="load-more-btn"
+                                            disabled={loadingMore}
+                                        >
+                                            <ChevronDown size={20} />
+                                            Load More Models
+                                        </button>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* End of Results */}
+                            {!pagination.hasNext && results.length > 0 && (
+                                <div className="end-of-results">
+                                    <p>🎉 You've seen all {totalLoaded} models!</p>
+                                </div>
+                            )}
                         </>
                     )}
 
@@ -317,11 +508,33 @@ export default function FindModelsPage() {
     );
 }
 
-function ModelCard({ model, onClick }) {
+function ModelCard({ model, index, onClick, onVisible }) {
+    const cardRef = useRef(null);
+    const hasTriggeredRef = useRef(false);
     const thumbnail = model.thumbnails?.images?.[1]?.url || model.thumbnails?.images?.[0]?.url;
 
+    // Track when this card becomes visible for prefetch logic
+    useEffect(() => {
+        if (!cardRef.current || !onVisible) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const [entry] = entries;
+                if (entry.isIntersecting && !hasTriggeredRef.current) {
+                    hasTriggeredRef.current = true;
+                    onVisible(index);
+                }
+            },
+            { threshold: 0.5 }
+        );
+
+        observer.observe(cardRef.current);
+
+        return () => observer.disconnect();
+    }, [index, onVisible]);
+
     return (
-        <div className="model-card" onClick={onClick}>
+        <div className="model-card" onClick={onClick} ref={cardRef} data-index={index}>
             {/* Thumbnail Image */}
             <div className="model-thumbnail">
                 {thumbnail ? (
