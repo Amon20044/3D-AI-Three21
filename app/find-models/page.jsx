@@ -420,8 +420,6 @@ export default function FindModelsPage() {
                                 <div className="ai-info-banner">
                                     <div className="ai-badge">AI-Powered Search</div>
                                     <div className="ai-details">
-                                        <span><strong>Your query:</strong> {aiInfo.originalQuery}</span>
-                                        <span><strong>Optimized to:</strong> {aiInfo.generatedQuery}</span>
                                         {aiInfo.generatedTags?.length > 0 && (
                                             <span><strong>Tags:</strong> {aiInfo.generatedTags.join(', ')}</span>
                                         )}
@@ -804,4 +802,5 @@ function ModelDetailsModal({ model, onClose }) {
         </div>
     );
 }
+
 
