@@ -1119,7 +1119,7 @@ Three21 leverages **two powerful Apify actors** to enhance both research and des
 
 > **🎯 CUSTOM ACTOR BUILT FROM SCRATCH**  
 > This integration uses a **custom Apify actor** specifically developed for Three21's 3D model discovery needs.  
-> 📦 **Published on Apify Store**: [`amonsharma/sketchfab-3d-models-search`](https://apify.com/amonsharma/sketchfab-3d-models-search)  
+> 📦 **Published on Apify Store**: [`amonsharma/sketchfab-3d-ai-model-search`](https://apify.com/amonsharma/sketchfab-3d-ai-model-search)
 > 🆔 **Actor ID**: `tCErBTV7dcifSOlkU`
 
 Three21 features a **premium 3D model discovery platform** powered by this custom Sketchfab Actor, combining AI-powered natural language search with manual filtering capabilities.
