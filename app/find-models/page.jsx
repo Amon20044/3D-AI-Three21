@@ -416,18 +416,18 @@ export default function FindModelsPage() {
                             </div>
 
                             {/* AI Info Banner */}
-                            {aiInfo && (
-                                <div className="ai-info-banner">
-                                    <div className="ai-badge">AI-Powered Search</div>
-                                    <div className="ai-details">
-                                        <span><strong>Your query:</strong> "{aiInfo.originalQuery}"</span>
-                                        <span><strong>Optimized to:</strong> "{aiInfo.generatedQuery}"</span>
-                                        {aiInfo.generatedTags?.length > 0 && (
-                                            <span><strong>Tags:</strong> {aiInfo.generatedTags.join(', ')}</span>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
+                            // {aiInfo && (
+                            //    <div className="ai-info-banner">
+                            //        <div className="ai-badge">AI-Powered Search</div>
+                             //       <div className="ai-details">
+                              //          <span><strong>Your query:</strong> "{aiInfo.originalQuery}"</span>
+                               //         <span><strong>Optimized to:</strong> "{aiInfo.generatedQuery}"</span>
+                               //         {aiInfo.generatedTags?.length > 0 && (
+                               //             <span><strong>Tags:</strong> {aiInfo.generatedTags.join(', ')}</span>
+                               //         )}
+                              //      </div>
+                           //     </div>
+                           // )}
 
                             <div className="results-grid">
                                 {results.map((model, index) => (
@@ -804,3 +804,4 @@ function ModelDetailsModal({ model, onClose }) {
         </div>
     );
 }
+
