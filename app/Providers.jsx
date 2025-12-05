@@ -3,7 +3,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
 import { ModelInfoProvider } from '../components/ModelInfoContext';
-import { Analytics } from "@vercel/analytics/next";
 
 export default function Providers({ children }) {
     // Create QueryClient instance with optimized defaults
@@ -28,7 +27,6 @@ export default function Providers({ children }) {
             <ModelInfoProvider>
                 {children}
             </ModelInfoProvider>
-            <Analytics />
         </QueryClientProvider>
     );
 }
