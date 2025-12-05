@@ -1,19 +1,21 @@
-import lingoCompiler from "lingo.dev/compiler";
-
 /** @type {import('next').NextConfig} */
-const config = {
+const nextConfig = {
+  reactStrictMode: true,
+
+  experimental: {
+    optimizeCss: true,
+    serverActions: true,
+  },
+
+  webpack: (config) => {
+    // Enable WebAssembly for physics engines / Three.js extensions
+    config.experiments = {
+      ...config.experiments,
+      asyncWebAssembly: true,
+    };
+
+    return config;
+  },
 };
 
-const withLingo = lingoCompiler.next({
-    sourceRoot: "app",
-    sourceLocale: "en",
-    targetLocales: ["es", "fr", "de", "hi", "ja", "ko", "pt", "ru", "zh", "ar", "id", "it", "th", "vi"],
-    rsc: true,
-    models: {
-        "*:*": "google:gemini-2.5-flash",
-    },
-});
-
-export default withLingo(config);
-
-
+export default nextConfig;

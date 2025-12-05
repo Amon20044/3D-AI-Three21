@@ -105,10 +105,13 @@ export default function FindModelsPage() {
             const payload = {
                 ...lastSearchPayloadRef.current,
                 cursor: cursor,
-                count: ITEMS_PER_PAGE
+                count: ITEMS_PER_PAGE,
+                // When paginating (cursor provided), skip AI processing and use Sketchfab API directly
+                // AI is only needed for the initial search to interpret the natural language query
+                ...(cursor && { useAI: false })
             };
 
-            console.log('🔍 Fetching models:', { cursor, append, page: currentPage });
+            console.log('🔍 Fetching models:', { cursor, append, page: currentPage, useAI: !cursor });
 
             const response = await fetch('/api/search-models', {
                 method: 'POST',
@@ -606,6 +609,42 @@ function ModelCard({ model, index, onClick, onVisible }) {
 function ModelDetailsModal({ model, onClose }) {
     const allThumbnails = model.thumbnails?.images || [];
     const [selectedThumb, setSelectedThumb] = useState(allThumbnails[allThumbnails.length - 1] || allThumbnails[0]);
+    const [downloadLinks, setDownloadLinks] = useState(null);
+    const [downloadLoading, setDownloadLoading] = useState(false);
+    const [downloadError, setDownloadError] = useState(null);
+    const [showDownloadMenu, setShowDownloadMenu] = useState(false);
+
+    // Fetch download links when modal opens for downloadable models
+    const fetchDownloadLinks = async () => {
+        if (!model.isDownloadable || downloadLinks || downloadLoading) return;
+        
+        setDownloadLoading(true);
+        setDownloadError(null);
+        
+        try {
+            const response = await fetch(`/api/download-model?uid=${model.uid}`);
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to fetch download links');
+            }
+            
+            setDownloadLinks(data.formats);
+            setShowDownloadMenu(true);
+        } catch (err) {
+            setDownloadError(err.message);
+            console.error('Download error:', err);
+        } finally {
+            setDownloadLoading(false);
+        }
+    };
+
+    // Format file size for display
+    const formatSize = (bytes) => {
+        if (!bytes) return 'Unknown';
+        const mb = bytes / 1024 / 1024;
+        return mb >= 1 ? `${mb.toFixed(2)} MB` : `${(bytes / 1024).toFixed(0)} KB`;
+    };
 
     return (
         <div className="modal-overlay" onClick={onClose}>
@@ -787,15 +826,96 @@ function ModelDetailsModal({ model, onClose }) {
                                 View on Sketchfab
                             </a>
                             {model.isDownloadable && (
-                                <a
-                                    href={model.viewerUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="action-btn secondary"
-                                >
-                                    <Download size={18} />
-                                    Download Model
-                                </a>
+                                <div className="download-wrapper">
+                                    <button
+                                        onClick={fetchDownloadLinks}
+                                        className="action-btn secondary"
+                                        disabled={downloadLoading}
+                                    >
+                                        {downloadLoading ? (
+                                            <>
+                                                <Loader className="spin" size={18} />
+                                                Getting Links...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Download size={18} />
+                                                Download Model
+                                            </>
+                                        )}
+                                    </button>
+                                    
+                                    {/* Download Format Menu */}
+                                    {showDownloadMenu && downloadLinks && (
+                                        <div className="download-menu">
+                                            <div className="download-menu-header">
+                                                <span>Select Format</span>
+                                                <button 
+                                                    className="close-menu" 
+                                                    onClick={() => setShowDownloadMenu(false)}
+                                                >
+                                                    <X size={16} />
+                                                </button>
+                                            </div>
+                                            <div className="download-options">
+                                                {downloadLinks.glb && (
+                                                    <a 
+                                                        href={downloadLinks.glb.url} 
+                                                        className="download-option"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        <span className="format-name">GLB</span>
+                                                        <span className="format-size">{formatSize(downloadLinks.glb.size)}</span>
+                                                    </a>
+                                                )}
+                                                {downloadLinks.gltf && (
+                                                    <a 
+                                                        href={downloadLinks.gltf.url} 
+                                                        className="download-option"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        <span className="format-name">GLTF</span>
+                                                        <span className="format-size">{formatSize(downloadLinks.gltf.size)}</span>
+                                                    </a>
+                                                )}
+                                                {downloadLinks.usdz && (
+                                                    <a 
+                                                        href={downloadLinks.usdz.url} 
+                                                        className="download-option"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        <span className="format-name">USDZ</span>
+                                                        <span className="format-size">{formatSize(downloadLinks.usdz.size)}</span>
+                                                    </a>
+                                                )}
+                                                {downloadLinks.source && (
+                                                    <a 
+                                                        href={downloadLinks.source.url} 
+                                                        className="download-option"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        <span className="format-name">Source</span>
+                                                        <span className="format-size">{formatSize(downloadLinks.source.size)}</span>
+                                                    </a>
+                                                )}
+                                            </div>
+                                            <p className="download-note">
+                                                Links expire in ~5 minutes
+                                            </p>
+                                        </div>
+                                    )}
+                                    
+                                    {/* Download Error */}
+                                    {downloadError && (
+                                        <div className="download-error">
+                                            {downloadError}
+                                        </div>
+                                    )}
+                                </div>
                             )}
                         </div>
                     </div>

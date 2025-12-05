@@ -22,7 +22,7 @@ const apifyClient = new ApifyClient({
 
 export async function POST(req) {
     try {
-        const { query, mode, manualFilters, cursor, count = 24 } = await req.json();
+        const { query, mode, manualFilters, cursor, count = 24, useAI: useAIOverride } = await req.json();
 
         // Build input for Apify actor based on the new schema
         let actorInput = {
@@ -35,18 +35,33 @@ export async function POST(req) {
             console.log('📄 Pagination cursor:', cursor);
         }
 
-        // Natural language mode - use AI on Apify side
-        if (mode === 'natural' && query) {
-            console.log('🤖 Natural language search (AI mode):', query);
-            
-            actorInput = {
-                ...actorInput,
-                useAI: true,
-                naturalQuery: query,
-                googleApiKey: process.env.GOOGLE_API_KEY // Pass Google API key for Gemini
-            };
+        // Check if useAI was explicitly set to false (for pagination requests)
+        const forceNoAI = useAIOverride === false;
+        if (forceNoAI) {
+            console.log('🔄 Pagination mode: AI disabled for direct Sketchfab API usage');
+        }
 
-            console.log('📤 Sending to Apify with AI mode enabled');
+        // Natural language mode - use AI on Apify side (unless explicitly disabled)
+        if (mode === 'natural' && query) {
+            if (forceNoAI) {
+                // Pagination request: Skip AI, use the query directly
+                console.log('🔄 Pagination: Using natural query directly without AI:', query);
+                actorInput = {
+                    ...actorInput,
+                    useAI: false,
+                    q: query // Use query as direct search term
+                };
+            } else {
+                // Initial search: Use AI to process the query
+                console.log('🤖 Natural language search (AI mode):', query);
+                actorInput = {
+                    ...actorInput,
+                    useAI: true,
+                    naturalQuery: query,
+                    googleApiKey: process.env.GOOGLE_API_KEY // Pass Google API key for Gemini
+                };
+                console.log('📤 Sending to Apify with AI mode enabled');
+            }
         }
         // Manual mode - use provided filters directly
         else if (mode === 'manual' && manualFilters) {

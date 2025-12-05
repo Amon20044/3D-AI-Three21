@@ -5776,11 +5776,11 @@
         },
         "7/declaration/body/24/argument/11/1/23/expression/right/5/expression/right/1": {
           "type": "element",
-          "hash": "64b87c2057407ce059508faf84a2d193",
+          "hash": "be73835b06a2a12feebc8731a5ea543b",
           "context": "",
           "skip": false,
           "overrides": {},
-          "content": "🤖 AI-Powered Search"
+          "content": "AI-Powered Search"
         },
         "7/declaration/body/24/argument/11/1/23/expression/right/5/expression/right/3/1": {
           "type": "element",
