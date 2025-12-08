@@ -9,9 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ai-sdk/google": "^2.0.23",
-    "@ai-sdk/react": "^2.0.102",
-    "@ai-sdk/togetherai": "^1.0.23",
+    "@ai-sdk/google": "^2.0.44",
+    "@ai-sdk/react": "^2.0.109",
+    "@ai-sdk/togetherai": "^1.0.29",
     "@built-in-ai/core": "^2.0.0",
     "@openrouter/ai-sdk-provider": "^1.2.0",
     "@react-three/drei": "^10.3.0",
