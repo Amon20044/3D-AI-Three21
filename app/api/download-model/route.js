@@ -33,6 +33,18 @@ export async function GET(req) {
             });
         }
 
+        // Validate UID to prevent unsafe characters from influencing the request path
+        const UID_PATTERN = /^[A-Za-z0-9_-]{1,128}$/;
+        if (!UID_PATTERN.test(uid)) {
+            return new Response(JSON.stringify({
+                error: 'Invalid model UID',
+                hint: 'UID must contain only letters, numbers, dashes, or underscores'
+            }), {
+                status: 400,
+                headers: { 'Content-Type': 'application/json' }
+            });
+        }
+
         if (!SKETCHFAB_API_TOKEN) {
             console.error('❌ SKETCHFAB_API_TOKEN not configured');
             return new Response(JSON.stringify({
