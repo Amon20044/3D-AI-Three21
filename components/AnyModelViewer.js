@@ -10,7 +10,6 @@ import { useModelInfo } from './ModelInfoContext';
 import { Toast } from './Toast';
 import { HighlightManager } from './HighlightManager';
 import { ScreenshotManager } from './ScreenshotManager';
-import ARViewer from './ARViewer';
 // import { DEMO_CONFIG } from '@/pages/model';
 import html2canvas from 'html2canvas';
 import * as THREE from 'three';
@@ -80,8 +79,10 @@ export default forwardRef(function AnyModelViewer({ url, type, isDemoMode = fals
     // Toast state for object clicking
     const [toast, setToast] = useState({ message: '', isVisible: false });
 
-    // AR viewer state
-    const [isAROpen, setIsAROpen] = useState(false);
+    // AR mode state - camera background
+    const [isARMode, setIsARMode] = useState(false);
+    const [cameraStream, setCameraStream] = useState(null);
+    const videoRef = useRef(null);
 
     // FPS panel collapse state - auto-collapse on mobile
     const [isFPSPanelCollapsed, setIsFPSPanelCollapsed] = useState(() => {
@@ -141,6 +142,58 @@ export default forwardRef(function AnyModelViewer({ url, type, isDemoMode = fals
 
         checkWebGPU();
     }, []);
+
+    // AR Camera Mode - Toggle camera background
+    const toggleARMode = useCallback(async () => {
+        if (isARMode) {
+            // Turn off AR mode
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                setCameraStream(null);
+            }
+            setIsARMode(false);
+            setToast({ message: '📷 AR Mode Off', isVisible: true });
+            setTimeout(() => setToast({ message: '', isVisible: false }), 2000);
+        } else {
+            // Turn on AR mode - request camera
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: { ideal: 'environment' }, // Prefer back camera
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 }
+                    }
+                });
+                setCameraStream(stream);
+                setIsARMode(true);
+                setToast({ message: '📷 AR Mode On - Camera Active', isVisible: true });
+                setTimeout(() => setToast({ message: '', isVisible: false }), 2000);
+            } catch (error) {
+                console.error('Camera access error:', error);
+                setToast({ 
+                    message: `❌ Camera Error: ${error.message || 'Permission denied'}`, 
+                    isVisible: true 
+                });
+                setTimeout(() => setToast({ message: '', isVisible: false }), 4000);
+            }
+        }
+    }, [isARMode, cameraStream]);
+
+    // Attach camera stream to video element when available
+    useEffect(() => {
+        if (videoRef.current && cameraStream) {
+            videoRef.current.srcObject = cameraStream;
+        }
+    }, [cameraStream]);
+
+    // Cleanup camera on unmount
+    useEffect(() => {
+        return () => {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+            }
+        };
+    }, [cameraStream]);
 
     // FPS Counter
     useEffect(() => {
@@ -793,18 +846,58 @@ export default forwardRef(function AnyModelViewer({ url, type, isDemoMode = fals
                 )}
             </div>
 
+            {/* AR Camera Video Background */}
+            {isARMode && cameraStream && (
+                <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        zIndex: 0
+                    }}
+                />
+            )}
+
+            {/* Normal Background Layer - shows when NOT in AR mode */}
+            {!isARMode && (
+                <div 
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        background: 'radial-gradient(ellipse at center, #27262fff 0%, #151515ff 70%, #000000 100%)',
+                        zIndex: 0
+                    }}
+                />
+            )}
+
             <Canvas
                 camera={{ position: [-100, 600, 400], fov: 60, near: 0.1, far: 100000 }}
                 shadows
-                gl={getRendererConfig()}
+                gl={{
+                    ...getRendererConfig(),
+                    alpha: true // Always enable transparency
+                }}
+                style={{ 
+                    background: 'transparent',
+                    position: 'relative',
+                    zIndex: 1
+                }}
                 onCreated={({ gl }) => {
                     console.log(`Renderer created: ${useWebGPU ? 'WebGPU' : 'WebGL'}`);
 
-                    // Apply dark bluish spotlight gradient background
+                    // Make canvas transparent - background is handled by separate layers
                     const canvas = gl.domElement;
-                    canvas.style.background = 'radial-gradient(ellipse at center, #27262fff 0%, #151515ff 70%, #000000 100%)';
-                    canvas.style.backgroundRepeat = 'no-repeat';
-                    canvas.style.backgroundSize = 'cover';
+                    canvas.style.background = 'transparent';
 
                     // Handle WebGL context loss (not applicable to WebGPU)
                     if (!useWebGPU) {
@@ -903,7 +996,8 @@ export default forwardRef(function AnyModelViewer({ url, type, isDemoMode = fals
                 isAnimating={isAnimating}
                 isOpenAI={isAIOpen}
                 onOpenAI={handleOpenAI}
-                onOpenAR={() => setIsAROpen(true)}
+                onToggleAR={toggleARMode}
+                isARMode={isARMode}
                 separationDistance={separationDistance}
                 onSeparationDistanceChange={setSeparationDistance}
                 highlightColor={highlightColor}
@@ -938,15 +1032,6 @@ export default forwardRef(function AnyModelViewer({ url, type, isDemoMode = fals
                 message={toast.message}
                 isVisible={toast.isVisible}
                 onHide={hideToast}
-            />
-
-            {/* AR Viewer */}
-            <ARViewer
-                url={url}
-                type={type}
-                isOpen={isAROpen}
-                onClose={() => setIsAROpen(false)}
-                modelName={activeDemoConfig?.name || 'Model'}
             />
 
         </div>

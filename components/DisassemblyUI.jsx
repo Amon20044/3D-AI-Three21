@@ -73,7 +73,8 @@ export function DisassemblyUI({
     isAnimating,
     onOpenAI,
     isOpenAI,
-    onOpenAR,
+    onToggleAR,
+    isARMode = false,
     separationDistance = 0.2,
     onSeparationDistanceChange,
     highlightColor = '#00ffff',
@@ -314,34 +315,35 @@ export function DisassemblyUI({
 
                 </div>
             )}
+            {/* Top Buttons Container - Row on desktop, Column on mobile */}
+            <div className="top-buttons-container">
+                {/* AI Assistant Button */}
+                <button
+                    onClick={onOpenAI}
+                    className="ai-assistant-btn"
+                    aria-label="Open Three21Bot AI Assistant"
+                    type="button"
+                >
+                    <div className="ai-btn-icon" aria-hidden="true">
+                        <Zap size={18} />
+                    </div>
+                    <span>Three21Bot AI</span>
+                </button>
 
-            {/* AR View Button */}
-            <button
-                onClick={onOpenAR}
-                className="ar-view-btn"
-                aria-label="Open AR View"
-                type="button"
-                title="View in Augmented Reality"
-            >
-                <div className="ar-btn-icon" aria-hidden="true">
-                    <Smartphone size={18} />
-                </div>
-                <span>AR View</span>
-            </button>
-
-            {/* AI Assistant Button */}
-            <button
-                onClick={onOpenAI}
-                className="ai-assistant-btn"
-                aria-label="Open Three21Bot AI Assistant"
-                type="button"
-            >
-                <div className="ai-btn-icon" aria-hidden="true">
-                    <Zap size={18} />
-                </div>
-                <span>Three21Bot AI</span>
-            </button>
-
+                {/* AR View Toggle Button */}
+                <button
+                    onClick={onToggleAR}
+                    className={`ar-view-btn ${isARMode ? 'ar-active' : ''}`}
+                    aria-label={isARMode ? "Turn off AR Camera" : "Turn on AR Camera"}
+                    type="button"
+                    title={isARMode ? "Turn off Camera" : "View with Camera (AR)"}
+                >
+                    <div className="ar-btn-icon" aria-hidden="true">
+                        <Smartphone size={18} />
+                    </div>
+                    <span>{isARMode ? 'AR On' : 'AR View'}</span>
+                </button>
+            </div>
             {/* Status Indicator */}
             {showStatus && (
                 <div className="status-indicator" role="region" aria-labelledby="status-title">
