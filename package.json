@@ -24,7 +24,7 @@
     "idb-keyval": "^6.2.2",
     "jszip": "^3.10.1",
     "lingo.dev": "^0.117.6",
-    "next": "15.3.8",
+    "next": "15.4.10",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-feather": "^2.0.10",
