@@ -17,8 +17,41 @@ export default function ImportModelPage() {
     const modelInfoContext = useModelInfo();
     const { saveModelInfo } = modelInfoContext || {};
 
+    const [gltfWarning, setGltfWarning] = useState(null);
+
+    // Helper to get file type from extension
+    const getFileType = (filename) => {
+        const ext = filename.toLowerCase().split('.').pop();
+        switch (ext) {
+            case 'fbx': return 'fbx';
+            case 'obj': return 'obj';
+            case 'stl': return 'stl';
+            case 'glb':
+            case 'gltf':
+            default: return 'gltf';
+        }
+    };
+
+    // Supported extensions
+    const SUPPORTED_EXTENSIONS = ['.glb', '.fbx', '.obj', '.stl'];
+    const WARN_EXTENSIONS = ['.gltf']; // These work but with limitations
+
     const handleFileChange = async (file) => {
-        if (file && (file.name.endsWith('.glb') || file.name.endsWith('.fbx') || file.name.endsWith('.gltf'))) {
+        const fileName = file?.name?.toLowerCase() || '';
+        const isSupported = SUPPORTED_EXTENSIONS.some(ext => fileName.endsWith(ext));
+        const needsWarning = WARN_EXTENSIONS.some(ext => fileName.endsWith(ext));
+
+        if (file && (isSupported || needsWarning)) {
+            // Warn about .gltf files (they reference external assets that won't load)
+            if (needsWarning) {
+                setGltfWarning(
+                    '⚠️ GLTF files reference external textures and .bin files that cannot be loaded. ' +
+                    'Please use GLB format instead (it contains everything in one file). ' +
+                    'You can convert GLTF to GLB using tools like Blender or gltf-pipeline.'
+                );
+                return; // Don't proceed with .gltf files
+            }
+            setGltfWarning(null);
             setSelectedFile(file);
             setShowInfoCollector(true);
         }
@@ -52,7 +85,7 @@ export default function ImportModelPage() {
     const handleModelInfoSubmit = async (modelInfo) => {
         setLoading(true);
         try {
-            const type = selectedFile.name.endsWith('.fbx') ? 'fbx' : 'gltf';
+            const type = getFileType(selectedFile.name);
 
             await idbSet('lastModelFile', selectedFile);
             await idbSet('lastModelType', type);
@@ -76,7 +109,7 @@ export default function ImportModelPage() {
     const handleSkipInfo = async (basicInfo) => {
         setLoading(true);
         try {
-            const type = selectedFile.name.endsWith('.fbx') ? 'fbx' : 'gltf';
+            const type = getFileType(selectedFile.name);
 
             await idbSet('lastModelFile', selectedFile);
             await idbSet('lastModelType', type);
@@ -101,7 +134,7 @@ export default function ImportModelPage() {
         return (
             <ModelInfoCollector
                 fileName={selectedFile.name}
-                fileType={selectedFile.name.endsWith('.fbx') ? 'fbx' : 'gltf'}
+                fileType={getFileType(selectedFile.name)}
                 onSubmit={handleModelInfoSubmit}
                 onSkip={handleSkipInfo}
                 isLoading={loading}
@@ -193,12 +226,29 @@ export default function ImportModelPage() {
                                         Choose File
                                     </div>
 
+                                    {gltfWarning && (
+                                        <div className="gltf-warning" style={{
+                                            background: 'rgba(255, 193, 7, 0.15)',
+                                            border: '1px solid rgba(255, 193, 7, 0.5)',
+                                            borderRadius: '8px',
+                                            padding: '12px 16px',
+                                            marginBottom: '16px',
+                                            color: '#ffc107',
+                                            fontSize: '0.9rem',
+                                            textAlign: 'left'
+                                        }}>
+                                            {gltfWarning}
+                                        </div>
+                                    )}
+
                                     <div className="supported-formats">
                                         <p className="text-sm text-secondary mb-3">Supported formats:</p>
-                                        <div className="flex justify-center gap-4">
-                                            <span className="format-badge">GLB</span>
-                                            <span className="format-badge">GLTF</span>
-                                            <span className="format-badge">FBX</span>
+                                        <div className="flex justify-center gap-4 flex-wrap">
+                                            <span className="format-badge" style={{ background: 'rgba(76, 175, 80, 0.2)', borderColor: 'rgba(76, 175, 80, 0.5)' }}>GLB ✓</span>
+                                            <span className="format-badge" style={{ background: 'rgba(76, 175, 80, 0.2)', borderColor: 'rgba(76, 175, 80, 0.5)' }}>FBX ✓</span>
+                                            <span className="format-badge" style={{ background: 'rgba(76, 175, 80, 0.2)', borderColor: 'rgba(76, 175, 80, 0.5)' }}>OBJ ✓</span>
+                                            <span className="format-badge" style={{ background: 'rgba(76, 175, 80, 0.2)', borderColor: 'rgba(76, 175, 80, 0.5)' }}>STL ✓</span>
+                                            <span className="format-badge" style={{ opacity: 0.5 }} title="GLTF files reference external assets - use GLB instead">GLTF ⚠️</span>
                                         </div>
                                     </div>
                                 </div>
@@ -207,7 +257,7 @@ export default function ImportModelPage() {
                             {/* Hidden file input */}
                             <input
                                 type="file"
-                                accept=".glb,.gltf,.fbx"
+                                accept=".glb,.gltf,.fbx,.obj,.stl"
                                 ref={fileInputRef}
                                 onChange={handleInputChange}
                                 className="hidden"

@@ -306,7 +306,14 @@ export default function ModelPage() {
                     console.log('✅ Loading from query parameter');
                     setFileUrl(queryFile);
                     // Determine type from URL extension or query parameter
-                    const detectedType = queryType || (queryFile.toLowerCase().includes('.fbx') ? 'fbx' : 'gltf');
+                    const getTypeFromUrl = (url) => {
+                        const lowerUrl = url.toLowerCase();
+                        if (lowerUrl.includes('.fbx')) return 'fbx';
+                        if (lowerUrl.includes('.obj')) return 'obj';
+                        if (lowerUrl.includes('.stl')) return 'stl';
+                        return 'gltf'; // default for .glb and .gltf
+                    };
+                    const detectedType = queryType || getTypeFromUrl(queryFile);
                     console.log('Detected type:', detectedType);
                     setType(detectedType);
                     localStorage.setItem('lastModelUrl', queryFile);

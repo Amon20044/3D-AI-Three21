@@ -11,6 +11,7 @@
   "dependencies": {
     "@ai-sdk/google": "^2.0.23",
     "@ai-sdk/react": "^2.0.102",
+    "@lingo.dev/compiler": "^0.1.2",
     "@react-three/drei": "^10.3.0",
     "@react-three/fiber": "^9.1.2",
     "@tanstack/react-query": "^5.90.5",
@@ -21,6 +22,7 @@
     "html2canvas": "^1.4.1",
     "idb": "^8.0.3",
     "idb-keyval": "^6.2.2",
+    "jszip": "^3.10.1",
     "lingo.dev": "^0.117.6",
     "next": "15.4",
     "react": "^19.2.0",

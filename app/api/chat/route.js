@@ -1,6 +1,6 @@
 import { Buffer } from "node:buffer";
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { streamText, convertToModelMessages, tool } from 'ai';
+import { streamText, tool } from 'ai';
 import { z } from 'zod';
 import { searchGoogleScholar } from '@/lib/apifyClient';
 export const runtime = 'nodejs';
@@ -198,7 +198,16 @@ export async function POST(req) {
             analysisContext,
             systemPrompt = ENHANCED_SYSTEM_PROMPT
         } = await req.json();
-        console.log({ messages, selectedPart, screenshot, sceneAnalysis, analysisContext, systemPrompt })
+        
+        // Debug: Log what we received
+        console.log('📥 API received:', {
+            messagesCount: messages?.length,
+            hasScreenshot: !!screenshot,
+            screenshotLength: screenshot?.length,
+            screenshotPrefix: screenshot?.substring(0, 50),
+            hasModelInfo: !!modelInfo,
+            hasSelectedPart: !!selectedPart
+        });
         // -------------------------
         // Screenshot Validation
         // -------------------------
@@ -296,30 +305,92 @@ export async function POST(req) {
         }
 
         // -------------------------
-        // Prepare Messages
+        // Prepare Messages for Gemini
         // -------------------------
-        // Attach screenshot to the last user message if present
-        if (validScreenshot && messages.length > 0) {
-            const lastMessage = messages[messages.length - 1];
-            if (lastMessage.role === 'user') {
-                // If message uses 'content' string, convert to parts
-                if (typeof lastMessage.content === 'string' && (!lastMessage.parts || lastMessage.parts.length === 0)) {
-                    lastMessage.parts = [{ type: 'text', text: lastMessage.content }];
-                    lastMessage.content = undefined; // Clear content to prioritize parts
+        // Convert messages to the format expected by Vercel AI SDK
+        const formattedMessages = messages.map((msg, index) => {
+            const isLastMessage = index === messages.length - 1;
+            
+            // Handle user messages
+            if (msg.role === 'user') {
+                // Get the text content
+                let textContent = '';
+                if (typeof msg.content === 'string') {
+                    textContent = msg.content;
+                } else if (msg.parts && msg.parts.length > 0) {
+                    textContent = msg.parts
+                        .filter(p => p.type === 'text')
+                        .map(p => p.text)
+                        .join(' ');
                 }
-
-                // Ensure parts array exists
-                if (!lastMessage.parts) {
-                    lastMessage.parts = [];
+                
+                // If this is the last message and we have a screenshot, create multimodal content
+                if (isLastMessage && validScreenshot) {
+                    // Process the screenshot - extract base64 and determine MIME type
+                    let base64Data = validScreenshot;
+                    let mimeType = 'image/png';
+                    
+                    // Check if it's a data URL and extract base64
+                    if (validScreenshot.startsWith('data:')) {
+                        const matches = validScreenshot.match(/^data:([^;]+);base64,(.+)$/);
+                        if (matches) {
+                            mimeType = matches[1];
+                            base64Data = matches[2]; // Pure base64 without data URL prefix
+                        }
+                    }
+                    
+                    console.log('📸 Attaching image to message:', {
+                        mimeType,
+                        base64Length: base64Data.length,
+                        sizeKB: ((base64Data.length * 0.75) / 1024).toFixed(2)
+                    });
+                    
+                    // Return multimodal message with both text and image
+                    return {
+                        role: 'user',
+                        content: [
+                            { type: 'text', text: textContent || 'Analyze this image' },
+                            { 
+                                type: 'image', 
+                                image: Buffer.from(base64Data, 'base64'),
+                                mimeType: mimeType
+                            }
+                        ]
+                    };
                 }
-
-                // Append image part
-                lastMessage.parts.push({
-                    type: 'image',
-                    image: validScreenshot
-                });
+                
+                // Regular text-only message
+                return {
+                    role: 'user',
+                    content: textContent
+                };
             }
-        }
+            
+            // Handle assistant messages
+            if (msg.role === 'assistant') {
+                let textContent = '';
+                if (typeof msg.content === 'string') {
+                    textContent = msg.content;
+                } else if (msg.parts && msg.parts.length > 0) {
+                    textContent = msg.parts
+                        .filter(p => p.type === 'text')
+                        .map(p => p.text)
+                        .join(' ');
+                }
+                return {
+                    role: 'assistant',
+                    content: textContent
+                };
+            }
+            
+            // Handle tool messages (pass through)
+            if (msg.role === 'tool') {
+                return msg;
+            }
+            
+            // Default: return as-is
+            return msg;
+        });
 
         // -------------------------
         // Initialize LLM
@@ -334,11 +405,7 @@ export async function POST(req) {
         const result = await streamText({
             model: gemini("gemini-2.5-flash"),
             system: contextPrompt,
-            messages: convertToModelMessages(messages, {
-                tools: {
-                    searchGoogleScholar,
-                }
-            }),
+            messages: formattedMessages,
             temperature: 0.4,
             maxRetries: 3,
             toolChoice: "auto",

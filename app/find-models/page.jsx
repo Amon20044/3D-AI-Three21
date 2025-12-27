@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Search, Sliders, Download, User, Eye, Heart, X, ExternalLink, MessageCircle, Calendar, Loader, ChevronDown } from 'react-feather';
+import { useRouter } from 'next/navigation';
+import { Search, Sliders, Download, User, Eye, Heart, X, ExternalLink, MessageCircle, Calendar, Loader, ChevronDown, Play } from 'react-feather';
 import Header from '../../components/Header';
+import { extractModelFromZip, getAvailableFormats } from '../../lib/zipExtractor';
 import './styles.css';
 import './modal.css';
 
@@ -607,12 +609,59 @@ function ModelCard({ model, index, onClick, onVisible }) {
 
 // 🔥🔥🔥 THE MOST PREMIUM MODAL EVER! 🔥🔥🔥
 function ModelDetailsModal({ model, onClose }) {
+    const router = useRouter();
     const allThumbnails = model.thumbnails?.images || [];
     const [selectedThumb, setSelectedThumb] = useState(allThumbnails[allThumbnails.length - 1] || allThumbnails[0]);
     const [downloadLinks, setDownloadLinks] = useState(null);
     const [downloadLoading, setDownloadLoading] = useState(false);
     const [downloadError, setDownloadError] = useState(null);
     const [showDownloadMenu, setShowDownloadMenu] = useState(false);
+    
+    // Use in Workspace state
+    const [importProgress, setImportProgress] = useState(null);
+    const [importError, setImportError] = useState(null);
+    const [isImporting, setIsImporting] = useState(false);
+
+    // Handle "Use in Workspace" - downloads, extracts, and imports the model
+    const handleUseInWorkspace = async (formatUrl, formatKey) => {
+        if (isImporting) return;
+        
+        setIsImporting(true);
+        setImportError(null);
+        setImportProgress({ phase: 'starting', percent: 0, message: 'Starting...' });
+
+        try {
+            // Determine preferred format
+            const preferredFormat = formatKey === 'glb' ? '.glb' : 
+                                   formatKey === 'source' ? '.fbx' : null;
+
+            await extractModelFromZip(
+                formatUrl,
+                model,
+                preferredFormat,
+                (progress) => {
+                    setImportProgress(progress);
+                }
+            );
+
+            // Success! Navigate to model viewer
+            setImportProgress({ phase: 'complete', percent: 100, message: 'Opening viewer...' });
+            
+            // Small delay to show completion
+            setTimeout(() => {
+                const type = formatKey === 'glb' ? 'gltf' : 
+                            formatKey === 'source' ? 'fbx' : 'gltf';
+                router.push(`/model?type=${type}`);
+            }, 500);
+
+        } catch (error) {
+            console.error('Import error:', error);
+            setImportError(error.message);
+            setImportProgress(null);
+        } finally {
+            setIsImporting(false);
+        }
+    };
 
     // Fetch download links when modal opens for downloadable models
     const fetchDownloadLinks = async () => {
@@ -840,7 +889,7 @@ function ModelDetailsModal({ model, onClose }) {
                                         ) : (
                                             <>
                                                 <Download size={18} />
-                                                Download Model
+                                                Use this Model
                                             </>
                                         )}
                                     </button>
@@ -857,54 +906,123 @@ function ModelDetailsModal({ model, onClose }) {
                                                     <X size={16} />
                                                 </button>
                                             </div>
+                                            
+                                            {/* Import Progress */}
+                                            {importProgress && (
+                                                <div className="import-progress">
+                                                    <div className="progress-bar">
+                                                        <div 
+                                                            className="progress-fill" 
+                                                            style={{ width: `${importProgress.percent}%` }}
+                                                        />
+                                                    </div>
+                                                    <span className="progress-message">{importProgress.message}</span>
+                                                </div>
+                                            )}
+                                            
+                                            {/* Import Error */}
+                                            {importError && (
+                                                <div className="import-error">
+                                                    ⚠️ {importError}
+                                                </div>
+                                            )}
+                                            
                                             <div className="download-options">
                                                 {downloadLinks.glb && (
-                                                    <a 
-                                                        href={downloadLinks.glb.url} 
-                                                        className="download-option"
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                    >
-                                                        <span className="format-name">GLB</span>
-                                                        <span className="format-size">{formatSize(downloadLinks.glb.size)}</span>
-                                                    </a>
-                                                )}
-                                                {downloadLinks.gltf && (
-                                                    <a 
-                                                        href={downloadLinks.gltf.url} 
-                                                        className="download-option"
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                    >
-                                                        <span className="format-name">GLTF</span>
-                                                        <span className="format-size">{formatSize(downloadLinks.gltf.size)}</span>
-                                                    </a>
-                                                )}
-                                                {downloadLinks.usdz && (
-                                                    <a 
-                                                        href={downloadLinks.usdz.url} 
-                                                        className="download-option"
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                    >
-                                                        <span className="format-name">USDZ</span>
-                                                        <span className="format-size">{formatSize(downloadLinks.usdz.size)}</span>
-                                                    </a>
+                                                    <div className="download-option-row">
+                                                        <div className="format-info">
+                                                            <span className="format-name">GLB</span>
+                                                            <span className="format-size">{formatSize(downloadLinks.glb.size)}</span>
+                                                            <span className="format-badge recommended">Recommended</span>
+                                                        </div>
+                                                        <div className="format-actions">
+                                                            <button
+                                                                className="use-btn"
+                                                                onClick={() => handleUseInWorkspace(downloadLinks.glb.url, 'glb')}
+                                                                disabled={isImporting}
+                                                            >
+                                                                {isImporting ? <Loader className="spin" size={14} /> : <Play size={14} />}
+                                                                Use in Workspace
+                                                            </button>
+                                                            <a 
+                                                                href={downloadLinks.glb.url} 
+                                                                className="download-btn"
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
+                                                                <Download size={14} />
+                                                            </a>
+                                                        </div>
+                                                    </div>
                                                 )}
                                                 {downloadLinks.source && (
-                                                    <a 
-                                                        href={downloadLinks.source.url} 
-                                                        className="download-option"
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                    >
-                                                        <span className="format-name">Source</span>
-                                                        <span className="format-size">{formatSize(downloadLinks.source.size)}</span>
-                                                    </a>
+                                                    <div className="download-option-row">
+                                                        <div className="format-info">
+                                                            <span className="format-name">Source (FBX)</span>
+                                                            <span className="format-size">{formatSize(downloadLinks.source.size)}</span>
+                                                        </div>
+                                                        <div className="format-actions">
+                                                            <button
+                                                                className="use-btn"
+                                                                onClick={() => handleUseInWorkspace(downloadLinks.source.url, 'source')}
+                                                                disabled={isImporting}
+                                                            >
+                                                                {isImporting ? <Loader className="spin" size={14} /> : <Play size={14} />}
+                                                                Use in Workspace
+                                                            </button>
+                                                            <a 
+                                                                href={downloadLinks.source.url} 
+                                                                className="download-btn"
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
+                                                                <Download size={14} />
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                {downloadLinks.gltf && (
+                                                    <div className="download-option-row disabled-option">
+                                                        <div className="format-info">
+                                                            <span className="format-name">GLTF</span>
+                                                            <span className="format-size">{formatSize(downloadLinks.gltf.size)}</span>
+                                                            <span className="format-badge warning">External files</span>
+                                                        </div>
+                                                        <div className="format-actions">
+                                                            <a 
+                                                                href={downloadLinks.gltf.url} 
+                                                                className="download-btn"
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                title="Download only - cannot import directly"
+                                                            >
+                                                                <Download size={14} />
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                {downloadLinks.usdz && (
+                                                    <div className="download-option-row disabled-option">
+                                                        <div className="format-info">
+                                                            <span className="format-name">USDZ</span>
+                                                            <span className="format-size">{formatSize(downloadLinks.usdz.size)}</span>
+                                                            <span className="format-badge warning">iOS only</span>
+                                                        </div>
+                                                        <div className="format-actions">
+                                                            <a 
+                                                                href={downloadLinks.usdz.url} 
+                                                                className="download-btn"
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
+                                                                <Download size={14} />
+                                                            </a>
+                                                        </div>
+                                                    </div>
                                                 )}
                                             </div>
                                             <p className="download-note">
-                                                Links expire in ~5 minutes
+                                                Links expire in ~5 minutes • "Use in Workspace" extracts & imports directly
                                             </p>
                                         </div>
                                     )}

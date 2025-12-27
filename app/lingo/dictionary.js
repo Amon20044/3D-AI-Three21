@@ -4983,6 +4983,40 @@ export default {
           },
       },
     },
+    "not-found.jsx": {
+      entries: {
+        "3/declaration/body/0/argument/3/1": {
+          content: {
+            en: "404",
+          },
+          hash: "b7218679a87e1426b5daa91922d59d31",
+        },
+        "3/declaration/body/0/argument/3/3": {
+          content: {
+            en: "Page Not Found",
+          },
+          hash: "5b1dea4722f8fd52b68f7ac5ce89875d",
+        },
+        "3/declaration/body/0/argument/3/5": {
+          content: {
+            en: "The page you're looking for doesn't exist or has been moved.",
+          },
+          hash: "90e141043b4f4624cdcf9c689f5b9867",
+        },
+        "3/declaration/body/0/argument/3/7/1": {
+          content: {
+            en: "<element:Home></element:Home> Go Home",
+          },
+          hash: "f289ad1853511636b13404df41a10e98",
+        },
+        "3/declaration/body/0/argument/3/7/3": {
+          content: {
+            en: "<element:Search></element:Search> Find Models",
+          },
+          hash: "bf970f1df8a6e44b226a919b00a14183",
+        },
+      },
+    },
     "page.jsx": {
       entries: {
         "10/declaration/body/2/argument/11/11/1": {

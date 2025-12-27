@@ -1,0 +1,110 @@
+'use client';
+
+import { useState } from "react";
+import Link from "next/link";
+import { useLocale, setLocale } from "lingo.dev/react/client";
+import BrandIcon from "./icons/BrandIcon";
+import "./header.css";
+
+const LANGUAGES = [
+  { code: "en", label: "English", flag: "🇬🇧" },
+  { code: "hi", label: "हिंदी", flag: "🇮🇳" },
+  { code: "ru", label: "Русский", flag: "🇷🇺" },
+  { code: "zh", label: "中文", flag: "🇨🇳" },
+];
+
+export default function Header() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const locale = useLocale();
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+  };
+
+  const handleLocaleChange = (e) => {
+    setLocale(e.target.value);
+  };
+
+  return (
+    <header className="site-header">
+      <div className="header-content">
+        <Link href="/" className="logo">
+          <div className="logo-icon">
+            <BrandIcon />
+          </div>
+          <span className="logo-text">Three21</span>
+        </Link>
+
+        <nav className="header-nav">
+          <Link href="/" className="nav-link">Home</Link>
+          <Link href="/find-models" className="nav-link">Find Models</Link>
+        </nav>
+
+        <div className="header-right">
+          <select
+            className="locale-switcher"
+            value={locale}
+            onChange={handleLocaleChange}
+            aria-label="Select language"
+          >
+            {LANGUAGES.map((lang) => (
+              <option key={lang.code} value={lang.code}>
+                {lang.flag} {lang.label}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="mobile-menu-toggle"
+            onClick={toggleMobileMenu}
+            aria-label="Toggle mobile menu"
+          >
+            <span className={`hamburger ${mobileMenuOpen ? "open" : ""}`}>
+              <span></span>
+              <span></span>
+              <span></span>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      <div className={`mobile-menu ${mobileMenuOpen ? "open" : ""}`}>
+        <nav className="mobile-nav">
+          <Link href="/" className="mobile-nav-link" onClick={closeMobileMenu}>
+            Home
+          </Link>
+          <Link href="/find-models" className="mobile-nav-link" onClick={closeMobileMenu}>
+            Find Models
+          </Link>
+          
+          {/* Mobile Language Selector */}
+          <div className="mobile-language-section">
+            <span className="mobile-language-label">Language</span>
+            <select
+              className="locale-switcher mobile-locale-switcher"
+              value={locale}
+              onChange={handleLocaleChange}
+              aria-label="Select language"
+            >
+              {LANGUAGES.map((lang) => (
+                <option key={lang.code} value={lang.code}>
+                  {lang.flag} {lang.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </nav>
+      </div>
+
+      {/* Backdrop */}
+      {mobileMenuOpen && (
+        <div className="mobile-menu-backdrop" onClick={closeMobileMenu}></div>
+      )}
+    </header>
+  );
+}
