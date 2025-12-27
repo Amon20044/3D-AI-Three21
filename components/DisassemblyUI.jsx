@@ -14,7 +14,8 @@ import {
     ChevronRight,
     Settings,
     Activity,
-    Layers
+    Layers,
+    Smartphone
 } from 'react-feather';
 import './disass.css'
 function TreeNode({ node, depth = 0 }) {
@@ -72,6 +73,7 @@ export function DisassemblyUI({
     isAnimating,
     onOpenAI,
     isOpenAI,
+    onOpenAR,
     separationDistance = 0.2,
     onSeparationDistanceChange,
     highlightColor = '#00ffff',
@@ -312,6 +314,20 @@ export function DisassemblyUI({
 
                 </div>
             )}
+
+            {/* AR View Button */}
+            <button
+                onClick={onOpenAR}
+                className="ar-view-btn"
+                aria-label="Open AR View"
+                type="button"
+                title="View in Augmented Reality"
+            >
+                <div className="ar-btn-icon" aria-hidden="true">
+                    <Smartphone size={18} />
+                </div>
+                <span>AR View</span>
+            </button>
 
             {/* AI Assistant Button */}
             <button

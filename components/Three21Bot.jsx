@@ -3,8 +3,6 @@ import React, { useState, useRef, useEffect, useLayoutEffect, useMemo } from 're
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-import html2canvas from 'html2canvas';
-import AIPromptGenerator from './AIPromptGenerator';
 import chatStorageManager from './ChatStorageManager';
 import { Toast } from './Toast';
 import { Mic, MicOff, Send, Camera, X } from 'react-feather';
@@ -120,7 +118,6 @@ export default function Three21Bot({
     const [inputMessage, setInputMessage] = useState('');
     const [screenshot, setScreenshot] = useState(autoScreenshot);
     const [chatLoaded, setChatLoaded] = useState(false);
-    const [aiPromptGenerator] = useState(() => new AIPromptGenerator());
     const [autoSendTimer, setAutoSendTimer] = useState(null);
     const [isListening, setIsListening] = useState(false);
     const [speechTranscript, setSpeechTranscript] = useState('');

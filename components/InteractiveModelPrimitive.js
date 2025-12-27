@@ -2,11 +2,23 @@ import { useRef, useEffect, forwardRef, useState } from 'react';
 import { useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
 import * as THREE from 'three';
+
+// Helper to get the right loader based on type
+const getLoader = (type) => {
+    switch (type) {
+        case 'fbx': return FBXLoader;
+        case 'obj': return OBJLoader;
+        case 'stl': return STLLoader;
+        default: return GLTFLoader; // gltf, glb
+    }
+};
 
 export const InteractiveModelPrimitive = forwardRef(({ url, type, onModelLoad, onObjectClick, onError, userScale = 1, enableAutoScale = false }, ref) => {
     // Load the model with enhanced error handling
-    const object = useLoader(type === 'fbx' ? FBXLoader : GLTFLoader, url,
+    const object = useLoader(getLoader(type), url,
         undefined,
         (error) => {
             console.error('🔴 InteractiveModelPrimitive: Model loading error caught:', error);
@@ -26,7 +38,25 @@ export const InteractiveModelPrimitive = forwardRef(({ url, type, onModelLoad, o
             }
         }
     );
-    const scene = type === 'fbx' ? object : object.scene;
+    
+    // Get the scene based on loader type
+    const getScene = () => {
+        if (type === 'fbx' || type === 'obj') {
+            return object;
+        } else if (type === 'stl') {
+            // STL returns geometry, need to create a mesh
+            const material = new THREE.MeshStandardMaterial({ color: 0x808080, metalness: 0.5, roughness: 0.5 });
+            const mesh = new THREE.Mesh(object, material);
+            const group = new THREE.Group();
+            group.add(mesh);
+            return group;
+        } else {
+            // GLTF/GLB returns { scene, ... }
+            return object.scene;
+        }
+    };
+    
+    const scene = getScene();
     const [modelInfo, setModelInfo] = useState({ originalSize: null, scale: 1, boundingBox: null });
 
     // Calculate model information without normalization

@@ -10,6 +10,7 @@ import { useModelInfo } from './ModelInfoContext';
 import { Toast } from './Toast';
 import { HighlightManager } from './HighlightManager';
 import { ScreenshotManager } from './ScreenshotManager';
+import ARViewer from './ARViewer';
 // import { DEMO_CONFIG } from '@/pages/model';
 import html2canvas from 'html2canvas';
 import * as THREE from 'three';
@@ -78,6 +79,9 @@ export default forwardRef(function AnyModelViewer({ url, type, isDemoMode = fals
 
     // Toast state for object clicking
     const [toast, setToast] = useState({ message: '', isVisible: false });
+
+    // AR viewer state
+    const [isAROpen, setIsAROpen] = useState(false);
 
     // FPS panel collapse state - auto-collapse on mobile
     const [isFPSPanelCollapsed, setIsFPSPanelCollapsed] = useState(() => {
@@ -790,7 +794,7 @@ export default forwardRef(function AnyModelViewer({ url, type, isDemoMode = fals
             </div>
 
             <Canvas
-                camera={{ position: [-100, 600, 400], fov: 60 }}
+                camera={{ position: [-100, 600, 400], fov: 60, near: 0.1, far: 100000 }}
                 shadows
                 gl={getRendererConfig()}
                 onCreated={({ gl }) => {
@@ -882,7 +886,13 @@ export default forwardRef(function AnyModelViewer({ url, type, isDemoMode = fals
                         onError={onError}
                     />
                 </Suspense>
-                <OrbitControls ref={orbitControlsRef} enableDamping dampingFactor={0.1} />
+                <OrbitControls 
+                    ref={orbitControlsRef} 
+                    enableDamping 
+                    dampingFactor={0.1}
+                    minDistance={0}
+                    maxDistance={Infinity}
+                />
                 <Environment preset="night" background={false} />
                 <AnimationController updateAnimation={updateAnimation} />
             </Canvas>
@@ -893,6 +903,7 @@ export default forwardRef(function AnyModelViewer({ url, type, isDemoMode = fals
                 isAnimating={isAnimating}
                 isOpenAI={isAIOpen}
                 onOpenAI={handleOpenAI}
+                onOpenAR={() => setIsAROpen(true)}
                 separationDistance={separationDistance}
                 onSeparationDistanceChange={setSeparationDistance}
                 highlightColor={highlightColor}
@@ -929,6 +940,14 @@ export default forwardRef(function AnyModelViewer({ url, type, isDemoMode = fals
                 onHide={hideToast}
             />
 
+            {/* AR Viewer */}
+            <ARViewer
+                url={url}
+                type={type}
+                isOpen={isAROpen}
+                onClose={() => setIsAROpen(false)}
+                modelName={activeDemoConfig?.name || 'Model'}
+            />
 
         </div>
 

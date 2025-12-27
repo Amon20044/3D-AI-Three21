@@ -430,7 +430,7 @@ export default function EmbeddedDemoViewer({
                 className="model-canvas-container"
             >
                 <Canvas
-                    camera={{ position: [115, 650, 400], fov: 80 }}
+                    camera={{ position: [115, 650, 400], fov: 80, near: 0.1, far: 100000 }}
                     shadows
                     gl={{
                         antialias: true,
@@ -476,8 +476,8 @@ export default function EmbeddedDemoViewer({
                         dampingFactor={0.1}
                         enableZoom={true}
                         enablePan={true}
-                        maxDistance={1000}
-                        minDistance={50}
+                        maxDistance={Infinity}
+                        minDistance={0}
                     />
                     <Environment preset="studio" background={false} />
                     <AnimationController updateAnimation={updateAnimation} />

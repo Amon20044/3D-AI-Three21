@@ -23,8 +23,8 @@ export class ScreenshotManager {
         const {
             width = 1920,
             height = 1080,
-            quality = 0.65, // WebP sweet spot for compression vs quality
-            format = 'image/webp' // WebP provides ~30% better compression than JPEG
+            quality = 0.92, // PNG quality
+            format = 'image/png' // PNG for better AI compatibility
         } = options;
 
         try {
@@ -117,8 +117,8 @@ export class ScreenshotManager {
             // Render the scene
             offScreenRenderer.render(scene, camera);
 
-            // Get the canvas and convert to data URL (WebP for better compression)
-            const dataURL = offScreenRenderer.domElement.toDataURL('image/webp', 0.75);
+            // Get the canvas and convert to data URL (PNG for AI compatibility)
+            const dataURL = offScreenRenderer.domElement.toDataURL('image/png', 0.92);
 
             // Clean up
             offScreenRenderer.dispose();
@@ -171,13 +171,13 @@ export class ScreenshotManager {
             camera.lookAt(center);
             camera.updateMatrixWorld();
 
-            // Capture screenshot with WebP compression
+            // Capture screenshot with PNG format for AI
             const screenshot = await this.captureModelOnly({
                 ...options,
                 width: 1024,
                 height: 768,
-                format: 'image/webp',
-                quality: 0.75
+                format: 'image/png',
+                quality: 0.92
             });
 
             // Restore camera position
@@ -235,8 +235,8 @@ export class ScreenshotManager {
                     ...options,
                     width: 512,
                     height: 512,
-                    format: 'image/webp',
-                    quality: 0.75
+                    format: 'image/png',
+                    quality: 0.92
                 });
 
                 if (screenshot) {
@@ -393,4 +393,3 @@ export class ScreenshotManager {
     }
 }
 
-export default ScreenshotManager;

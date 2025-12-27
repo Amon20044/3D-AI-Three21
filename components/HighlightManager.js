@@ -242,11 +242,3 @@ export class HighlightManager {
         this.originalMaterials.clear();
     }
 }
-
-/**
- * Hook for using highlight manager in React components
- */
-export function useHighlightManager() {
-    const highlightManager = new HighlightManager();
-    return highlightManager;
-}

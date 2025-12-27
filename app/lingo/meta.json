@@ -5776,11 +5776,11 @@
         },
         "7/declaration/body/24/argument/11/1/23/expression/right/5/expression/right/1": {
           "type": "element",
-          "hash": "64b87c2057407ce059508faf84a2d193",
+          "hash": "be73835b06a2a12feebc8731a5ea543b",
           "context": "",
           "skip": false,
           "overrides": {},
-          "content": "🤖 AI-Powered Search"
+          "content": "AI-Powered Search"
         },
         "7/declaration/body/24/argument/11/1/23/expression/right/5/expression/right/3/1": {
           "type": "element",
@@ -6397,6 +6397,50 @@
           "skip": false,
           "overrides": {},
           "content": "Reload Page"
+        }
+      }
+    },
+    "not-found.jsx": {
+      "scopes": {
+        "3/declaration/body/0/argument/3/1": {
+          "type": "element",
+          "hash": "b7218679a87e1426b5daa91922d59d31",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "404"
+        },
+        "3/declaration/body/0/argument/3/3": {
+          "type": "element",
+          "hash": "5b1dea4722f8fd52b68f7ac5ce89875d",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "Page Not Found"
+        },
+        "3/declaration/body/0/argument/3/5": {
+          "type": "element",
+          "hash": "90e141043b4f4624cdcf9c689f5b9867",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "The page you're looking for doesn't exist or has been moved."
+        },
+        "3/declaration/body/0/argument/3/7/1": {
+          "type": "element",
+          "hash": "f289ad1853511636b13404df41a10e98",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:Home></element:Home> Go Home"
+        },
+        "3/declaration/body/0/argument/3/7/3": {
+          "type": "element",
+          "hash": "bf970f1df8a6e44b226a919b00a14183",
+          "context": "",
+          "skip": false,
+          "overrides": {},
+          "content": "<element:Search></element:Search> Find Models"
         }
       }
     },
