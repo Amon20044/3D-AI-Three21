@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
 import { ModelInfoProvider } from '../components/ModelInfoContext';
+import { LanguageProvider } from '../components/LanguageContext';
 import { Analytics } from "@vercel/analytics/next";
 
 export default function Providers({ children }) {
@@ -25,9 +26,11 @@ export default function Providers({ children }) {
 
     return (
         <QueryClientProvider client={queryClient}>
-            <ModelInfoProvider>
-                {children}
-            </ModelInfoProvider>
+            <LanguageProvider>
+                <ModelInfoProvider>
+                    {children}
+                </ModelInfoProvider>
+            </LanguageProvider>
             <Analytics />
         </QueryClientProvider>
     );

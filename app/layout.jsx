@@ -2,7 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ModelInfoWrapper from "../components/ModelInfoWrapper";
 import { Analytics } from "@vercel/analytics/next"
-import { LingoProvider, loadDictionary } from "lingo.dev/react/rsc";
+import { LingoProvider } from "@lingo.dev/compiler/react";
 import Providers from "./Providers";
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -59,7 +59,7 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <LingoProvider loadDictionary={(locale) => loadDictionary(locale)}>
+    <LingoProvider>
       <html lang="en" data-theme="dark">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased dark-theme`}

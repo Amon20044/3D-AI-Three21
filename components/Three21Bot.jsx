@@ -8,6 +8,7 @@ import { Toast } from './Toast';
 import { Mic, MicOff, Send, Camera, X } from 'react-feather';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls } from 'ai';
+import { useLanguage, LANGUAGE_NAMES } from './LanguageContext';
 import './three21bot.css'
 // Error Boundary for Markdown rendering
 
@@ -101,7 +102,6 @@ const MarkdownMessage = React.memo(({ content }) => {
 });
 
 
-
 export default function Three21Bot({
     isOpen,
     onClose,
@@ -130,6 +130,10 @@ export default function Three21Bot({
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
 
+    // Language context for multilingual responses
+    const { language } = useLanguage();
+    const languageRef = useRef(language); // Ref for immediate access to language
+
     const messagesEndRef = useRef(null);
     const chatContainerRef = useRef(null);
     const recognitionRef = useRef(null);
@@ -157,7 +161,7 @@ export default function Three21Bot({
                 //     content: msg.parts?.map(p => p.text || '').join('') || msg.content || ''
                 // }));
 
-                console.log('📤 Sending', validMessages.length, 'valid messages');
+                console.log('📤 Sending', validMessages.length, 'valid messages, language:', languageRef.current);
 
                 return {
                     body: {
@@ -165,6 +169,7 @@ export default function Three21Bot({
                         modelInfo: demoConfig || (modelInfo ? { ...modelInfo, modelStructure: undefined } : null), // Ensure modelStructure is removed
                         selectedPart: currentSelectedPartRef.current, // Use ref to get current value
                         screenshot: screenshotRef.current, // Use ref to get current value
+                        language: languageRef.current, // Pass language for multilingual responses
                         // sceneAnalysis, // REMOVED: Too large for Vercel payload
                         analysisContext: {
                             excludeUIElements: true,
@@ -222,6 +227,11 @@ export default function Three21Bot({
     useEffect(() => {
         inputMessageRef.current = inputMessage;
     }, [inputMessage]);
+
+    // Keep language ref updated
+    useEffect(() => {
+        languageRef.current = language;
+    }, [language]);
 
     // Track chatbot visibility and clear unread count when opened
     useEffect(() => {

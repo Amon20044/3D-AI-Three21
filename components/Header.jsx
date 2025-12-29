@@ -1,12 +1,27 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useLingoLocale, setLingoLocale } from "lingo.dev/react/client";
 import BrandIcon from "./icons/BrandIcon";
+import { useLanguage, SUPPORTED_LANGUAGES } from "./LanguageContext";
 import "./header.css";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  // Lingo.dev for UI translations
+  const lingoLocale = useLingoLocale();
+  
+  // LanguageContext for chat API
+  const { language, setLanguage, isHydrated } = useLanguage();
+
+  // Sync LanguageContext when lingo locale changes
+  useEffect(() => {
+    if (lingoLocale && lingoLocale !== language) {
+      setLanguage(lingoLocale);
+    }
+  }, [lingoLocale]);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -14,6 +29,13 @@ export default function Header() {
 
   const closeMobileMenu = () => {
     setMobileMenuOpen(false);
+  };
+
+  // Update BOTH lingo.dev (UI) AND LanguageContext (chat API)
+  const handleLocaleChange = (e) => {
+    const newLocale = e.target.value;
+    setLingoLocale(newLocale);      // Update lingo.dev for UI
+    setLanguage(newLocale);    // Update context for chat API
   };
 
   return (
@@ -32,6 +54,21 @@ export default function Header() {
         </nav>
 
         <div className="header-right">
+          {isHydrated && (
+            <select
+              className="locale-switcher"
+              value={lingoLocale || language}
+              onChange={handleLocaleChange}
+              aria-label="Select language"
+            >
+              {SUPPORTED_LANGUAGES.map((lang) => (
+                <option key={lang.code} value={lang.code}>
+                  {lang.flag} {lang.nativeName}
+                </option>
+              ))}
+            </select>
+          )}
+
           <button
             className="mobile-menu-toggle"
             onClick={toggleMobileMenu}
@@ -55,6 +92,25 @@ export default function Header() {
           <Link href="/find-models" className="mobile-nav-link" onClick={closeMobileMenu}>
             Find Models
           </Link>
+          
+          {/* Mobile Language Selector */}
+          {isHydrated && (
+            <div className="mobile-language-section">
+              <span className="mobile-language-label">Language</span>
+              <select
+                className="locale-switcher mobile-locale-switcher"
+                value={lingoLocale || language}
+                onChange={handleLocaleChange}
+                aria-label="Select language"
+              >
+                {SUPPORTED_LANGUAGES.map((lang) => (
+                  <option key={lang.code} value={lang.code}>
+                    {lang.flag} {lang.nativeName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </nav>
       </div>
 

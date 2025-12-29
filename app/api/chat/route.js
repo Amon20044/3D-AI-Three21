@@ -184,6 +184,12 @@ Bro, this is your **final, polished, dynamic, adaptive** system prompt — built
 
 `;
 
+// Language configuration for multilingual responses
+const LANGUAGE_NAMES = {
+    en: 'English',
+    hi: 'Hindi (हिन्दी)',
+};
+
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
@@ -196,6 +202,7 @@ export async function POST(req) {
             screenshot,
             sceneAnalysis,
             analysisContext,
+            language = 'en', // Default to English
             systemPrompt = ENHANCED_SYSTEM_PROMPT
         } = await req.json();
         
@@ -206,7 +213,8 @@ export async function POST(req) {
             screenshotLength: screenshot?.length,
             screenshotPrefix: screenshot?.substring(0, 50),
             hasModelInfo: !!modelInfo,
-            hasSelectedPart: !!selectedPart
+            hasSelectedPart: !!selectedPart,
+            language: language
         });
         // -------------------------
         // Screenshot Validation
@@ -228,6 +236,17 @@ export async function POST(req) {
         // Build system prompt
         // -------------------------
         let contextPrompt = ENHANCED_SYSTEM_PROMPT;
+
+        // LANGUAGE INSTRUCTION (add at the start for priority)
+        if (language && language !== 'en') {
+            const langName = LANGUAGE_NAMES[language] || language;
+            contextPrompt += `\n\n# 🌐 LANGUAGE INSTRUCTION\n`;
+            contextPrompt += `**IMPORTANT**: The user has selected ${langName} as their preferred language.\n`;
+            contextPrompt += `You MUST respond entirely in ${langName}.\n`;
+            contextPrompt += `- Use ${langName} script and vocabulary\n`;
+            contextPrompt += `- Keep technical terms in English when no good translation exists\n`;
+            contextPrompt += `- Maintain the same helpful, adaptive persona in ${langName}\n`;
+        }
 
         // MODEL CONTEXT
         if (modelInfo) {
